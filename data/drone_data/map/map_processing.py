@@ -62,4 +62,3 @@ with open(cur_path + 'map/' + data_id + '/link_set_mod.json', "w") as json_file:
     json.dump(links, json_file)
 
 
-
