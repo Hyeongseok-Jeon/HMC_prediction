@@ -104,7 +104,10 @@ def coordinate_conversion(scale, tracks, landmark, recordingMeta, origin_GT):
                  (landmark1_GT[0, 1] + landmark2_GT[0, 1] + landmark3_GT[0, 1]) / 3]
 
     for i in range(len(landmark)):
-        print(i)
+        if i+1 == len(landmark):
+            print(str(int(10000 * (i + 1) / len(landmark)) / 100) + ' % is completed')
+        else:
+            print(str(int(10000*(i+1)/len(landmark))/100) + ' % is completed', end='\r')
         cur_frame = landmark[i, 1]
         landmark1 = np.asarray([[landmark[i, 2] * meter_per_pixel, -landmark[i, 3] * meter_per_pixel]])
         landmark2 = np.asarray([[landmark[i, 4] * meter_per_pixel, -landmark[i, 5] * meter_per_pixel]])
