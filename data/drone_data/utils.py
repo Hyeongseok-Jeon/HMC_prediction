@@ -167,4 +167,4 @@ def get_nearest_link(links, pos):
             min_dist = min_dist_cand
             min_seg = links[i]
             min_seg_int_idx = links[i]['idx_int']
-    return min_seg_int_idx, min_seg
+    return min_seg_int_idx, min_seg, min_dist
