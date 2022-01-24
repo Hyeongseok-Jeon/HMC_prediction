@@ -3,12 +3,10 @@ import os
 import tqdm
 from model.representation_learning.data import pred_loader
 from torch.utils.data import DataLoader
+from model. representation_learning.config import config
 
-cur_dir = os.getcwd()
-data_dir = cur_dir+'/data/drone_data/processed/'
-
-dataset = pred_loader(data_dir)
-dataloader = DataLoader(dataset, batch_size=4, shuffle=True)
+dataset = pred_loader(config)
+dataloader = DataLoader(dataset, batch_size=config["batch_size"], shuffle=True)
 
 for i, data in enumerate(dataloader):
     hist_traj, outlet_state, total_traj, maneuver_index = data

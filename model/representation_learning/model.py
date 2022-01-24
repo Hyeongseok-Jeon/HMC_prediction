@@ -1,13 +1,13 @@
-import os
 import sys
+import os
 root_path = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, root_path)
-
+sys.path.append(root_path)
+from modules.encoder import Encoder
+from modules.autoregressive import AutoRegressive
 from torch import Tensor, nn
-from typing import Dict, List, Tuple, Union
-import torch
 
-class Encoder(nn.Module):
+
+class Net(nn.Module):
     """
     Final motion forecasting with Linear Residual block
     """

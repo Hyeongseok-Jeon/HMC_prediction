@@ -5,9 +5,10 @@ from torch.utils.data import Dataset
 from torchvision.io import read_image
 
 class pred_loader(Dataset):
-    def __init__(self, data_dir):
-        self.data_list = [os.path.basename(x) for x in glob.glob(data_dir+'hist_traj/*.npy')]
-        self.data_dir = data_dir
+    def __init__(self, config):
+        self.config = config
+        self.data_dir = self.config["data_dir"]
+        self.data_list = [os.path.basename(x) for x in glob.glob(self.data_dir +'hist_traj/*.npy')]
 
         self.hist_traj_max = 0
         self.total_traj_max = 0
