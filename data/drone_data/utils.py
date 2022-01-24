@@ -85,7 +85,7 @@ def data_load(root, data_id):
     return landmark, recordingMeta, tracks, tracksMeta, tracksClass
 
 
-def coordinate_conversion(tracks, landmark, recordingMeta, origin_GT):
+def coordinate_conversion(scale, tracks, landmark, recordingMeta, origin_GT):
     global center_GT
     global landmark1_GT
     global landmark2_GT
@@ -94,7 +94,7 @@ def coordinate_conversion(tracks, landmark, recordingMeta, origin_GT):
     global landmark2
     global landmark3
 
-    meter_per_pixel = recordingMeta[15]
+    meter_per_pixel = scale * recordingMeta[15]
     new_tracks = np.zeros_like(tracks)
     new_tracks[:] = tracks[:]
     landmark1_GT = np.asarray([origin_GT[0]])
@@ -120,7 +120,7 @@ def coordinate_conversion(tracks, landmark, recordingMeta, origin_GT):
 
         veh_list = np.where(tracks[:, 2] == cur_frame)[0]
         for j in range(len(veh_list)):
-            cur_pos = np.asarray([tracks[veh_list[j], 4:6]])
+            cur_pos = scale * np.asarray([tracks[veh_list[j], 4:6]])
             theta_1 = np.rad2deg(np.arctan2(cur_pos[0][1], cur_pos[0][0]))
 
             x_1 = trans_x + np.sqrt(cur_pos[0][0] ** 2 + cur_pos[0][1] ** 2) * np.cos(np.deg2rad(rot + theta_1))
@@ -165,5 +165,6 @@ def get_nearest_link(links, pos):
         min_dist_cand = np.min(np.linalg.norm(pt - pos, axis=1))
         if min_dist_cand < min_dist:
             min_dist = min_dist_cand
-            min_seg = links[i]['idx']
-    return min_seg
+            min_seg = links[i]
+            min_seg_int_idx = links[i]['idx_int']
+    return min_seg_int_idx, min_seg
