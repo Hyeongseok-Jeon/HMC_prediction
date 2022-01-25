@@ -8,7 +8,7 @@ class pred_loader(Dataset):
     def __init__(self, config):
         self.config = config
         self.data_dir = self.config["data_dir"]
-        self.data_list = [os.path.basename(x) for x in glob.glob(self.data_dir +'hist_traj/*.npy')]
+        self.data_list = config['splicing_num'] * [os.path.basename(x) for x in glob.glob(self.data_dir +'hist_traj/*.npy')]
 
         self.hist_traj_max = 0
         self.total_traj_max = 0
