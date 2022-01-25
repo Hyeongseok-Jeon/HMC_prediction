@@ -5,6 +5,9 @@ data_dir = root_path+'/data/drone_data/processed/'
 ### config used ###
 config = dict()
 
+''' environment '''
+config["GPU_id"] = 0
+
 ''' training '''
 config["batch_size"] = 4
 config["epoch"] = 50
@@ -12,4 +15,4 @@ config["epoch"] = 50
 ''' data '''
 config["data_dir"] = data_dir
 config["occlusion_rate"] = 0.2
-config["splicing_num"] = 20
+config["splicing_num"] = 128

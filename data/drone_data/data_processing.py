@@ -126,6 +126,7 @@ for i in range(len(veh_idx)):
             traj_conv = np.matmul(rot, (traj - origin_point).T).T
             heading_conv = heading + 90 - origin_heading
             inlet_idx = np.argmin(np.linalg.norm(traj_conv, axis=1))
+            # TODO: hist_traj길이를 intersection 중간지점까지 확장할 필요도 있을듯
 
             hist_traj = np.concatenate((traj_conv[:inlet_idx+1, :], heading_conv[:inlet_idx+1]), axis=1)
             outlet_state = np.concatenate((traj_conv[target_index:target_index+1, :], heading_conv[target_index:target_index+1]), axis=1)

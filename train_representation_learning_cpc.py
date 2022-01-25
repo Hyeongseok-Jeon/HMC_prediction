@@ -1,6 +1,3 @@
-import torch
-import os
-import tqdm
 from model.representation_learning.data import pred_loader
 from torch.utils.data import DataLoader
 from model. representation_learning.config import config
