@@ -17,7 +17,7 @@ class Net(nn.Module):
         self.config = config
         self.encoder = Encoder
         self.autoregressive = AutoRegressive
-
+        self.Wk = nn.ModuleList([nn.Linear(256, 512) for i in range(timestep)])
     def forward(self, ):
         preds = []
         recons = []

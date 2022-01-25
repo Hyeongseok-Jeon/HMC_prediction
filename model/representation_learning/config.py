@@ -9,7 +9,7 @@ config = dict()
 config["GPU_id"] = 0
 
 ''' training '''
-config["batch_size"] = 4
+config["batch_size"] = 1
 config["epoch"] = 50
 
 ''' data '''
