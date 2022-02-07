@@ -15,15 +15,10 @@ class Net(nn.Module):
     def __init__(self, config):
         super(Encoder, self).__init__()
         self.config = config
-        norm = "GN"
-        ng = 1
-
-        n_actor = config["n_actor"]
-
-        self.generator = nn.Linear(n_actor, 2 * config["num_preds"])
-        self.reconstructor = nn.Linear(n_actor, 2 * config["num_preds"])
-
-    def forward(self, actors: Tensor, actor_idcs_mod: List[Tensor], actor_ctrs_mod: List[Tensor]) -> Dict[str, List[Tensor]]:
+        self.encoder = Encoder
+        self.autoregressive = AutoRegressive
+        self.Wk = nn.ModuleList([nn.Linear(256, 512) for i in range(timestep)])
+    def forward(self, ):
         preds = []
         recons = []
 
