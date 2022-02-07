@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import sys
+import csv
 # matplotlib.use('TkAgg')
 # file_path = os.path.dirname(os.path.abspath(__file__))
 # cur_path = os.path.dirname(file_path)+'/'
@@ -13,8 +14,10 @@ data_bag = glob.glob(cur_path + '/raw/tracks/*.csv')
 sys.path.append(cur_path)
 from utils import point_regen
 
-data_idx = 11
+data_idx = 8
 data_id = os.path.basename(data_bag[data_idx]).split("_")[0]
+if '10' in data_id:
+    data_id = '1001'
 
 with open(cur_path + 'map/' + data_id + '/link_set_new.json') as json_file:
     links = json.load(json_file)
@@ -22,46 +25,72 @@ with open(cur_path + 'map/' + data_id + '/link_set_new.json') as json_file:
 with open(cur_path + 'map/' + data_id + '/node_set_new.json') as json_file:
     nodes = json.load(json_file)
 
-branch_cnt = 0
-for i in range(len(links)):
-    points_np = np.array(links[i]['points'])[:, :2]
-    nodes_in = points_np[0,:]
-    nodes_in_idx = links[i]['from_node_idx']
-    nodes_out = points_np[-1,:]
-    nodes_out_idx = links[i]['to_node_idx']
+nodes_csv = []
+with open(cur_path + 'map/' + data_id + '/csv/node_set.csv', newline='') as csvfile:
+    spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+    for row in spamreader:
+        row_mod = row[0].split(',')
+        node_id = row_mod[0]
+        if node_id == 'id':
+            pass
+        else:
+            x_pos = float(row_mod[1])
+            y_pos = float(row_mod[2])
+            nodes_csv.append([node_id, x_pos, y_pos])
 
-    list_pt = []
-    for j in range(len(points_np)-1):
-        dist_to_next = np.linalg.norm(points_np[j+1]-points_np[j])
-        list_pt.append(points_np[j,:])
-        if dist_to_next > 1:
-            inter_num = int(np.ceil(dist_to_next))
-            for z in range(inter_num-1):
-                x = points_np[j,0] + (points_np[j+1,0]-points_np[j,0])*z/inter_num
-                y = points_np[j,1] + (points_np[j+1,1]-points_np[j,1])*z/inter_num
-                list_pt.append(np.asarray([x,y]))
-    list_pt.append(points_np[-1,:])
-    points_np_interpolate = np.asarray(list_pt)
+links_csv = []
+link_bag = glob.glob(cur_path + 'map/' + data_id + '/csv/*_link.csv')
+for i in range(len(link_bag)):
+    link_id = os.path.basename(link_bag[i])[:-9]
+    points = []
+    with open(link_bag[i], newline='') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+        for row in spamreader:
+            row_mod = row[0].split(',')
+            x = row_mod[3]
+            y = row_mod[4]
+            if x == 'x':
+                pass
+            else:
+                points.append([x,y])
+    links_csv.append([link_id, points])
 
-    pt_list = point_regen(points_np_interpolate)
-    if i == 7:
-        pt_list = pt_list[127:]
-    elif i == 8:
-        pt_list = pt_list[131:]
-    elif i == 9:
-        pt_list = pt_list[132:]
 
-    links[i]['points'] = pt_list.tolist()
-    plt.scatter(np.array(pt_list)[:, 0], np.array(pt_list)[:, 1])
-    plt.text((np.array(pt_list)[0, 0]),
-             (np.array(pt_list)[0, 1]),
-             str(links[i]['idx_int']))
-    if links[i]['idx_int']>0:
-        branch_cnt = branch_cnt+1
-    init = 0
+if len(nodes) > len(nodes_csv):
+    nodes = nodes[:len(nodes_csv)]
+else:
+    while len(nodes) < len(nodes_csv):
+        nodes.append(nodes[-1])
 
-plt.axis('equal')
-plt.show()
+for i in range(len(nodes_csv)):
+    idx = nodes_csv[i][0][1:-1]
+    node_type = 1
+    junction = []
+    point = [nodes_csv[i][1], nodes_csv[i][2], 0]
+    on_stop_line = False
+    nodes[i]['idx'] = idx
+    nodes[i]['node_type'] = node_type
+    nodes[i]['junction'] = junction
+    nodes[i]['point'] = point
+    nodes[i]['on_stop_line'] = on_stop_line
+
+if len(links) > len(links_csv):
+    links = nodes[:len(links_csv)]
+else:
+    while len(links) < len(links_csv):
+        links.append(links[-1])
+
+for i in range(len(links_csv)):
+    idx = links_csv[i][0][1:-1]
+    node_type = 1
+    junction = []
+    point = [nodes_csv[i][1], nodes_csv[i][2], 0]
+    on_stop_line = False
+    nodes[i]['idx'] = idx
+    nodes[i]['node_type'] = node_type
+    nodes[i]['junction'] = junction
+    nodes[i]['point'] = point
+    nodes[i]['on_stop_line'] = on_stop_line
 
 with open(cur_path + 'map/' + data_id + '/link_set_mod.json', "w") as json_file:
     json.dump(links, json_file)
