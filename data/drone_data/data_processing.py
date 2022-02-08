@@ -31,7 +31,7 @@ print('------------------------------------------------------------')
 print('\n')
 
 # issued index
-# conversion error = [1009, 1010, 1003]
+# conversion error = [1010, 1003] [10, 6]
 for file_name_index in range(len(file_list_int)):
 
     # selected_file_index = input('Select data file index from above :')
@@ -102,6 +102,8 @@ for file_name_index in range(len(file_list_int)):
         veh_idx = tracksMeta[(tracksMeta[:, 6] > 0) & (tracksMeta[:, 4] > 0), 1]
         for i in range(len(veh_idx)):
             if selected_scenario_id == 1001 and i == 2:
+                pass
+            elif selected_scenario_id == 1010 and i == 51:
                 pass
             else:
                 if i+1 == len(veh_idx):
