@@ -6,7 +6,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import sys
 import csv
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 # file_path = os.path.dirname(os.path.abspath(__file__))
 # cur_path = os.path.dirname(file_path)+'/'
 cur_path = os.getcwd() + '/data/drone_data/'
@@ -82,13 +82,19 @@ else:
 
 for i in range(len(links_csv)):
     idx = links_csv[i][0]
+    idx_int = int(idx[-2:])
+    if idx_int > 14:
+        if idx_int > 17:
+            idx_int = 0
+        else:
+            idx_int = -1
     point = links_csv[i][1]
     from_node_idx = [nodes[j]['idx'] for j in range(len(nodes)) if (nodes[j]['point'][0] == float(point[0][0])) & (nodes[j]['point'][1] == float(point[0][1]))][0]
     to_node_idx = [nodes[j]['idx'] for j in range(len(nodes)) if (nodes[j]['point'][0] == float(point[-1][0])) & (nodes[j]['point'][1] == float(point[-1][1]))][0]
-    points = [[float(point[j][0]), float(point[j][1]), 0] for j in range(len(point))]
+    points = [[float(point[j][0]), float(point[j][1])] for j in range(len(point))]
 
     links[i]['idx'] = idx
-    links[i]['idx_int'] = 1
+    links[i]['idx_int'] = idx_int
     links[i]['from_node_idx'] = from_node_idx
     links[i]['to_node_idx'] = to_node_idx
     links[i]['points'] = points
@@ -115,35 +121,30 @@ for i in range(len(nodes)):
 plt.show()
 
 # maneuver table 다시 만들어야됨
-maneuver_table = np.zeros([len(links),len(links)])
+maneuver_table = np.zeros([15,15])
 maneuver_table[1,11] = 1
+maneuver_table[2,6] = 2
 maneuver_table[2,7] = 2
 maneuver_table[3,6] = 2
+maneuver_table[3,7] = 2
 maneuver_table[3,4] = 3
-maneuver_table[5,16] = 1
-maneuver_table[4,15] = 1
-maneuver_table[4,14] = 1
-maneuver_table[5,16] = 1
-maneuver_table[5,15] = 1
+maneuver_table[5,13] = 1
 maneuver_table[5,14] = 1
-maneuver_table[6,12] = 2
-maneuver_table[6,13] = 2
-maneuver_table[9,3] = 1
-maneuver_table[9,2] = 1
-maneuver_table[9,16] = 2
-maneuver_table[10,3] = 1
-maneuver_table[10,2] = 1
-maneuver_table[10,16] = 2
-maneuver_table[10,15] = 2
+maneuver_table[5,11] = 2
+maneuver_table[5,6] = 3
+maneuver_table[5,7] = 3
+maneuver_table[8,4] = 1
+maneuver_table[9,13] = 2
+maneuver_table[9,14] = 2
+maneuver_table[10,13] = 2
 maneuver_table[10,14] = 2
-maneuver_table[11,16] = 2
-maneuver_table[11,15] = 2
-maneuver_table[11,14] = 2
-maneuver_table[11,12] = 3
-maneuver_table[13,8] = 1
-maneuver_table[13,7] = 1
-maneuver_table[13,14] = 3
-maneuver_table[13,15] = 3
-maneuver_table[13,16] = 3
+maneuver_table[10,11] = 3
+maneuver_table[12,7] = 1
+maneuver_table[12,8] = 1
+maneuver_table[12,7] = 1
+maneuver_table[12,4] = 2
+maneuver_table[12,13] = 3
+maneuver_table[12,14] = 3
+
 with open(cur_path + 'map/' + data_id + '/maneuver_table.npy', "wb") as f:
     np.save(f, maneuver_table)
