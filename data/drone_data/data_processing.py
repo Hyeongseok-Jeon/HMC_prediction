@@ -8,7 +8,7 @@ import json
 import matplotlib
 import matplotlib.pyplot as plt
 
-# matplotlib.use('TkAgg')
+matplotlib.use('TkAgg')
 
 # cur_path = os.path.dirname(os.path.abspath(__file__))+'/'
 cur_path = os.getcwd() + '/data/drone_data/'
@@ -30,10 +30,9 @@ for i in range(len(file_list_int)):
 print('------------------------------------------------------------')
 print('\n')
 
-# issued index
-# conversion error = [1010, 1003] [10, 6]
 for file_name_index in range(len(file_list_int)):
-
+    # if file_list_int[file_name_index] == 1003:
+    #     print(file_name_index)
     # selected_file_index = input('Select data file index from above :')
     # selected_file_index = input('Proceed?: ')
 
@@ -69,7 +68,9 @@ for file_name_index in range(len(file_list_int)):
         print('Data Converting ....')
 
         new_tracks = coordinate_conversion(scale, tracks, landmark, recordingMeta, origin_GT)
-
+        new_tracks_tmp = new_tracks.copy()
+        if selected_scenario_id == 1003:
+            new_tracks[:,5] = new_tracks[:,5] - 13
         with open(cur_path + 'map/' + representative_id + '/link_set.json') as json_file:
             links = json.load(json_file)
         with open(cur_path + 'map/' + representative_id + '/node_set.json') as json_file:
@@ -161,6 +162,12 @@ for file_name_index in range(len(file_list_int)):
                             if seg['idx_int'] == init_seg_int:
                                 init_seg = seg
 
+                    if selected_scenario_id == 1010 and i == 42:
+                        init_seg_int = 5
+                        for asdf in range(len(links)):
+                            seg = links[asdf]
+                            if seg['idx_int'] == init_seg_int:
+                                init_seg = seg
                     end_pos = traj[-1, :]
                     end_seg_int, end_seg, _ = get_nearest_link(links, end_pos)
                     if 0 in seg_list and end_seg_int != 0 and init_seg_int != 0:
