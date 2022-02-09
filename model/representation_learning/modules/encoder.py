@@ -26,13 +26,15 @@ class Encoder(nn.Module):
                 ch_in = config['deconv_chennel_num_list'][i - 1]
                 ch_out = config['deconv_chennel_num_list'][i]
 
+            if i == config['n_deconv_layer_enc']-1:
+                output_padding = config['doconv_output_padding']
+            else:
+                output_padding = 0
             layer = nn.ConvTranspose2d(in_channels=ch_in,
                                        out_channels=ch_out,
                                        kernel_size=config['deconv_kernel_size_list'][i],
-                                       stride=1,
-                                       padding=0,
-                                       output_padding=0,
-                                       groups=1,
+                                       stride=config['deconv_stride_list'][i],
+                                       output_padding=output_padding,
                                        bias=True,
                                        dilation=1)
             deconv.append(layer)
@@ -48,10 +50,20 @@ class Encoder(nn.Module):
     def forward(self, hist_traj):
         length_idx = torch.where(hist_traj[:, :, 0] == 0)
         hist_traj[hist_traj == -1] = 0
-        hist_traj = hist_traj.view(hist_traj.shape[0] * hist_traj.shape[1], 3, 1, 1)
+        for i in range(hist_traj.shape[0]):
+            if i == 0:
+                x = hist_traj[i, :length_idx[1][torch.where(length_idx[0] == i)[0][0]],:]
+                x = torch.unsqueeze(x, dim=-1)
+                x = torch.unsqueeze(x, dim=-1)
+            else:
+                cut = hist_traj[i, :length_idx[1][torch.where(length_idx[0] == i)[0][0]],:]
+                cut = torch.unsqueeze(cut, dim=-1)
+                cut = torch.unsqueeze(cut, dim=-1)
+                x = torch.cat((x, cut), dim=0)
 
         for i, l in enumerate(deconv):
-            hist_traj = deconv[i](hist_traj)
+            x = deconv[i](x)
+
 
         preds = []
         recons = []
