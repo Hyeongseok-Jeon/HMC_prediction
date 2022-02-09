@@ -15,5 +15,12 @@ config["epoch"] = 50
 ''' data '''
 config["data_dir"] = data_dir
 config["occlusion_rate"] = 0.2
-config["splicing_num"] = 128
+config["splicing_num"] = 2
 config["FOV"] = 30
+config["interpolate"] = False
+
+''' network '''
+config["n_deconv_layer_enc"] = 5
+config["deconv_kernel_size_list"] = [4, 5, 5, 5, 5]
+config['deconv_chennel_num_list'] = [3, 4, 8, 16, 32]
+config["n_hidden_after_deconv"] = 256

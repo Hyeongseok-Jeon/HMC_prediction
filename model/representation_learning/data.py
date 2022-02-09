@@ -37,22 +37,23 @@ class pred_loader(Dataset):
         for i in range(1,len(hist_traj_raw)-1):
             rd_num = np.random.rand()
             if rd_num < self.config["occlusion_rate"]:
-                hist_traj_raw[i] = 0
+                hist_traj_raw[i] = -1
         traj_save = hist_traj_raw.copy()
 
         hist_traj_raw = traj_save.copy()
-        i = 0
-        while i < len(hist_traj_raw)-1:
-            if hist_traj_raw[i,0] != 0:
-                i = i + 1
-            else:
-                for j in range(1, len(hist_traj_raw)-i):
-                    if hist_traj_raw[i+j,0] != 0:
-                        next_seen_idx = i+j
-                        break
-                for k in range(i,next_seen_idx):
-                    hist_traj_raw[k] = hist_traj_raw[i-1] + (k-i+1) * (hist_traj_raw[next_seen_idx] - hist_traj_raw[i-1]) / (next_seen_idx-i+1)
-                i = i + j
+        if self.config["interpolate"]:
+            i = 0
+            while i < len(hist_traj_raw)-1:
+                if hist_traj_raw[i,0] != 0:
+                    i = i + 1
+                else:
+                    for j in range(1, len(hist_traj_raw)-i):
+                        if hist_traj_raw[i+j,0] != 0:
+                            next_seen_idx = i+j
+                            break
+                    for k in range(i,next_seen_idx):
+                        hist_traj_raw[k] = hist_traj_raw[i-1] + (k-i+1) * (hist_traj_raw[next_seen_idx] - hist_traj_raw[i-1]) / (next_seen_idx-i+1)
+                    i = i + j
 
         hist_traj[:hist_traj_raw.shape[0]] = hist_traj_raw
         total_traj[:total_traj_raw.shape[0]] = total_traj_raw
