@@ -29,16 +29,16 @@ class ConvGRUCell(nn.Module):
         self.dtype = dtype
 
         self.conv_gates = nn.Conv2d(in_channels=input_dim + hidden_dim,
-                                    out_channels=2*self.hidden_dim,  # for update_gate,reset_gate respectively
+                                    out_channels=2 * self.hidden_dim,  # for update_gate,reset_gate respectively
                                     kernel_size=kernel_size,
                                     padding=self.padding,
                                     bias=self.bias)
 
-        self.conv_can = nn.Conv2d(in_channels=input_dim+hidden_dim,
-                              out_channels=self.hidden_dim, # for candidate neural memory
-                              kernel_size=kernel_size,
-                              padding=self.padding,
-                              bias=self.bias)
+        self.conv_can = nn.Conv2d(in_channels=input_dim + hidden_dim,
+                                  out_channels=self.hidden_dim,  # for candidate neural memory
+                                  kernel_size=kernel_size,
+                                  padding=self.padding,
+                                  bias=self.bias)
 
     def init_hidden(self, batch_size):
         return (Variable(torch.zeros(batch_size, self.hidden_dim, self.height, self.width)).type(self.dtype))
@@ -61,7 +61,7 @@ class ConvGRUCell(nn.Module):
         reset_gate = torch.sigmoid(gamma)
         update_gate = torch.sigmoid(beta)
 
-        combined = torch.cat([input_tensor, reset_gate*h_cur], dim=1)
+        combined = torch.cat([input_tensor, reset_gate * h_cur], dim=1)
         cc_cnm = self.conv_can(combined)
         cnm = torch.tanh(cc_cnm)
 
@@ -99,7 +99,7 @@ class ConvGRU(nn.Module):
 
         # Make sure that both `kernel_size` and `hidden_dim` are lists having len == num_layers
         kernel_size = self._extend_for_multilayer(kernel_size, num_layers)
-        hidden_dim  = self._extend_for_multilayer(hidden_dim, num_layers)
+        hidden_dim = self._extend_for_multilayer(hidden_dim, num_layers)
         if not len(kernel_size) == len(hidden_dim) == num_layers:
             raise ValueError('Inconsistent list length.')
 
@@ -145,7 +145,7 @@ class ConvGRU(nn.Module):
             hidden_state = self._init_hidden(batch_size=input_tensor.size(0))
 
         layer_output_list = []
-        last_state_list   = []
+        last_state_list = []
 
         seq_len = input_tensor.size(1)
         cur_layer_input = input_tensor
@@ -155,7 +155,7 @@ class ConvGRU(nn.Module):
             output_inner = []
             for t in range(seq_len):
                 # input current hidden and cell state then compute the next hidden and cell state through ConvLSTMCell forward function
-                h = self.cell_list[layer_idx](input_tensor=cur_layer_input[:, t, :, :, :], # (b,t,c,h,w)
+                h = self.cell_list[layer_idx](input_tensor=cur_layer_input[:, t, :, :, :],  # (b,t,c,h,w)
                                               h_cur=h)
                 output_inner.append(h)
 
@@ -167,7 +167,7 @@ class ConvGRU(nn.Module):
 
         if not self.return_all_layers:
             layer_output_list = layer_output_list[-1:]
-            last_state_list   = last_state_list[-1:]
+            last_state_list = last_state_list[-1:]
 
         return layer_output_list, last_state_list
 
@@ -180,7 +180,7 @@ class ConvGRU(nn.Module):
     @staticmethod
     def _check_kernel_size_consistency(kernel_size):
         if not (isinstance(kernel_size, tuple) or
-                    (isinstance(kernel_size, list) and all([isinstance(elem, tuple) for elem in kernel_size]))):
+                (isinstance(kernel_size, list) and all([isinstance(elem, tuple) for elem in kernel_size]))):
             raise ValueError('`kernel_size` must be tuple or list of tuples')
 
     @staticmethod

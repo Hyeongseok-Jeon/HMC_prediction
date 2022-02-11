@@ -7,7 +7,7 @@ sys.path.insert(0, root_path)
 from torch import Tensor, nn
 from typing import Dict, List, Tuple, Union
 import torch
-
+from ConvGRU import ConvGRU
 
 class Encoder(nn.Module):
     """
@@ -27,7 +27,7 @@ class Encoder(nn.Module):
                 ch_out = config['deconv_chennel_num_list'][i]
 
             if i == config['n_deconv_layer_enc']-1:
-                output_padding = config['doconv_output_padding']
+                output_padding = config['deconv_output_padding']
             else:
                 output_padding = 0
             layer = nn.ConvTranspose2d(in_channels=ch_in,
@@ -38,57 +38,47 @@ class Encoder(nn.Module):
                                        bias=True,
                                        dilation=1)
             deconv.append(layer)
+            if config["deconv_activation"] == 'elu':
+                deconv.append(nn.ELU())
+            elif config["deconv_activation"] == 'relu':
+                deconv.append(nn.ReLU())
         self.deconv = deconv
-        norm = "GN"
-        ng = 1
-
-        n_actor = config["n_actor"]
-
-        self.generator = nn.Linear(n_actor, 2 * config["num_preds"])
-        self.reconstructor = nn.Linear(n_actor, 2 * config["num_preds"])
 
     def forward(self, hist_traj):
         length_idx = torch.where(hist_traj[:, :, 0] == 0)
         hist_traj[hist_traj == -1] = 0
+        seq_len = []
         for i in range(hist_traj.shape[0]):
             if i == 0:
                 x = hist_traj[i, :length_idx[1][torch.where(length_idx[0] == i)[0][0]],:]
+                seq_len.append(x.shape[0])
                 x = torch.unsqueeze(x, dim=-1)
                 x = torch.unsqueeze(x, dim=-1)
             else:
                 cut = hist_traj[i, :length_idx[1][torch.where(length_idx[0] == i)[0][0]],:]
+                seq_len.append(cut.shape[0])
                 cut = torch.unsqueeze(cut, dim=-1)
                 cut = torch.unsqueeze(cut, dim=-1)
                 x = torch.cat((x, cut), dim=0)
 
-        for i, l in enumerate(deconv):
-            x = deconv[i](x)
+        for i, l in enumerate(self.deconv):
+            x = self.deconv[i](x)
 
+        mask = torch.zeros(size=(1, 1,
+                                 self.config['deconv_chennel_num_list'][-1],
+                                 self.config["n_hidden_after_deconv"],
+                                 self.config["n_hidden_after_deconv"]))
+        for i in range(hist_traj.shape[0]):
+            if i == 0:
+                enc_out = x[0:seq_len[i]]
+                enc_out = torch.unsqueeze(enc_out, dim = 0)
+                while enc_out.shape[1] < max(seq_len):
+                    enc_out = torch.cat((enc_out, mask), dim=1)
+            else:
+                cand = x[seq_len[i-1]:seq_len[i-1]+seq_len[i]]
+                cand = torch.unsqueeze(cand, dim = 0)
+                while cand.shape[1] < max(seq_len):
+                    cand = torch.cat((cand, mask), dim=1)
+                enc_out = torch.cat((enc_out, cand), dim=0)
 
-        preds = []
-        recons = []
-
-        hid = self.decoder(actors)
-        preds.append(self.generator(hid))
-
-        hid_for_ego = torch.cat([hid[x[0]:x[0 + 1]] for x in actor_idcs_mod])
-        recons.append(self.reconstructor(hid_for_ego))
-
-        reg = torch.cat([x.unsqueeze(1) for x in preds], 1)
-        reg = reg.view(reg.size(0), reg.size(1), -1, 2)
-        reconstruction = torch.cat([x.unsqueeze(1) for x in recons], 1)
-        reconstruction = reconstruction.view(reconstruction.size(0), reconstruction.size(1), -1, 2)
-
-        for i in range(len(actor_idcs_mod)):
-            idcs = actor_idcs_mod[i]
-            ctrs = actor_ctrs_mod[i].view(-1, 1, 1, 2)
-            reg[idcs] = reg[idcs] + ctrs
-            reconstruction[i] = reconstruction[i] + ctrs[0]
-
-        out = dict()
-        out["reconstruction"], out["reg"] = [], []
-        for i in range(len(actor_idcs_mod)):
-            idcs = actor_idcs_mod[i]
-            out["reg"].append(reg[idcs])
-            out['reconstruction'].append(reconstruction[i, 0])
-        return out
+        return [enc_out, seq_len]
