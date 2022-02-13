@@ -12,16 +12,11 @@ class pred_loader_0(Dataset):
         self.data_dir = self.config["data_dir"]
         self.data_list = config['splicing_num'] * [os.path.basename(x) for x in glob.glob(self.data_dir +'hist_traj/*.npy')]
 
-        self.hist_traj_max = 0
         self.total_traj_max = 0
         for i in range(len(self.data_list)):
-            hist_traj = np.load(self.data_dir+'hist_traj/'+self.data_list[i])
             total_traj = np.load(self.data_dir + 'total_traj/' + self.data_list[i])
-            if hist_traj.shape[0] > self.hist_traj_max:
-                self.hist_traj_max = hist_traj.shape[0]
             if total_traj.shape[0] > self.total_traj_max:
                 self.total_traj_max = total_traj.shape[0]
-
 
     def __len__(self):
         return len(self.data_list)
@@ -73,14 +68,9 @@ class pred_loader_1(Dataset):
         self.data_list = [os.path.basename(x) for x in glob.glob(self.data_dir +'maneuver_index/*.npy')]
         self.data_list_dup = config['splicing_num'] * [os.path.basename(x) for x in glob.glob(self.data_dir +'maneuver_index/*.npy')]
 
-
-        self.hist_traj_max = 0
         self.total_traj_max = 0
         for i in range(len(self.data_list)):
-            hist_traj = np.load(self.data_dir+'hist_traj/'+self.data_list_dup[i])
             total_traj = np.load(self.data_dir + 'total_traj/' + self.data_list_dup[i])
-            if hist_traj.shape[0] > self.hist_traj_max:
-                self.hist_traj_max = hist_traj.shape[0]
             if total_traj.shape[0] > self.total_traj_max:
                 self.total_traj_max = total_traj.shape[0]
 
@@ -129,10 +119,7 @@ class pred_loader_1(Dataset):
 
     def get_maneuver_distribution(self):
         maneuver_index_tot = np.zeros(shape=4)
-        for i in range(len(data_list)):
-            maneuver_index = np.load(data_dir + 'maneuver_index/' + data_list[i])
+        for i in range(len(self.data_list)):
+            maneuver_index = np.load(self.data_dir + 'maneuver_index/' + self.data_list[i])
             maneuver_index_tot = maneuver_index_tot + maneuver_index
-            if maneuver_index[0] == 1:
-                index = np.load(data_dir + 'link_idx/' + data_list[i])
-                print(index)
-        outlet_state = np.load(self.data_dir+'outlet_state/'+self.data_list[idx])
+        return maneuver_index_tot
