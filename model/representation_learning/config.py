@@ -1,6 +1,7 @@
 import os
 
-root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+root_path = os.getcwd()
 data_dir = root_path + '/data/drone_data/processed/'
 
 ### config used ###
