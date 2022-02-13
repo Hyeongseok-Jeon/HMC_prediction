@@ -1,11 +1,10 @@
 import os
 import sys
-# root_path = os.path.dirname(os.path.abspath(__file__))
-root_path = os.getcwd() + '/model/representation_learning/modules'
+root_path = os.path.dirname(os.path.abspath(__file__))
+# root_path = os.getcwd() + '/model/representation_learning/modules'
 sys.path.insert(0, root_path)
 
-from torch import Tensor, nn
-from typing import Dict, List, Tuple, Union
+from torch import nn
 import torch
 from ConvGRU import ConvGRU
 
@@ -22,7 +21,7 @@ class AutoRegressive(nn.Module):
                                hidden_dim=config["deconv_chennel_num_list"][-1],
                                kernel_size=config["convgru_kernel_size"],
                                num_layers=config["n_convgru_layer"],
-                               dtype=torch.FloatTensor,
+                               dtype=torch.cuda.FloatTensor,
                                batch_first=True,
                                return_all_layers=True)
         output = nn.ModuleList()
@@ -37,8 +36,13 @@ class AutoRegressive(nn.Module):
             layer = nn.Conv2d(in_channels=ch_in,
                               out_channels=ch_out,
                               kernel_size=config["convgru_output_kernel_size_list"][i],
-                              )
-        self.output =
+                              padding=int((config["convgru_output_kernel_size_list"][i]-1)/2))
+            output.append(layer)
+            if i > 0:
+                maxpool = nn.MaxPool2d(kernel_size=4,
+                                       stride=4)
+                output.append(maxpool)
+        self.output = output
 
 
     def forward(self, ar_input, seq_len):
@@ -50,4 +54,11 @@ class AutoRegressive(nn.Module):
                 cand = ar_out[0][i:i+1,seq_len[i]-1]
                 feature_map = torch.cat((feature_map,cand), dim=0)
 
+        for i, l in enumerate(self.output):
+            if i == 0:
+                x = self.output[i](feature_map)
+            else:
+                x = self.output[i](x)
+
+        out = torch.squeeze(x)
         return out

@@ -12,6 +12,7 @@ config["GPU_id"] = 0
 ''' training '''
 config["batch_size"] = 2
 config["epoch"] = 50
+config["n_warmup_steps"] = 30
 
 ''' data '''
 config["data_dir"] = data_dir
@@ -33,7 +34,7 @@ config["convgru_kernel_size"] = (3, 3)
 
 config["convgru_output_layer_num"] = 5
 config["convgru_output_channel_list"] = [16, 32, 64, 128, 256]
-config["convgru_output_kernel_size_list"] = [3, 3, 3, 3, 3]
+config["convgru_output_kernel_size_list"] = [5, 5, 5, 5, 5]
 config["convgru_kernel_size"] = (3, 3)
 config["convgru_kernel_size"] = (3, 3)
 

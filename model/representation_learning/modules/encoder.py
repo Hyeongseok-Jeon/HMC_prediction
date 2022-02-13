@@ -4,10 +4,8 @@ import sys
 root_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, root_path)
 
-from torch import Tensor, nn
-from typing import Dict, List, Tuple, Union
+from torch import nn
 import torch
-from ConvGRU import ConvGRU
 
 class Encoder(nn.Module):
     """
@@ -45,21 +43,35 @@ class Encoder(nn.Module):
         self.deconv = deconv
 
     def forward(self, hist_traj):
-        length_idx = torch.where(hist_traj[:, :, 0] == 0)
-        hist_traj[hist_traj == -1] = 0
         seq_len = []
-        for i in range(hist_traj.shape[0]):
-            if i == 0:
-                x = hist_traj[i, :length_idx[1][torch.where(length_idx[0] == i)[0][0]],:]
-                seq_len.append(x.shape[0])
-                x = torch.unsqueeze(x, dim=-1)
-                x = torch.unsqueeze(x, dim=-1)
-            else:
-                cut = hist_traj[i, :length_idx[1][torch.where(length_idx[0] == i)[0][0]],:]
-                seq_len.append(cut.shape[0])
-                cut = torch.unsqueeze(cut, dim=-1)
-                cut = torch.unsqueeze(cut, dim=-1)
-                x = torch.cat((x, cut), dim=0)
+        if hist_traj.shape[1] > 1:
+            length_idx = torch.where(hist_traj[:, :, 0] == 0)
+            hist_traj[hist_traj == -1] = 0
+            for i in range(hist_traj.shape[0]):
+                if i == 0:
+                    x = hist_traj[i, :length_idx[1][torch.where(length_idx[0] == i)[0][0]],:]
+                    seq_len.append(x.shape[0])
+                    x = torch.unsqueeze(x, dim=-1)
+                    x = torch.unsqueeze(x, dim=-1)
+                else:
+                    cut = hist_traj[i, :length_idx[1][torch.where(length_idx[0] == i)[0][0]],:]
+                    seq_len.append(cut.shape[0])
+                    cut = torch.unsqueeze(cut, dim=-1)
+                    cut = torch.unsqueeze(cut, dim=-1)
+                    x = torch.cat((x, cut), dim=0)
+        else:
+            for i in range(hist_traj.shape[0]):
+                if i == 0:
+                    x = hist_traj[i]
+                    seq_len.append(x.shape[0])
+                    x = torch.unsqueeze(x, dim=-1)
+                    x = torch.unsqueeze(x, dim=-1)
+                else:
+                    cut = hist_traj[i]
+                    seq_len.append(cut.shape[0])
+                    cut = torch.unsqueeze(cut, dim=-1)
+                    cut = torch.unsqueeze(cut, dim=-1)
+                    x = torch.cat((x, cut), dim=0)
 
         for i, l in enumerate(self.deconv):
             x = self.deconv[i](x)
@@ -67,7 +79,8 @@ class Encoder(nn.Module):
         mask = torch.zeros(size=(1, 1,
                                  self.config['deconv_chennel_num_list'][-1],
                                  self.config["n_hidden_after_deconv"],
-                                 self.config["n_hidden_after_deconv"]))
+                                 self.config["n_hidden_after_deconv"]),
+                           device=torch.device('cuda:'+str(self.config["GPU_id"])))
         for i in range(hist_traj.shape[0]):
             if i == 0:
                 enc_out = x[0:seq_len[i]]
@@ -82,3 +95,4 @@ class Encoder(nn.Module):
                 enc_out = torch.cat((enc_out, cand), dim=0)
 
         return [enc_out, seq_len]
+        # return [enc_out, torch.tensor(seq_len, device=torch.device(self.config["GPU_id_text"]))]
