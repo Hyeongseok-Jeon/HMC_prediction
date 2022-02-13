@@ -162,7 +162,7 @@ for file_name_index in range(len(file_list_int)):
                             if seg['idx_int'] == init_seg_int:
                                 init_seg = seg
 
-                    if selected_scenario_id == 1010 and i == 42:
+                    if selected_scenario_id == 1010 and veh_id == '72':
                         init_seg_int = 5
                         for asdf in range(len(links)):
                             seg = links[asdf]
@@ -195,8 +195,8 @@ for file_name_index in range(len(file_list_int)):
                         maneuver_index[int(maneuver_table[init_seg_int, end_seg_int])] = 1
 
                         file_name = str(selected_scenario_id) + '_'+ veh_id_sort
-                        with open(cur_path + 'processed/hist_traj/' + file_name + '.npy', "wb") as f:
-                            np.save(f, hist_traj)
+                        # with open(cur_path + 'processed/hist_traj/' + file_name + '.npy', "wb") as f:
+                        #     np.save(f, hist_traj)
                         with open(cur_path + 'processed/maneuver_index/' + file_name + '.npy', "wb") as f:
                             np.save(f, maneuver_index)
                         with open(cur_path + 'processed/outlet_state/' + file_name + '.npy', "wb") as f:
@@ -206,8 +206,8 @@ for file_name_index in range(len(file_list_int)):
                         plt.scatter(traj_conv[:, 0], traj_conv[:, 1])
                         plt.text(traj_conv[-1, 0], traj_conv[-1,1], veh_id_sort)
                         # plt.scatter(hist_traj[:,0], hist_traj[:,1])
-                # except:
-                #     pass
+                except:
+                    pass
         plt.pause(0.05)
 
         print('\n')
