@@ -27,5 +27,13 @@ for epoch in range(config["epoch"]):
         maneuver_index = maneuver_index.float().cuda(torch.device('cuda:'+str(config["GPU_id"])))
 
         hist_representation = model(hist_traj)
-        goal_representation, _ = model.encoder(outlet_state)
-        goal_representation = model.autoregressive.output(goal_representation)
+        goal_point_repre, _ = model.encoder(outlet_state)
+
+        for i, l in enumerate(model.autoregressive.output):
+            if i == 0:
+                x = model.autoregressive.output[i](goal_point_repre[:,0])
+            else:
+                x = model.autoregressive.output[i](x)
+
+        goal_representation = torch.squeeze(x)
+

@@ -19,6 +19,20 @@ class BackBone(nn.Module):
 
         return representation
 
+class Pred(nn.Module):
+    def __init__(self, config):
+        super(Pred, self).__init__()
+        self.config = config
+        self.Wk = nn.ModuleList([nn.Linear(256, 256) for i in range(self.config["max_pred_gap"])])
+
+
+    def forward(self, hist_traj):
+        enc_out, seq_len = self.encoder(hist_traj)
+        representation = self.autoregressive(enc_out, seq_len)
+
+        return representation
+
+
     # def predict(self, x, x_reverse, hidden1, hidden2):
     #     batch = x.size()[0]
     #

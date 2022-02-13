@@ -8,7 +8,7 @@ import json
 import matplotlib
 import matplotlib.pyplot as plt
 
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 
 # cur_path = os.path.dirname(os.path.abspath(__file__))+'/'
 cur_path = os.getcwd() + '/data/drone_data/'
@@ -84,11 +84,11 @@ for file_name_index in range(len(file_list_int)):
         # plt.scatter(new_tracks[:,4], new_tracks[:,5])
         plt.axis('equal')
         plt.show()
-        for i in range(47):
-            x = new_tracks[new_tracks[:,1]==i,4]
-            y = new_tracks[new_tracks[:,1]==i,5]
-            plt.plot(x, y, linewidth=3)
+        for i in range(int(max(new_tracks[:, 1]))+1):
             try:
+                x = new_tracks[new_tracks[:, 1] == i, 4]
+                y = new_tracks[new_tracks[:, 1] == i, 5]
+                plt.plot(x, y, linewidth=3)
                 plt.text(x[0], y[0], str(int(new_tracks[new_tracks[:,1]==i,1][0])))
             except:
                 pass
@@ -118,29 +118,29 @@ for file_name_index in range(len(file_list_int)):
                 try:
                     traj = new_tracks[new_tracks[:, 1] == veh_idx[i], 4:6]
                     heading = new_tracks[new_tracks[:, 1] == veh_idx[i], 6:7]
-                    move_check = 0
-                    for j in range(len(traj) - 5):
-                        displacement = np.linalg.norm(traj[j + 5] - traj[j])
-                        if displacement > 0.1:
-                            if move_check == 0:
-                                start_index_cand = j
-                            move_check = move_check + 1
-                            if move_check == 20:
-                                start_index = start_index_cand
-                                break
-                        else:
-                            move_check = 0
-
-                    while True:
-                        init_pos = traj[start_index, :]
-                        init_seg_int, init_seg, min_dist = get_nearest_link(links, init_pos)
-                        if min_dist < 1.5:
-                            break
-                        else:
-                            start_index = start_index+1
-
-                    traj = traj[start_index:]
-                    heading = heading[start_index:]
+                    # move_check = 0
+                    # for j in range(len(traj) - 5):
+                    #     displacement = np.linalg.norm(traj[j + 5] - traj[j])
+                    #     if displacement > 0.1:
+                    #         if move_check == 0:
+                    #             start_index_cand = j
+                    #         move_check = move_check + 1
+                    #         if move_check == 20:
+                    #             start_index = start_index_cand
+                    #             break
+                    #     else:
+                    #         move_check = 0
+                    #
+                    # while True:
+                    #     init_pos = traj[start_index, :]
+                    #     init_seg_int, init_seg, min_dist = get_nearest_link(links, init_pos)
+                    #     if min_dist < 1.5:
+                    #         break
+                    #     else:
+                    #         start_index = start_index+1
+                    #
+                    # traj = traj[start_index:]
+                    # heading = heading[start_index:]
 
                     seg_list = []
                     for jjj in range(len(traj)):
@@ -206,8 +206,8 @@ for file_name_index in range(len(file_list_int)):
                         plt.scatter(traj_conv[:, 0], traj_conv[:, 1])
                         plt.text(traj_conv[-1, 0], traj_conv[-1,1], veh_id_sort)
                         # plt.scatter(hist_traj[:,0], hist_traj[:,1])
-                except:
-                    pass
+                # except:
+                #     pass
         plt.pause(0.05)
 
         print('\n')

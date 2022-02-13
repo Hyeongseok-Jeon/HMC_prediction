@@ -120,31 +120,71 @@ for i in range(len(nodes)):
     ax.scatter(x,y,c='k', zorder=10)
 plt.show()
 
-# maneuver table 다시 만들어야됨
 maneuver_table = np.zeros([15,15])
 maneuver_table[1,11] = 1
+maneuver_table[1,12] = 1
+maneuver_table[2,11] = 1
+maneuver_table[2,12] = 1
+maneuver_table[3,11] = 1
+maneuver_table[3,12] = 1
+maneuver_table[1,6] = 2
+maneuver_table[1,7] = 2
 maneuver_table[2,6] = 2
 maneuver_table[2,7] = 2
 maneuver_table[3,6] = 2
 maneuver_table[3,7] = 2
+maneuver_table[1,4] = 3
+maneuver_table[1,5] = 3
+maneuver_table[2,4] = 3
+maneuver_table[2,5] = 3
 maneuver_table[3,4] = 3
+maneuver_table[3,5] = 3
+
+maneuver_table[4,13] = 1
+maneuver_table[4,14] = 1
 maneuver_table[5,13] = 1
 maneuver_table[5,14] = 1
+maneuver_table[4,11] = 2
+maneuver_table[4,12] = 2
 maneuver_table[5,11] = 2
+maneuver_table[5,12] = 2
+maneuver_table[4,6] = 3
+maneuver_table[4,7] = 3
 maneuver_table[5,6] = 3
 maneuver_table[5,7] = 3
+
 maneuver_table[8,4] = 1
+maneuver_table[8,5] = 1
+maneuver_table[9,4] = 1
+maneuver_table[9,5] = 1
+maneuver_table[10,4] = 1
+maneuver_table[10,5] = 1
+maneuver_table[8,13] = 2
+maneuver_table[8,14] = 2
 maneuver_table[9,13] = 2
 maneuver_table[9,14] = 2
 maneuver_table[10,13] = 2
 maneuver_table[10,14] = 2
+maneuver_table[8,11] = 3
+maneuver_table[8,12] = 3
+maneuver_table[9,11] = 3
+maneuver_table[9,12] = 3
 maneuver_table[10,11] = 3
+maneuver_table[10,12] = 3
+
+maneuver_table[11,7] = 1
+maneuver_table[11,8] = 1
 maneuver_table[12,7] = 1
 maneuver_table[12,8] = 1
-maneuver_table[12,7] = 1
+maneuver_table[11,4] = 2
+maneuver_table[11,5] = 2
 maneuver_table[12,4] = 2
+maneuver_table[12,5] = 2
+maneuver_table[11,13] = 3
+maneuver_table[11,14] = 3
 maneuver_table[12,13] = 3
 maneuver_table[12,14] = 3
+
 
 with open(cur_path + 'map/' + data_id + '/maneuver_table.npy', "wb") as f:
     np.save(f, maneuver_table)

@@ -20,6 +20,7 @@ config["occlusion_rate"] = 0.2
 config["splicing_num"] = 2
 config["FOV"] = 30
 config["interpolate"] = False
+config["max_pred_gap"] = 20
 
 ''' network '''
 config["n_deconv_layer_enc"] = 7
