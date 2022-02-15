@@ -19,6 +19,7 @@ config["n_warmup_steps"] = 30
 config["data_dir"] = data_dir
 config["occlusion_rate"] = 0.2
 config["splicing_num"] = 2
+config["LC_multiple"] = 5
 config["FOV"] = 30
 config["interpolate"] = False
 config["max_pred_gap"] = 20

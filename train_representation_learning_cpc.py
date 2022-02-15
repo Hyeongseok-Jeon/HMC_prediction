@@ -1,4 +1,4 @@
-from model.representation_learning.data import pred_loader
+from model.representation_learning.data import pred_loader_1
 from torch.utils.data import DataLoader
 from model.representation_learning.config import config
 from model.representation_learning.Net import BackBone
@@ -6,7 +6,7 @@ from opt.optimizer import ScheduledOptim
 import torch
 import torch.optim as optim
 
-dataset = pred_loader(config)
+dataset = pred_loader_1(config)
 dataloader = DataLoader(dataset, batch_size=config["batch_size"], shuffle=True)
 
 model = BackBone(config).cuda()
