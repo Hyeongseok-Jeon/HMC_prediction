@@ -1,5 +1,6 @@
 import os
 import sys
+
 root_path = os.path.dirname(os.path.abspath(__file__))
 # root_path = os.getcwd() + '/model/representation_learning/modules'
 sys.path.insert(0, root_path)
@@ -7,6 +8,7 @@ sys.path.insert(0, root_path)
 from torch import nn
 import torch
 from ConvGRU import ConvGRU
+
 
 class AutoRegressive(nn.Module):
     """
@@ -30,29 +32,36 @@ class AutoRegressive(nn.Module):
                 ch_in = config['deconv_chennel_num_list'][-1]
                 ch_out = config["convgru_output_channel_list"][i]
             else:
-                ch_in = config["convgru_output_channel_list"][i-1]
+                ch_in = config["convgru_output_channel_list"][i - 1]
                 ch_out = config["convgru_output_channel_list"][i]
 
             layer = nn.Conv2d(in_channels=ch_in,
                               out_channels=ch_out,
                               kernel_size=config["convgru_output_kernel_size_list"][i],
-                              padding=int((config["convgru_output_kernel_size_list"][i]-1)/2))
+                              padding=int((config["convgru_output_kernel_size_list"][i] - 1) / 2))
             output.append(layer)
             if i > 0:
                 maxpool = nn.MaxPool2d(kernel_size=4,
                                        stride=4)
                 output.append(maxpool)
+        output.append(nn.MaxPool2d(kernel_size=2))
         self.output = output
 
-
     def forward(self, ar_input, seq_len):
-        ar_out, _ = self.convGRU(ar_input)
         for i in range(len(seq_len)):
             if i == 0:
-                feature_map = ar_out[0][i:i+1,seq_len[i]-1]
+                input_tensor = ar_input[0:seq_len[i]]
+                input_tensor = torch.unsqueeze(input_tensor, dim=0)
             else:
-                cand = ar_out[0][i:i+1,seq_len[i]-1]
-                feature_map = torch.cat((feature_map,cand), dim=0)
+                input_tensor = ar_input[sum(seq_len[:i]):sum(seq_len[:i]) + seq_len[i]]
+                input_tensor = torch.unsqueeze(input_tensor, dim=0)
+
+            ar_out, _ = self.convGRU(input_tensor)
+            if i == 0:
+                feature_map = ar_out[0][:, seq_len[i] - 1]
+            else:
+                cand = ar_out[0][:, seq_len[i] - 1]
+                feature_map = torch.cat((feature_map, cand), dim=0)
 
         for i, l in enumerate(self.output):
             if i == 0:

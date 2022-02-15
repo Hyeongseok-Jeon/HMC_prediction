@@ -7,6 +7,7 @@ sys.path.insert(0, root_path)
 from torch import nn
 import torch
 
+
 class Encoder(nn.Module):
     """
     Final motion forecasting with Linear Residual block
@@ -24,7 +25,7 @@ class Encoder(nn.Module):
                 ch_in = config['deconv_chennel_num_list'][i - 1]
                 ch_out = config['deconv_chennel_num_list'][i]
 
-            if i == config['n_deconv_layer_enc']-1:
+            if i == config['n_deconv_layer_enc'] - 1:
                 output_padding = config['deconv_output_padding']
             else:
                 output_padding = 0
@@ -43,18 +44,24 @@ class Encoder(nn.Module):
         self.deconv = deconv
 
     def forward(self, hist_traj):
+        # hist_traj = observation_fit
         seq_len = []
         if hist_traj.shape[1] > 1:
             length_idx = torch.where(hist_traj[:, :, 0] == 0)
             hist_traj[hist_traj == -1] = 0
             for i in range(hist_traj.shape[0]):
+                idx = len(torch.where(length_idx[0] == i)[0])
+                if idx == 0:
+                    end_index = hist_traj.shape[1]
+                else:
+                    end_index = length_idx[1][torch.where(length_idx[0] == i)[0][0]]
                 if i == 0:
-                    x = hist_traj[i, :length_idx[1][torch.where(length_idx[0] == i)[0][0]],:]
+                    x = hist_traj[i, :end_index, :]
                     seq_len.append(x.shape[0])
                     x = torch.unsqueeze(x, dim=-1)
                     x = torch.unsqueeze(x, dim=-1)
                 else:
-                    cut = hist_traj[i, :length_idx[1][torch.where(length_idx[0] == i)[0][0]],:]
+                    cut = hist_traj[i, :end_index, :]
                     seq_len.append(cut.shape[0])
                     cut = torch.unsqueeze(cut, dim=-1)
                     cut = torch.unsqueeze(cut, dim=-1)
@@ -76,22 +83,11 @@ class Encoder(nn.Module):
         for i, l in enumerate(self.deconv):
             x = self.deconv[i](x)
 
-        mask = torch.zeros(size=(1, 1,
-                                 self.config['deconv_chennel_num_list'][-1],
-                                 self.config["n_hidden_after_deconv"],
-                                 self.config["n_hidden_after_deconv"]),
-                           device=torch.device('cuda:'+str(self.config["GPU_id"])))
         for i in range(hist_traj.shape[0]):
             if i == 0:
                 enc_out = x[0:seq_len[i]]
-                enc_out = torch.unsqueeze(enc_out, dim = 0)
-                while enc_out.shape[1] < max(seq_len):
-                    enc_out = torch.cat((enc_out, mask), dim=1)
             else:
-                cand = x[seq_len[i-1]:seq_len[i-1]+seq_len[i]]
-                cand = torch.unsqueeze(cand, dim = 0)
-                while cand.shape[1] < max(seq_len):
-                    cand = torch.cat((cand, mask), dim=1)
+                cand = x[seq_len[i - 1]:seq_len[i - 1] + seq_len[i]]
                 enc_out = torch.cat((enc_out, cand), dim=0)
 
         return [enc_out, seq_len]

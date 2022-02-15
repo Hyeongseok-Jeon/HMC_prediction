@@ -188,35 +188,3 @@ class ConvGRU(nn.Module):
         if not isinstance(param, list):
             param = [param] * num_layers
         return param
-
-#
-# if __name__ == '__main__':
-#     # set CUDA device
-#     os.environ["CUDA_VISIBLE_DEVICES"] = "3"
-#
-#     # detect if CUDA is available or not
-#     use_gpu = torch.cuda.is_available()
-#     if use_gpu:
-#         dtype = torch.cuda.FloatTensor # computation in GPU
-#     else:
-#         dtype = torch.FloatTensor
-#
-#     height = width = 6
-#     channels = 256
-#     hidden_dim = [32, 64]
-#     kernel_size = (3,3) # kernel size for two stacked hidden layer
-#     num_layers = 2 # number of stacked hidden layer
-#     model = ConvGRU(input_size=(height, width),
-#                     input_dim=channels,
-#                     hidden_dim=hidden_dim,
-#                     kernel_size=kernel_size,
-#                     num_layers=num_layers,
-#                     dtype=dtype,
-#                     batch_first=True,
-#                     bias = True,
-#                     return_all_layers = False)
-#
-#     batch_size = 1
-#     time_steps = 1
-#     input_tensor = torch.rand(batch_size, time_steps, channels, height, width)  # (b,t,c,h,w)
-#     layer_output_list, last_state_list = model(input_tensor)
