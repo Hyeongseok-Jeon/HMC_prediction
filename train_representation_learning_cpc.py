@@ -23,7 +23,7 @@ loss = torch.nn.L1Loss()
 for epoch in range(config["epoch"]):
     for i, data in enumerate(dataloader):
         print(i)
-        observation, nearest_outlet_state, maneuver_index = data
+        observation, nearest_outlet_state, maneuver_index, pred_step = data
 
         max_data_len = 0
         for i in range(observation.shape[0]):

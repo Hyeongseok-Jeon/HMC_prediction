@@ -27,7 +27,7 @@ config["splicing_num"] = 2
 config["LC_multiple"] = 5
 config["FOV"] = 30
 config["interpolate"] = False
-config["max_pred_gap"] = 20
+config["max_pred_step"] = 20
 config["max_data_length"] = 50
 
 ''' network '''

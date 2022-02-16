@@ -103,17 +103,16 @@ class pred_loader_1(Dataset):
         total_traj = np.load(self.data_dir + 'total_traj/' + self.data_list_dup[idx])
 
         outlet_index = np.where(total_traj[:, 0] == nearest_outlet_state[0, 0])[0][0]
-        inlet_index = np.where(link_idx == 0)[0][0]
+        end_index_cand = [outlet_index-5*(i+1) for i in range(self.config["max_pred_step"]) if outlet_index-5*(i+1)>0]
         id_check = 0
         while id_check == 0:
-            splicing_idx_1 = random.sample(range(np.where(total_traj[:, 0] > -self.config["FOV"])[0][0], inlet_index), 1)[0]
-            splicing_idx_2 = random.sample(range(np.where(total_traj[:, 0] > -self.config["FOV"])[0][0], outlet_index), 1)[0]
-            while splicing_idx_1 == splicing_idx_2:
-                splicing_idx_2 = \
-                random.sample(range(np.where(total_traj[:, 0] > -self.config["FOV"])[0][0], outlet_index), 1)[0]
+            splicing_idx_2 = random.sample(range(0, len(end_index_cand)), 1)[0]
+            pred_step = splicing_idx_2
+            splicing_idx_2 = end_index_cand[splicing_idx_2]
+            splicing_idx_1 = random.sample(range(np.where(total_traj[:, 0] > -self.config["FOV"])[0][0], splicing_idx_2), 1)[0]
             if np.abs(splicing_idx_1 - splicing_idx_2) < self.config["max_data_length"]:
                 id_check = 1
-        observation = total_traj[min([splicing_idx_1, splicing_idx_2]): max([splicing_idx_1, splicing_idx_2])]
+        observation = total_traj[splicing_idx_1:splicing_idx_2+1]
         for i in range(1, len(observation) - 1):
             rd_num = np.random.rand()
             if rd_num < self.config["occlusion_rate"]:
@@ -135,7 +134,7 @@ class pred_loader_1(Dataset):
                     i = i + j
         observation_padding[0:observation.shape[0],:] = observation
 
-        return observation_padding, nearest_outlet_state, maneuver_index
+        return observation_padding, nearest_outlet_state, maneuver_index, pred_step
 
     def get_maneuver_distribution(self, data):
         maneuver_index_tot = np.zeros(shape=4)
