@@ -2,6 +2,7 @@ import os
 import glob
 import numpy as np
 from torch.utils.data import Dataset
+import torch
 import random
 import matplotlib.pyplot as plt
 
@@ -94,47 +95,18 @@ class pred_loader_1(Dataset):
         return len(self.data_list_dup)
 
     def __getitem__(self, idx):
-        observation_padding = np.zeros(shape=(self.total_traj_max, 3))
-        conversion = np.load(self.data_dir + 'conversion/' + self.data_list_dup[idx])
-        link_idx = np.load(self.data_dir + 'link_idx/' + self.data_list_dup[idx])
-        maneuver_index = np.load(self.data_dir + 'maneuver_index/' + self.data_list_dup[idx])
+        # observation_padding = np.zeros(shape=(self.total_traj_max, 3))
+        # conversion = np.load(self.data_dir + 'conversion/' + self.data_list_dup[idx])
+        # link_idx = np.load(self.data_dir + 'link_idx/' + self.data_list_dup[idx])
+        # maneuver_index = np.load(self.data_dir + 'maneuver_index/' + self.data_list_dup[idx])
         nearest_outlet_state = np.load(self.data_dir + 'nearest_outlet_state/' + self.data_list_dup[idx])
-        outlet_node_state = np.load(self.data_dir + 'outlet_node_state/' + self.data_list_dup[idx])
+        # outlet_node_state = np.load(self.data_dir + 'outlet_node_state/' + self.data_list_dup[idx])
         total_traj = np.load(self.data_dir + 'total_traj/' + self.data_list_dup[idx])
 
         outlet_index = np.where(total_traj[:, 0] == nearest_outlet_state[0, 0])[0][0]
-        end_index_cand = [outlet_index-5*(i+1) for i in range(self.config["max_pred_step"]) if outlet_index-5*(i+1)>0]
-        id_check = 0
-        while id_check == 0:
-            splicing_idx_2 = random.sample(range(0, len(end_index_cand)), 1)[0]
-            pred_step = splicing_idx_2
-            splicing_idx_2 = end_index_cand[splicing_idx_2]
-            splicing_idx_1 = random.sample(range(np.where(total_traj[:, 0] > -self.config["FOV"])[0][0], splicing_idx_2), 1)[0]
-            if np.abs(splicing_idx_1 - splicing_idx_2) < self.config["max_data_length"]:
-                id_check = 1
-        observation = total_traj[splicing_idx_1:splicing_idx_2+1]
-        for i in range(1, len(observation) - 1):
-            rd_num = np.random.rand()
-            if rd_num < self.config["occlusion_rate"]:
-                observation[i] = -1
+        total_traj = total_traj[:outlet_index+1,:]
 
-        if self.config["interpolate"]:
-            i = 0
-            while i < len(observation) - 1:
-                if observation[i, 0] != -1:
-                    i = i + 1
-                else:
-                    for j in range(1, len(observation) - i):
-                        if observation[i + j, 0] != -1:
-                            next_seen_idx = i + j
-                            break
-                    for k in range(i, next_seen_idx):
-                        observation[k] = observation[i - 1] + (k - i + 1) * (
-                                    observation[next_seen_idx] - observation[i - 1]) / (next_seen_idx - i + 1)
-                    i = i + j
-        observation_padding[0:observation.shape[0],:] = observation
-
-        return observation_padding, nearest_outlet_state, maneuver_index, pred_step
+        return total_traj
 
     def get_maneuver_distribution(self, data):
         maneuver_index_tot = np.zeros(shape=4)
@@ -142,3 +114,10 @@ class pred_loader_1(Dataset):
             maneuver_index = np.load(self.data_dir + 'maneuver_index/' + data[i])
             maneuver_index_tot = maneuver_index_tot + maneuver_index
         return maneuver_index_tot
+
+def collate_fn(samples):
+    inputs = [torch.from_numpy(i) for i in samples]
+    trajectory = torch.nn.utils.rnn.pad_sequence(inputs, batch_first=True)
+    length = [inputs[i].shape[0] for i in range(len(inputs))]
+
+    return trajectory, length

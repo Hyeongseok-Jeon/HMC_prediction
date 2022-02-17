@@ -1,94 +1,68 @@
 import os
 import sys
 
-root_path = os.path.dirname(os.path.abspath(__file__))
+# root_path = os.path.dirname(os.path.abspath(__file__))
+root_path = os.getcwd()+'/model/representation_learning/modules'
 sys.path.insert(0, root_path)
 
 from torch import nn
 import torch
+from torch.nn import functional as F
+from layers import Res1d, Conv1d
 
 
 class Encoder(nn.Module):
     """
-    Final motion forecasting with Linear Residual block
+    Actor feature extractor with Conv1D
     """
-
     def __init__(self, config):
         super(Encoder, self).__init__()
         self.config = config
-        deconv = nn.ModuleList()
-        for i in range(config['n_deconv_layer_enc']):
+        norm = "GN"
+        ng = 1
+
+        n_in = 3
+        n_out = [32, 64, 128]
+        blocks = [Res1d, Res1d, Res1d]
+        num_blocks = [2, 2, 2]
+
+        groups = []
+        for i in range(len(num_blocks)):
+            group = []
             if i == 0:
-                ch_in = 3
-                ch_out = config['deconv_chennel_num_list'][i]
+                group.append(blocks[i](n_in, n_out[i], norm=norm, ng=ng))
             else:
-                ch_in = config['deconv_chennel_num_list'][i - 1]
-                ch_out = config['deconv_chennel_num_list'][i]
+                group.append(blocks[i](n_in, n_out[i], stride=2, norm=norm, ng=ng))
 
-            if i == config['n_deconv_layer_enc'] - 1:
-                output_padding = config['deconv_output_padding']
-            else:
-                output_padding = 0
-            layer = nn.ConvTranspose2d(in_channels=ch_in,
-                                       out_channels=ch_out,
-                                       kernel_size=config['deconv_kernel_size_list'][i],
-                                       stride=config['deconv_stride_list'][i],
-                                       output_padding=output_padding,
-                                       bias=True,
-                                       dilation=1)
-            deconv.append(layer)
-            if config["deconv_activation"] == 'elu':
-                deconv.append(nn.ELU())
-            elif config["deconv_activation"] == 'relu':
-                deconv.append(nn.ReLU())
-        self.deconv = deconv
+            for j in range(1, num_blocks[i]):
+                group.append(blocks[i](n_out[i], n_out[i], norm=norm, ng=ng))
+            groups.append(nn.Sequential(*group))
+            n_in = n_out[i]
+        self.groups = nn.ModuleList(groups)
 
-    def forward(self, hist_traj):
-        # hist_traj = observation_fit
-        seq_len = []
-        if hist_traj.shape[1] > 1:
-            length_idx = torch.where(hist_traj[:, :, 0] == 0)
-            hist_traj[hist_traj == -1] = 0
-            for i in range(hist_traj.shape[0]):
-                idx = len(torch.where(length_idx[0] == i)[0])
-                if idx == 0:
-                    end_index = hist_traj.shape[1]
-                else:
-                    end_index = length_idx[1][torch.where(length_idx[0] == i)[0][0]]
-                if i == 0:
-                    x = hist_traj[i, :end_index, :]
-                    seq_len.append(x.shape[0])
-                    x = torch.unsqueeze(x, dim=-1)
-                    x = torch.unsqueeze(x, dim=-1)
-                else:
-                    cut = hist_traj[i, :end_index, :]
-                    seq_len.append(cut.shape[0])
-                    cut = torch.unsqueeze(cut, dim=-1)
-                    cut = torch.unsqueeze(cut, dim=-1)
-                    x = torch.cat((x, cut), dim=0)
-        else:
-            for i in range(hist_traj.shape[0]):
-                if i == 0:
-                    x = hist_traj[i]
-                    seq_len.append(x.shape[0])
-                    x = torch.unsqueeze(x, dim=-1)
-                    x = torch.unsqueeze(x, dim=-1)
-                else:
-                    cut = hist_traj[i]
-                    seq_len.append(cut.shape[0])
-                    cut = torch.unsqueeze(cut, dim=-1)
-                    cut = torch.unsqueeze(cut, dim=-1)
-                    x = torch.cat((x, cut), dim=0)
+        n = config["n_hidden_after_deconv"]
+        lateral = []
+        for i in range(len(n_out)):
+            lateral.append(Conv1d(n_out[i], n, norm=norm, ng=ng, act=False))
+        self.lateral = nn.ModuleList(lateral)
 
-        for i, l in enumerate(self.deconv):
-            x = self.deconv[i](x)
+        self.output = Res1d(n, n, norm=norm, ng=ng)
 
-        for i in range(hist_traj.shape[0]):
-            if i == 0:
-                enc_out = x[0:seq_len[i]]
-            else:
-                cand = x[seq_len[i - 1]:seq_len[i - 1] + seq_len[i]]
-                enc_out = torch.cat((enc_out, cand), dim=0)
+    def forward(self, enc_in):
+        out = enc_in
 
-        return [enc_out, seq_len]
-        # return [enc_out, torch.tensor(seq_len, device=torch.device(self.config["GPU_id_text"]))]
+        outputs = []
+        for i in range(len(self.groups)):
+            out = self.groups[i](out)
+            outputs.append(out)
+
+        out = self.lateral[-1](outputs[-1])
+        for i in range(len(outputs) - 2, -1, -1):
+            if i == 1:
+                out = F.interpolate(out, scale_factor=1.5, mode="linear", align_corners=False)
+            elif i == 0:
+                out = F.interpolate(out, scale_factor=5/3, mode="linear", align_corners=False)
+            out += self.lateral[i](outputs[i])
+
+        out = self.output(out)[:, :, -1]
+        return out

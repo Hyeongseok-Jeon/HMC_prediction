@@ -27,17 +27,12 @@ config["splicing_num"] = 2
 config["LC_multiple"] = 5
 config["FOV"] = 30
 config["interpolate"] = False
-config["max_pred_step"] = 20
-config["max_data_length"] = 50
+config["max_pred_time"] = 5
+config["max_hist_time"] = 10
+config["hz"] = 2
 
 ''' network '''
-config["n_deconv_layer_enc"] = 6
-config["deconv_kernel_size_list"] = [3, 3, 3, 3, 3, 3]
-config['deconv_chennel_num_list'] = [3, 4, 4, 8, 8, 16]
-config['deconv_stride_list'] = [1, 2, 2, 2, 2, 2, ]
-config['deconv_output_padding'] = 1
-config['deconv_activation'] = 'elu'
-config["n_hidden_after_deconv"] = 128
+config["n_hidden_after_deconv"] = 256
 config["n_convgru_layer"] = 1
 config["convgru_kernel_size"] = (3, 3)
 
