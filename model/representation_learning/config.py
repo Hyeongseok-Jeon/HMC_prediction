@@ -13,7 +13,7 @@ config["GPU_id"] = 0
 ''' training '''
 gpu_name = torch.cuda.get_device_name(0)
 if '3070' in gpu_name:
-    config["batch_size"] = 2
+    config["batch_size"] = 128
 elif '3090' in gpu_name:
     config["batch_size"] = 8
 

@@ -6,6 +6,8 @@ from opt.optimizer import ScheduledOptim
 import torch
 import torch.optim as optim
 from koila import LazyTensor, lazy
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
 
 dataset = pred_loader_1(config)
 dataloader = DataLoader(dataset,
@@ -28,8 +30,10 @@ timestep = config["max_pred_time"] * config["hz"]
 for epoch in range(config["epoch"]):
     for i, data in enumerate(dataloader):
         trajectory, traj_length = data
-        trajectory = trajectory.float()
+        trajectory = trajectory.float().cuda()
 
+        accuracy, loss, calc_step = model(trajectory, traj_length)
+        print(loss)
 
         splicing_idx_2 = total_traj.shape[0]
         min_idx = splicing_idx_2 - dataset.config["max_pred_time"] * dataset.config["hz"] - dataset.config["max_hist_time"] * dataset.config["hz"]

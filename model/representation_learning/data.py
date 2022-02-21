@@ -4,8 +4,6 @@ import numpy as np
 from torch.utils.data import Dataset
 import torch
 import random
-import matplotlib.pyplot as plt
-
 
 class pred_loader_0(Dataset):
     def __init__(self, config):
