@@ -2,8 +2,7 @@ import os
 import torch
 # root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 root_path = os.getcwd()
-data_dir_train = root_path + '/data/drone_data/processed/train/'
-data_dir_val = root_path + '/data/drone_data/processed/val/'
+data_dir = root_path + '/data/drone_data/processed/'
 
 ### config used ###
 config = dict()
@@ -20,13 +19,16 @@ elif '3090' in gpu_name:
 
 config["epoch"] = 300
 config["n_warmup_steps"] = 30
-config["validataion_peroid"] = 5
+config["validataion_period"] = 5
+config["ckpt_period"] = 10
+config["ckpt_dir"] = root_path + '/ckpt/'
 
 ''' data '''
-config["data_dir_train"] = data_dir_train
-config["data_dir_val"] = data_dir_val
+config["data_dir_train"] = data_dir + 'train/'
+config["data_dir_val"] = data_dir + 'val/'
+config["data_dir_orig"] = data_dir + 'archive/'
 config["occlusion_rate"] = 0.2
-config["splicing_num"] = 64
+config["splicing_num"] = 2
 config["LC_multiple"] = 5
 config["FOV"] = 30
 config["interpolate"] = False

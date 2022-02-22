@@ -66,6 +66,8 @@ class pred_loader_1(Dataset):
             self.data_dir = self.config["data_dir_train"]
         elif label == 'val':
             self.data_dir = self.config["data_dir_val"]
+        elif label == 'orig':
+            self.data_dir = self.config["data_dir_orig"]
         self.data_list = [os.path.basename(x) for x in glob.glob(self.data_dir + 'maneuver_index/*.npy')]
         self.data_list_dup = []
         for x in glob.glob(self.data_dir + 'maneuver_index/*.npy'):
