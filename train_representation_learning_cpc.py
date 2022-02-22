@@ -14,7 +14,7 @@ import socket
 run_name = "maneuver_prediction" + time.strftime("-%Y-%m-%d_%H_%M_%S")
 print(run_name)
 ckpt_dir = config['ckpt_dir'] + run_name
-os.mkdir(ckpt_dir)
+os.makedirs(ckpt_dir)
 logger = setup_logs(config['log_dir'], run_name)  # setup logs
 
 warnings.filterwarnings("ignore", category=UserWarning)

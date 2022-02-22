@@ -7,6 +7,7 @@ def setup_logs(save_dir, run_name):
     logger.setLevel(logging.INFO)
 
     # create the logging file handler
+    os.makedirs(save_dir)
     log_file = os.path.join(save_dir, run_name + ".log")
     fh = logging.FileHandler(log_file)
 
