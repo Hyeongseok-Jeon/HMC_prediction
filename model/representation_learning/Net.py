@@ -89,4 +89,4 @@ class BackBone(nn.Module):
         nce /= -1. * calc_step
         accuracy = 1. * correct.item() / torch.sum(batch_idx)
 
-        return accuracy, nce, calc_step
+        return accuracy, nce, torch.sum(batch_idx), calc_step

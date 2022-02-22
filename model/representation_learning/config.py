@@ -42,6 +42,8 @@ config["convgru_output_kernel_size_list"] = [5, 5, 5, 5]
 config["convgru_kernel_size"] = (3, 3)
 config["convgru_kernel_size"] = (3, 3)
 
+''' logging '''
+config["log_dir"] = 'logs/'
 
 def calc_deconv_out(config):
     ch = 1
