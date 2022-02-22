@@ -26,7 +26,6 @@ dataloader = DataLoader(dataset,
 model = BackBone(config).cuda()
 model_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 logger.info('### Model summary below###\n {}\n'.format(str(model)))
-logger.info('===> Model total parameter: {}'.format(model_params))
 
 for i in range(len(config)):
     if i == 0:
@@ -35,6 +34,9 @@ for i in range(len(config)):
         config_log = config_log + '                                    ' + list(config.keys())[i] + ': ' + str(list(config.values())[i]) + '\n'
 
 logger.info('===> Configuration parameter\n{}'.format(config_log))
+
+
+logger.info('===> Model total parameter: {}'.format(model_params))
 
 model.train()
 optimizer = ScheduledOptim(
