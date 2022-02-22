@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 
 # cur_path = os.path.dirname(os.path.abspath(__file__))+'/'
 cur_path = os.getcwd() + '/data/drone_data/'
+val_rate = 0.2
 print(cur_path)
 sys.path.append(cur_path)
 from utils import data_load, coordinate_conversion, get_nearest_link
@@ -86,29 +87,29 @@ for file_name_index in range(len(file_list_int)):
             nodes = json.load(json_file)
         maneuver_table = np.load(cur_path + 'map/' + representative_id + '/maneuver_table.npy')
 
-        plt.figure(str(selected_scenario_id) + '_1')
-        for i in range(len(links)):
-            points_np = np.array(links[i]['points'])[:, :2]
-            plt.plot(np.array(points_np)[:, 0], np.array(points_np)[:, 1], c='k')
-        # plt.scatter(new_tracks[:,4], new_tracks[:,5])
-        plt.axis('equal')
-        plt.show()
-        for i in range(int(max(new_tracks[:, 1])) + 1):
-            try:
-                x = new_tracks[new_tracks[:, 1] == i, 4]
-                y = new_tracks[new_tracks[:, 1] == i, 5]
-                plt.plot(x, y, linewidth=3)
-                plt.text(x[0], y[0], str(int(new_tracks[new_tracks[:, 1] == i, 1][0])))
-            except:
-                pass
-            # plt.pause(0.05)
-            # input('press enter')
-        plt.pause(0.05)
+        # plt.figure(str(selected_scenario_id) + '_1')
+        # for i in range(len(links)):
+        #     points_np = np.array(links[i]['points'])[:, :2]
+        #     plt.plot(np.array(points_np)[:, 0], np.array(points_np)[:, 1], c='k')
+        # # plt.scatter(new_tracks[:,4], new_tracks[:,5])
+        # plt.axis('equal')
+        # plt.show()
+        # for i in range(int(max(new_tracks[:, 1])) + 1):
+        #     try:
+        #         x = new_tracks[new_tracks[:, 1] == i, 4]
+        #         y = new_tracks[new_tracks[:, 1] == i, 5]
+        #         plt.plot(x, y, linewidth=3)
+        #         plt.text(x[0], y[0], str(int(new_tracks[new_tracks[:, 1] == i, 1][0])))
+        #     except:
+        #         pass
+        #     # plt.pause(0.05)
+        #     # input('press enter')
+        # plt.pause(0.05)
 
         print('\n')
         print('Data Extracting ....')
 
-        plt.figure(str(selected_scenario_id) + '_2')
+        # plt.figure(str(selected_scenario_id) + '_2')
         veh_idx = tracksMeta[(tracksMeta[:, 6] > 0) & (tracksMeta[:, 4] > 0), 1]
         for i in range(len(veh_idx)):
             if i + 1 == len(veh_idx):
@@ -235,29 +236,33 @@ for file_name_index in range(len(file_list_int)):
                 file_name = str(selected_scenario_id) + '_' + veh_id_sort
                 # with open(cur_path + 'processed/hist_traj/' + file_name + '.npy', "wb") as f:
                 #     np.save(f, hist_traj)
-                with open(cur_path + 'processed/maneuver_index/' + file_name + '.npy', "wb") as f:
+                if np.random.rand() < 0.2:
+                    cat = 'val'
+                else:
+                    cat = 'train'
+                with open(cur_path + 'processed/' + cat + '/maneuver_index/' + file_name + '.npy', "wb") as f:
                     np.save(f, maneuver_index)
-                with open(cur_path + 'processed/nearest_outlet_state/' + file_name + '.npy', "wb") as f:
+                with open(cur_path + 'processed/' + cat + '/nearest_outlet_state/' + file_name + '.npy', "wb") as f:
                     np.save(f, nearest_outlet_state)
-                with open(cur_path + 'processed/outlet_node_state/' + file_name + '.npy', "wb") as f:
+                with open(cur_path + 'processed/' + cat + '/outlet_node_state/' + file_name + '.npy', "wb") as f:
                     np.save(f, outlet_node_state)
-                with open(cur_path + 'processed/total_traj/' + file_name + '.npy', "wb") as f:
+                with open(cur_path + 'processed/' + cat + '/total_traj/' + file_name + '.npy', "wb") as f:
                     np.save(f, total_traj)
-                with open(cur_path + 'processed/link_idx/' + file_name + '.npy', "wb") as f:
+                with open(cur_path + 'processed/' + cat + '/link_idx/' + file_name + '.npy', "wb") as f:
                     np.save(f, seg_list)
-                with open(cur_path + 'processed/conversion/' + file_name + '.npy', "wb") as f:
+                with open(cur_path + 'processed/' + cat + '/conversion/' + file_name + '.npy', "wb") as f:
                     np.save(f, np.asarray([origin_point] + rot.tolist()))
-                plt.scatter(traj_conv[:, 0], traj_conv[:, 1])
-                plt.text(traj_conv[-1, 0], traj_conv[-1, 1], veh_id_sort)
+                # plt.scatter(traj_conv[:, 0], traj_conv[:, 1])
+                # plt.text(traj_conv[-1, 0], traj_conv[-1, 1], veh_id_sort)
                 # plt.scatter(hist_traj[:,0], hist_traj[:,1])
 
-        plt.pause(0.05)
+        # plt.pause(0.05)
 
         print('\n')
         print('Done!!')
 
 print('program finished')
-plt.pause(100000)
+# plt.pause(100000)
 #
 #
 # for i in range(len(links)):

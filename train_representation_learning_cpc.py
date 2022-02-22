@@ -7,7 +7,6 @@ from opt.optimizer import ScheduledOptim
 import torch
 import torch.optim as optim
 import warnings
-import logging
 import time
 
 run_name = "maneuver_prediction" + time.strftime("-%Y-%m-%d_%H_%M_%S")
@@ -17,11 +16,16 @@ logger = setup_logs(config['log_dir'], run_name)  # setup logs
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
-dataset = pred_loader_1(config)
-dataloader = DataLoader(dataset,
-                        batch_size=config["batch_size"],
-                        shuffle=True,
-                        collate_fn=collate_fn)
+dataset_train = pred_loader_1(config, 'train')
+dataset_val = pred_loader_1(config, 'val')
+dataloader_train = DataLoader(dataset_train,
+                              batch_size=config["batch_size"],
+                              shuffle=True,
+                              collate_fn=collate_fn)
+dataloader_val = DataLoader(dataset_val,
+                            batch_size=config["batch_size"],
+                            shuffle=True,
+                            collate_fn=collate_fn)
 
 model = BackBone(config).cuda()
 model_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -34,7 +38,6 @@ for i in range(len(config)):
         config_log = config_log + '                                    ' + list(config.keys())[i] + ': ' + str(list(config.values())[i]) + '\n'
 
 logger.info('===> Configuration parameter\n{}'.format(config_log))
-
 
 logger.info('===> Model total parameter: {}'.format(model_params))
 
@@ -52,6 +55,7 @@ for epoch in range(config["epoch"]):
     full_length_num_tot = 0
     loss_tot = 0
     loss_calc_num_tot = 0
+    epoch_time = time.time()
     for i, data in enumerate(dataloader):
         trajectory, traj_length = data
         trajectory = trajectory.float().cuda()
@@ -67,9 +71,15 @@ for epoch in range(config["epoch"]):
         loss_tot += -loss.item() * loss_calc_num
         loss_calc_num_tot += loss_calc_num
 
-        loss_out = loss.item()
+        if data[0].shape[0] == config['batch_size']:
+            print('Epoch: %d \t Time: %3.2f \t Data: %d/%d \t Loss: %7.5f' % (epoch, time.time() - epoch_time, config['batch_size'] * (i + 1), len(dataloader.dataset), loss.item()), end='\r')
+        else:
+            print('Epoch: %d \t Time: %3.2f \t Data: %d/%d \t Loss: %7.5f' % (epoch, time.time() - epoch_time, config['batch_size'] * i + data[0].shape[0], len(dataloader.dataset), loss.item()))
 
     nce_tot = -loss_tot / loss_calc_num_tot
     logger.info('===> Train Epoch: {} \t Accuracy: {:.2f}%\tLoss: {:.8f}'.format(
-        epoch, 100 * correct_num_tot / full_length_num_tot, nce_tot
+        epoch + 1, 100 * correct_num_tot / full_length_num_tot, nce_tot
     ))
+
+    if (epoch + 1) % config['validataion_peroid'] == 0:
+        model.eval()

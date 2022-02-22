@@ -1,4 +1,4 @@
-2022-02-22 17:46:55,996 - ### Model summary below###
+2022-02-22 17:49:36,013 - ### Model summary below###
  BackBone(
   (encoder): Encoder(
     (groups): ModuleList(
@@ -107,10 +107,9 @@
   (lsoftmax): LogSoftmax(dim=None)
 )
 
-2022-02-22 17:46:55,997 - ===> Model total parameter: 1283392
-2022-02-22 17:46:55,997 - ===> Configuration parameter
+2022-02-22 17:49:36,014 - ===> Configuration parameter
                                     GPU_id: 0
-                                    batch_size: 128
+                                    batch_size: 64
                                     epoch: 50
                                     n_warmup_steps: 30
                                     data_dir: D:\research\HMC_prediction/data/drone_data/processed/
@@ -130,7 +129,55 @@
                                     convgru_output_kernel_size_list: [5, 5, 5, 5]
                                     log_dir: logs/
 
-2022-02-22 17:46:55,997 - ===> Model Training Start
-2022-02-22 17:47:14,093 - ===> Train Epoch: 0 	 Accuracy: 2.32%	Loss: 5.19146204
-2022-02-22 17:47:32,207 - ===> Train Epoch: 1 	 Accuracy: 4.69%	Loss: 4.13334942
-2022-02-22 17:47:49,906 - ===> Train Epoch: 2 	 Accuracy: 5.90%	Loss: 3.91846943
+2022-02-22 17:49:36,014 - ===> Model total parameter: 1283392
+2022-02-22 17:49:36,014 - ===> Model Training Start
+2022-02-22 17:50:03,159 - ===> Train Epoch: 0 	 Accuracy: 5.27%	Loss: 3.89413404
+2022-02-22 17:50:21,829 - ===> Train Epoch: 1 	 Accuracy: 8.80%	Loss: 3.28821802
+2022-02-22 17:50:40,074 - ===> Train Epoch: 2 	 Accuracy: 12.80%	Loss: 2.89689589
+2022-02-22 17:50:57,888 - ===> Train Epoch: 3 	 Accuracy: 15.86%	Loss: 2.61891174
+2022-02-22 17:51:16,034 - ===> Train Epoch: 4 	 Accuracy: 18.23%	Loss: 2.34438562
+2022-02-22 17:51:33,745 - ===> Train Epoch: 5 	 Accuracy: 19.86%	Loss: 2.16361403
+2022-02-22 17:51:51,729 - ===> Train Epoch: 6 	 Accuracy: 20.81%	Loss: 2.17910528
+2022-02-22 17:52:09,334 - ===> Train Epoch: 7 	 Accuracy: 25.87%	Loss: 1.98524654
+2022-02-22 17:52:27,512 - ===> Train Epoch: 8 	 Accuracy: 25.82%	Loss: 1.92020822
+2022-02-22 17:52:45,293 - ===> Train Epoch: 9 	 Accuracy: 26.61%	Loss: 1.81103373
+2022-02-22 17:53:03,369 - ===> Train Epoch: 10 	 Accuracy: 29.50%	Loss: 1.90370119
+2022-02-22 17:53:21,150 - ===> Train Epoch: 11 	 Accuracy: 28.98%	Loss: 1.79806697
+2022-02-22 17:53:39,278 - ===> Train Epoch: 12 	 Accuracy: 30.45%	Loss: 1.65910542
+2022-02-22 17:53:56,842 - ===> Train Epoch: 13 	 Accuracy: 31.24%	Loss: 1.69267547
+2022-02-22 17:54:15,000 - ===> Train Epoch: 14 	 Accuracy: 35.14%	Loss: 1.61103582
+2022-02-22 17:54:32,645 - ===> Train Epoch: 15 	 Accuracy: 35.19%	Loss: 1.59836066
+2022-02-22 17:54:50,663 - ===> Train Epoch: 16 	 Accuracy: 37.14%	Loss: 1.53276908
+2022-02-22 17:55:08,277 - ===> Train Epoch: 17 	 Accuracy: 34.51%	Loss: 1.54181778
+2022-02-22 17:55:26,200 - ===> Train Epoch: 18 	 Accuracy: 37.51%	Loss: 1.52431238
+2022-02-22 17:55:44,025 - ===> Train Epoch: 19 	 Accuracy: 36.78%	Loss: 1.52980030
+2022-02-22 17:56:02,087 - ===> Train Epoch: 20 	 Accuracy: 39.78%	Loss: 1.44890797
+2022-02-22 17:56:19,819 - ===> Train Epoch: 21 	 Accuracy: 38.51%	Loss: 1.42795217
+2022-02-22 17:56:37,680 - ===> Train Epoch: 22 	 Accuracy: 39.62%	Loss: 1.40347075
+2022-02-22 17:56:55,418 - ===> Train Epoch: 23 	 Accuracy: 42.62%	Loss: 1.30332291
+2022-02-22 17:57:13,460 - ===> Train Epoch: 24 	 Accuracy: 39.30%	Loss: 1.34996808
+2022-02-22 17:57:31,162 - ===> Train Epoch: 25 	 Accuracy: 42.73%	Loss: 1.29181278
+2022-02-22 17:57:49,178 - ===> Train Epoch: 26 	 Accuracy: 41.94%	Loss: 1.29668164
+2022-02-22 17:58:06,952 - ===> Train Epoch: 27 	 Accuracy: 41.46%	Loss: 1.36287296
+2022-02-22 17:58:24,712 - ===> Train Epoch: 28 	 Accuracy: 43.99%	Loss: 1.27744138
+2022-02-22 17:58:42,464 - ===> Train Epoch: 29 	 Accuracy: 44.05%	Loss: 1.24766982
+2022-02-22 17:59:00,262 - ===> Train Epoch: 30 	 Accuracy: 44.68%	Loss: 1.23612368
+2022-02-22 17:59:18,189 - ===> Train Epoch: 31 	 Accuracy: 44.31%	Loss: 1.24938762
+2022-02-22 17:59:35,945 - ===> Train Epoch: 32 	 Accuracy: 46.15%	Loss: 1.19409811
+2022-02-22 17:59:53,989 - ===> Train Epoch: 33 	 Accuracy: 44.36%	Loss: 1.21267152
+2022-02-22 18:00:11,917 - ===> Train Epoch: 34 	 Accuracy: 45.89%	Loss: 1.22063375
+2022-02-22 18:00:29,872 - ===> Train Epoch: 35 	 Accuracy: 45.68%	Loss: 1.16077471
+2022-02-22 18:00:47,654 - ===> Train Epoch: 36 	 Accuracy: 46.73%	Loss: 1.17670834
+2022-02-22 18:01:05,822 - ===> Train Epoch: 37 	 Accuracy: 47.15%	Loss: 1.13915241
+2022-02-22 18:01:23,548 - ===> Train Epoch: 38 	 Accuracy: 49.37%	Loss: 1.11781597
+2022-02-22 18:01:41,464 - ===> Train Epoch: 39 	 Accuracy: 50.11%	Loss: 1.06635571
+2022-02-22 18:01:59,259 - ===> Train Epoch: 40 	 Accuracy: 49.00%	Loss: 1.13772810
+2022-02-22 18:02:17,290 - ===> Train Epoch: 41 	 Accuracy: 48.47%	Loss: 1.13788807
+2022-02-22 18:02:34,914 - ===> Train Epoch: 42 	 Accuracy: 50.05%	Loss: 1.09093010
+2022-02-22 18:02:52,878 - ===> Train Epoch: 43 	 Accuracy: 51.79%	Loss: 1.03937387
+2022-02-22 18:03:10,639 - ===> Train Epoch: 44 	 Accuracy: 50.95%	Loss: 1.04857063
+2022-02-22 18:03:28,710 - ===> Train Epoch: 45 	 Accuracy: 52.79%	Loss: 1.04207897
+2022-02-22 18:03:46,258 - ===> Train Epoch: 46 	 Accuracy: 52.32%	Loss: 1.06941700
+2022-02-22 18:04:04,310 - ===> Train Epoch: 47 	 Accuracy: 52.21%	Loss: 1.05348980
+2022-02-22 18:04:22,283 - ===> Train Epoch: 48 	 Accuracy: 53.21%	Loss: 1.00282335
+2022-02-22 18:04:40,515 - ===> Train Epoch: 49 	 Accuracy: 53.85%	Loss: 1.02353072

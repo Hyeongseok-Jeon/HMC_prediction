@@ -55,17 +55,17 @@ class pred_loader_0(Dataset):
 
         hist_traj[:hist_traj_raw.shape[0]] = hist_traj_raw
         total_traj[:total_traj_raw.shape[0]] = total_traj_raw
-
         maneuver_index = np.load(self.data_dir + 'maneuver_index/' + self.data_list[idx])
         outlet_state = np.load(self.data_dir + 'outlet_state/' + self.data_list[idx])
-
         return hist_traj, outlet_state, total_traj, maneuver_index
 
-
 class pred_loader_1(Dataset):
-    def __init__(self, config):
+    def __init__(self, config, label):
         self.config = config
-        self.data_dir = self.config["data_dir"]
+        if label == 'train':
+            self.data_dir = self.config["data_dir_train"]
+        elif label == 'val':
+            self.data_dir = self.config["data_dir_val"]
         self.data_list = [os.path.basename(x) for x in glob.glob(self.data_dir + 'maneuver_index/*.npy')]
         self.data_list_dup = []
         for x in glob.glob(self.data_dir + 'maneuver_index/*.npy'):
