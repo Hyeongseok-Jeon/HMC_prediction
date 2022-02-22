@@ -9,6 +9,7 @@ import os
 import torch.optim as optim
 import warnings
 import time
+import socket
 
 run_name = "maneuver_prediction" + time.strftime("-%Y-%m-%d_%H_%M_%S")
 print(run_name)
@@ -32,6 +33,7 @@ dataloader_val = DataLoader(dataset_val,
 
 model = BackBone(config).cuda()
 model_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+logger.info('### Training Machine Ip address ###\n {}\n'.format(socket.gethostbyname(socket.gethostname())))
 logger.info('### Model summary below###\n {}\n'.format(str(model)))
 
 for i in range(len(config)):

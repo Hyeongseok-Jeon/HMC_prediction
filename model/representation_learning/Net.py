@@ -2,6 +2,7 @@ import os
 import sys
 
 # root_path = os.path.dirname(os.path.abspath(__file__))
+
 root_path = os.getcwd() + '/model/representation_learning/'
 sys.path.insert(0, root_path)
 
