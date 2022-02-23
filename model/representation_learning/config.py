@@ -15,7 +15,7 @@ gpu_name = torch.cuda.get_device_name(0)
 if '3070' in gpu_name:
     config["batch_size"] = 64
 elif '3090' in gpu_name:
-    config["batch_size"] = 64
+    config["batch_size"] = 512
 
 config["epoch"] = 300
 config["n_warmup_steps"] = 30
@@ -28,7 +28,7 @@ config["data_dir_train"] = data_dir + 'train/'
 config["data_dir_val"] = data_dir + 'val/'
 config["data_dir_orig"] = data_dir + 'archive/'
 config["occlusion_rate"] = 0.2
-config["splicing_num"] = 2
+config["splicing_num"] = 128
 config["LC_multiple"] = 5
 config["FOV"] = 30
 config["interpolate"] = False

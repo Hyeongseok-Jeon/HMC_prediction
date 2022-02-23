@@ -14,7 +14,7 @@ import socket
 run_name = "maneuver_prediction" + time.strftime("-%Y-%m-%d_%H_%M_%S")
 print(run_name)
 ckpt_dir = config['ckpt_dir'] + run_name
-os.makedirs(ckpt_dir)
+os.makedirs(ckpt_dir, exist_ok=True)
 logger = setup_logs(config['log_dir'], run_name)  # setup logs
 
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -77,9 +77,9 @@ for epoch in range(config["epoch"]):
         loss_calc_num_tot += loss_calc_num
 
         if data[0].shape[0] == config['batch_size']:
-            print('Epoch: %d \t Time: %3.2f \t Data: %d/%d \t Loss: %7.5f' % (epoch, time.time() - epoch_time, config['batch_size'] * (i + 1), len(dataloader_train.dataset), loss.item()), end='\r')
+            print('Epoch: %d \t Time: %3.2f sec \t Data: %d/%d \t Loss: %7.5f' % (epoch+1, time.time() - epoch_time, config['batch_size'] * (i + 1), len(dataloader_train.dataset), loss.item()), end='\r')
         else:
-            print('Epoch: %d \t Time: %3.2f \t Data: %d/%d \t Loss: %7.5f' % (epoch, time.time() - epoch_time, config['batch_size'] * i + data[0].shape[0], len(dataloader_train.dataset), loss.item()))
+            print('Epoch: %d \t Time: %3.2f sec \t Data: %d/%d \t Loss: %7.5f' % (epoch+1, time.time() - epoch_time, config['batch_size'] * i + data[0].shape[0], len(dataloader_train.dataset), loss.item()))
 
     nce_tot = -loss_tot / loss_calc_num_tot
     logger.info('===> Train Epoch: {} \t Accuracy: {:.2f}%\tLoss: {:.8f}'.format(
