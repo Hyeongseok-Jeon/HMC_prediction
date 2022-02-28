@@ -1,0 +1,146 @@
+2022-02-28 20:06:37,087 - ### Training Machine Ip address ###
+ 192.168.0.7
+
+2022-02-28 20:06:37,088 - ### Model summary below###
+ BackBone(
+  (encoder): Encoder(
+    (groups): ModuleList(
+      (0): Sequential(
+        (0): Res1d(
+          (conv1): Conv1d(3, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (conv2): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 32, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 32, eps=1e-05, affine=True)
+          (downsample): Sequential(
+            (0): Conv1d(3, 32, kernel_size=(1,), stride=(1,), bias=False)
+            (1): GroupNorm(1, 32, eps=1e-05, affine=True)
+          )
+        )
+        (1): Res1d(
+          (conv1): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (conv2): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 32, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 32, eps=1e-05, affine=True)
+        )
+      )
+      (1): Sequential(
+        (0): Res1d(
+          (conv1): Conv1d(32, 64, kernel_size=(3,), stride=(2,), padding=(1,), bias=False)
+          (conv2): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 64, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 64, eps=1e-05, affine=True)
+          (downsample): Sequential(
+            (0): Conv1d(32, 64, kernel_size=(1,), stride=(2,), bias=False)
+            (1): GroupNorm(1, 64, eps=1e-05, affine=True)
+          )
+        )
+        (1): Res1d(
+          (conv1): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (conv2): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 64, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 64, eps=1e-05, affine=True)
+        )
+      )
+      (2): Sequential(
+        (0): Res1d(
+          (conv1): Conv1d(64, 128, kernel_size=(3,), stride=(2,), padding=(1,), bias=False)
+          (conv2): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 128, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 128, eps=1e-05, affine=True)
+          (downsample): Sequential(
+            (0): Conv1d(64, 128, kernel_size=(1,), stride=(2,), bias=False)
+            (1): GroupNorm(1, 128, eps=1e-05, affine=True)
+          )
+        )
+        (1): Res1d(
+          (conv1): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (conv2): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 128, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 128, eps=1e-05, affine=True)
+        )
+      )
+    )
+    (lateral): ModuleList(
+      (0): Conv1d(
+        (conv): Conv1d(32, 256, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+        (norm): GroupNorm(1, 256, eps=1e-05, affine=True)
+        (relu): ReLU(inplace=True)
+      )
+      (1): Conv1d(
+        (conv): Conv1d(64, 256, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+        (norm): GroupNorm(1, 256, eps=1e-05, affine=True)
+        (relu): ReLU(inplace=True)
+      )
+      (2): Conv1d(
+        (conv): Conv1d(128, 256, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+        (norm): GroupNorm(1, 256, eps=1e-05, affine=True)
+        (relu): ReLU(inplace=True)
+      )
+    )
+    (output): Res1d(
+      (conv1): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+      (conv2): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+      (relu): ReLU(inplace=True)
+      (bn1): GroupNorm(1, 256, eps=1e-05, affine=True)
+      (bn2): GroupNorm(1, 256, eps=1e-05, affine=True)
+    )
+  )
+  (autoregressive): AutoRegressive(
+    (gru): GRU(256, 128, batch_first=True)
+  )
+  (Wk): ModuleList(
+    (0): Linear(in_features=128, out_features=256, bias=True)
+    (1): Linear(in_features=128, out_features=256, bias=True)
+    (2): Linear(in_features=128, out_features=256, bias=True)
+    (3): Linear(in_features=128, out_features=256, bias=True)
+    (4): Linear(in_features=128, out_features=256, bias=True)
+    (5): Linear(in_features=128, out_features=256, bias=True)
+    (6): Linear(in_features=128, out_features=256, bias=True)
+    (7): Linear(in_features=128, out_features=256, bias=True)
+    (8): Linear(in_features=128, out_features=256, bias=True)
+    (9): Linear(in_features=128, out_features=256, bias=True)
+  )
+  (softmax): Softmax(dim=None)
+  (lsoftmax): LogSoftmax(dim=None)
+)
+
+2022-02-28 20:06:37,089 - ===> Configuration parameter
+                                    GPU_id: 0
+                                    batch_size: 16
+                                    epoch: 300
+                                    n_warmup_steps: 30
+                                    validataion_period: 1
+                                    ckpt_period: 5
+                                    ckpt_dir: C:\Users\VDCLAB\Desktop\hs\HMC_prediction/ckpt/
+                                    data_dir_train: C:\Users\VDCLAB\Desktop\hs\HMC_prediction/data/drone_data/processed/train/
+                                    data_dir_val: C:\Users\VDCLAB\Desktop\hs\HMC_prediction/data/drone_data/processed/val/
+                                    data_dir_orig: C:\Users\VDCLAB\Desktop\hs\HMC_prediction/data/drone_data/processed/archive/
+                                    occlusion_rate: 0.2
+                                    splicing_num: 128
+                                    LC_multiple: 5
+                                    FOV: 30
+                                    interpolate: False
+                                    max_pred_time: 5
+                                    max_hist_time: 10
+                                    hz: 2
+                                    val_rate: 0.2
+                                    n_hidden_after_deconv: 256
+                                    n_convgru_layer: 1
+                                    convgru_kernel_size: (3, 3)
+                                    convgru_output_layer_num: 4
+                                    convgru_output_channel_list: [16, 32, 64, 128]
+                                    convgru_output_kernel_size_list: [5, 5, 5, 5]
+                                    log_dir: logs/
+
+2022-02-28 20:06:37,089 - ===> Model total parameter: 1283392
+2022-02-28 20:06:37,090 - ===> Model Training Start
+2022-02-28 20:20:17,636 - ===> Train Epoch: 1 	 Accuracy: 66.90%	Loss: 0.74650073
+2022-02-28 20:21:49,886 - ===> Validation after Training epoch: 1 	 Accuracy: 59.38%	Loss: 0.91872096
+2022-02-28 20:35:22,484 - ===> Train Epoch: 2 	 Accuracy: 81.83%	Loss: 0.39282209
+2022-02-28 20:36:55,464 - ===> Validation after Training epoch: 2 	 Accuracy: 59.52%	Loss: 1.00533748
