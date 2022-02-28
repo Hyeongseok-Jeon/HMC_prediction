@@ -11,6 +11,15 @@ import warnings
 import time
 import socket
 
+GPU_NUM = config["GPU_id"]
+device = torch.device(f'cuda:{GPU_NUM}' if torch.cuda.is_available() else 'cpu')
+torch.cuda.set_device(device) # change allocation of current GPU
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print('Device:', device)
+print('Current cuda device:', torch.cuda.current_device())
+print('Count of using GPUs:', torch.cuda.device_count())
+
 run_name = "maneuver_prediction" + time.strftime("-%Y-%m-%d_%H_%M_%S")
 print(run_name)
 ckpt_dir = config['ckpt_dir'] + run_name
