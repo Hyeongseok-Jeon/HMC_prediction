@@ -50,7 +50,7 @@ model.train()
 optimizer = ScheduledOptim(
     optim.Adam(
         filter(lambda p: p.requires_grad, model.parameters()),
-        betas=(0.9, 0.98), eps=1e-09, weight_decay=1e-4, amsgrad=True),
+        lr = config["learning_rate"], betas=(0.9, 0.98), eps=1e-09, weight_decay=1e-4, amsgrad=True),
     config["n_warmup_steps"])
 
 logger.info('===> Model Training Start')
