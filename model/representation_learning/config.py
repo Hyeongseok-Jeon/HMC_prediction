@@ -8,7 +8,7 @@ data_dir = root_path + '/data/drone_data/processed/'
 config = dict()
 
 ''' environment '''
-config["GPU_id"] = 3
+config["GPU_id"] = 0
 
 ''' training '''
 gpu_name = torch.cuda.get_device_name(0)
