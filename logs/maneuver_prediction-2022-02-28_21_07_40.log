@@ -1,0 +1,179 @@
+2022-02-28 21:08:54,123 - ### Training Machine Ip address ###
+ 127.0.1.1
+
+2022-02-28 21:08:54,124 - ### Model summary below###
+ BackBone(
+  (encoder): Encoder(
+    (groups): ModuleList(
+      (0): Sequential(
+        (0): Res1d(
+          (conv1): Conv1d(3, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (conv2): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 32, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 32, eps=1e-05, affine=True)
+          (downsample): Sequential(
+            (0): Conv1d(3, 32, kernel_size=(1,), stride=(1,), bias=False)
+            (1): GroupNorm(1, 32, eps=1e-05, affine=True)
+          )
+        )
+        (1): Res1d(
+          (conv1): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (conv2): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 32, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 32, eps=1e-05, affine=True)
+        )
+      )
+      (1): Sequential(
+        (0): Res1d(
+          (conv1): Conv1d(32, 64, kernel_size=(3,), stride=(2,), padding=(1,), bias=False)
+          (conv2): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 64, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 64, eps=1e-05, affine=True)
+          (downsample): Sequential(
+            (0): Conv1d(32, 64, kernel_size=(1,), stride=(2,), bias=False)
+            (1): GroupNorm(1, 64, eps=1e-05, affine=True)
+          )
+        )
+        (1): Res1d(
+          (conv1): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (conv2): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 64, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 64, eps=1e-05, affine=True)
+        )
+      )
+      (2): Sequential(
+        (0): Res1d(
+          (conv1): Conv1d(64, 128, kernel_size=(3,), stride=(2,), padding=(1,), bias=False)
+          (conv2): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 128, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 128, eps=1e-05, affine=True)
+          (downsample): Sequential(
+            (0): Conv1d(64, 128, kernel_size=(1,), stride=(2,), bias=False)
+            (1): GroupNorm(1, 128, eps=1e-05, affine=True)
+          )
+        )
+        (1): Res1d(
+          (conv1): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (conv2): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 128, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 128, eps=1e-05, affine=True)
+        )
+      )
+    )
+    (lateral): ModuleList(
+      (0): Conv1d(
+        (conv): Conv1d(32, 256, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+        (norm): GroupNorm(1, 256, eps=1e-05, affine=True)
+        (relu): ReLU(inplace=True)
+      )
+      (1): Conv1d(
+        (conv): Conv1d(64, 256, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+        (norm): GroupNorm(1, 256, eps=1e-05, affine=True)
+        (relu): ReLU(inplace=True)
+      )
+      (2): Conv1d(
+        (conv): Conv1d(128, 256, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+        (norm): GroupNorm(1, 256, eps=1e-05, affine=True)
+        (relu): ReLU(inplace=True)
+      )
+    )
+    (output): Res1d(
+      (conv1): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+      (conv2): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+      (relu): ReLU(inplace=True)
+      (bn1): GroupNorm(1, 256, eps=1e-05, affine=True)
+      (bn2): GroupNorm(1, 256, eps=1e-05, affine=True)
+    )
+  )
+  (autoregressive): AutoRegressive(
+    (gru): GRU(256, 128, batch_first=True)
+  )
+  (Wk): ModuleList(
+    (0): Linear(in_features=128, out_features=256, bias=True)
+    (1): Linear(in_features=128, out_features=256, bias=True)
+    (2): Linear(in_features=128, out_features=256, bias=True)
+    (3): Linear(in_features=128, out_features=256, bias=True)
+    (4): Linear(in_features=128, out_features=256, bias=True)
+    (5): Linear(in_features=128, out_features=256, bias=True)
+    (6): Linear(in_features=128, out_features=256, bias=True)
+    (7): Linear(in_features=128, out_features=256, bias=True)
+    (8): Linear(in_features=128, out_features=256, bias=True)
+    (9): Linear(in_features=128, out_features=256, bias=True)
+  )
+  (softmax): Softmax(dim=None)
+  (lsoftmax): LogSoftmax(dim=None)
+)
+
+2022-02-28 21:08:54,124 - ===> Configuration parameter
+                                    GPU_id: 3
+                                    batch_size: 16
+                                    epoch: 300
+                                    n_warmup_steps: 30
+                                    validataion_period: 1
+                                    ckpt_period: 5
+                                    ckpt_dir: /home/user/data/HyeongseokJeon/HMC_prediction/ckpt/
+                                    learning_rate: 5e-05
+                                    data_dir_train: /home/user/data/HyeongseokJeon/HMC_prediction/data/drone_data/processed/train/
+                                    data_dir_val: /home/user/data/HyeongseokJeon/HMC_prediction/data/drone_data/processed/val/
+                                    data_dir_orig: /home/user/data/HyeongseokJeon/HMC_prediction/data/drone_data/processed/archive/
+                                    occlusion_rate: 0.2
+                                    splicing_num: 128
+                                    LC_multiple: 5
+                                    FOV: 30
+                                    interpolate: False
+                                    max_pred_time: 5
+                                    max_hist_time: 10
+                                    hz: 2
+                                    val_rate: 0.2
+                                    n_hidden_after_deconv: 256
+                                    n_convgru_layer: 1
+                                    convgru_kernel_size: (3, 3)
+                                    convgru_output_layer_num: 4
+                                    convgru_output_channel_list: [16, 32, 64, 128]
+                                    convgru_output_kernel_size_list: [5, 5, 5, 5]
+                                    log_dir: logs/
+
+2022-02-28 21:08:54,124 - ===> Model total parameter: 1283392
+2022-02-28 21:08:54,125 - ===> Model Training Start
+2022-02-28 21:24:46,695 - ===> Train Epoch: 1 	 Accuracy: 65.67%	Loss: 0.75483429
+2022-02-28 21:26:32,340 - ===> Validation after Training epoch: 1 	 Accuracy: 58.19%	Loss: 1.03492415
+2022-02-28 21:42:24,077 - ===> Train Epoch: 2 	 Accuracy: 81.31%	Loss: 0.40330452
+2022-02-28 21:44:00,377 - ===> Validation after Training epoch: 2 	 Accuracy: 60.93%	Loss: 1.07895434
+2022-02-28 21:59:54,510 - ===> Train Epoch: 3 	 Accuracy: 85.88%	Loss: 0.31557003
+2022-02-28 22:01:31,583 - ===> Validation after Training epoch: 3 	 Accuracy: 57.33%	Loss: 1.21390522
+2022-02-28 22:17:22,771 - ===> Train Epoch: 4 	 Accuracy: 88.19%	Loss: 0.26729724
+2022-02-28 22:19:02,027 - ===> Validation after Training epoch: 4 	 Accuracy: 60.46%	Loss: 1.30810571
+2022-02-28 22:34:56,280 - ===> Train Epoch: 5 	 Accuracy: 89.76%	Loss: 0.23733744
+2022-02-28 22:36:38,778 - ===> Validation after Training epoch: 5 	 Accuracy: 58.98%	Loss: 1.40234661
+2022-02-28 22:52:28,992 - ===> Train Epoch: 6 	 Accuracy: 90.80%	Loss: 0.21551308
+2022-02-28 22:54:07,959 - ===> Validation after Training epoch: 6 	 Accuracy: 61.08%	Loss: 1.40914643
+2022-02-28 23:10:01,398 - ===> Train Epoch: 7 	 Accuracy: 92.08%	Loss: 0.19312109
+2022-02-28 23:11:39,405 - ===> Validation after Training epoch: 7 	 Accuracy: 59.18%	Loss: 1.49314940
+2022-02-28 23:27:33,836 - ===> Train Epoch: 8 	 Accuracy: 92.68%	Loss: 0.18042608
+2022-02-28 23:29:14,646 - ===> Validation after Training epoch: 8 	 Accuracy: 60.53%	Loss: 1.55840397
+2022-02-28 23:45:06,810 - ===> Train Epoch: 9 	 Accuracy: 93.41%	Loss: 0.16557428
+2022-02-28 23:46:48,283 - ===> Validation after Training epoch: 9 	 Accuracy: 59.71%	Loss: 1.55936575
+2022-03-01 00:02:40,271 - ===> Train Epoch: 10 	 Accuracy: 94.09%	Loss: 0.15253569
+2022-03-01 00:04:18,591 - ===> Validation after Training epoch: 10 	 Accuracy: 57.68%	Loss: 1.77114630
+2022-03-01 00:20:09,674 - ===> Train Epoch: 11 	 Accuracy: 94.36%	Loss: 0.14384471
+2022-03-01 00:21:52,193 - ===> Validation after Training epoch: 11 	 Accuracy: 58.67%	Loss: 1.69517839
+2022-03-01 00:37:43,769 - ===> Train Epoch: 12 	 Accuracy: 94.98%	Loss: 0.13544928
+2022-03-01 00:39:23,457 - ===> Validation after Training epoch: 12 	 Accuracy: 59.03%	Loss: 1.75059676
+2022-03-01 00:55:17,246 - ===> Train Epoch: 13 	 Accuracy: 95.44%	Loss: 0.12550023
+2022-03-01 00:56:56,590 - ===> Validation after Training epoch: 13 	 Accuracy: 59.43%	Loss: 1.78813434
+2022-03-01 01:12:47,759 - ===> Train Epoch: 14 	 Accuracy: 95.86%	Loss: 0.11725473
+2022-03-01 01:14:23,092 - ===> Validation after Training epoch: 14 	 Accuracy: 59.42%	Loss: 1.82196522
+2022-03-01 01:30:20,504 - ===> Train Epoch: 15 	 Accuracy: 96.34%	Loss: 0.10965306
+2022-03-01 01:31:58,367 - ===> Validation after Training epoch: 15 	 Accuracy: 58.53%	Loss: 1.81953692
+2022-03-01 01:47:50,874 - ===> Train Epoch: 16 	 Accuracy: 96.59%	Loss: 0.10310634
+2022-03-01 01:49:32,732 - ===> Validation after Training epoch: 16 	 Accuracy: 58.64%	Loss: 1.96361482
+2022-03-01 02:05:22,731 - ===> Train Epoch: 17 	 Accuracy: 96.92%	Loss: 0.09750251
+2022-03-01 02:07:01,987 - ===> Validation after Training epoch: 17 	 Accuracy: 58.75%	Loss: 1.93936038
+2022-03-01 02:22:51,562 - ===> Train Epoch: 18 	 Accuracy: 97.04%	Loss: 0.09400956
+2022-03-01 02:24:30,357 - ===> Validation after Training epoch: 18 	 Accuracy: 58.90%	Loss: 1.91107941
