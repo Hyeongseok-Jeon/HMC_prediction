@@ -2,19 +2,20 @@ from model.representation_learning.data import pred_loader_1, collate_fn
 from torch.utils.data import DataLoader
 from model.representation_learning.config import config
 from model.representation_learning.Net import BackBone
-from logger.logger import setup_logs
-from opt.optimizer import ScheduledOptim
 import torch
 import os
-import torch.optim as optim
 import warnings
 import time
-import socket
 import numpy as np
+from openTSNE import TSNE
+import matplotlib
+import matplotlib.pyplot as plt
+
+matplotlib.use('tkagg')
 
 GPU_NUM = config["GPU_id"]
 device = torch.device(f'cuda:{GPU_NUM}' if torch.cuda.is_available() else 'cpu')
-torch.cuda.set_device(device) # change allocation of current GPU
+torch.cuda.set_device(device)  # change allocation of current GPU
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print('Device:', device)
@@ -34,7 +35,7 @@ print('\n')
 while True:
     s = input('selected target models : ')
     try:
-        if int(s) < len(file_list) and int(s)>=0:
+        if int(s) < len(file_list) and int(s) >= 0:
             file_index = int(s)
             file_id = file_list[file_index].split('.')[0]
             break
@@ -49,7 +50,6 @@ epoch_list = [int(ckpt_list[i].split('_')[1].split('.')[0]) for i in range(len(c
 idx = sorted(range(len(epoch_list)), key=lambda k: epoch_list[k])
 ckpt_list = [ckpt_list[idx[i]] for i in range(len(idx))]
 
-
 print('------------------------------------------------------------')
 for i in range(len(ckpt_list)):
     print('File_id : ' + str(ckpt_list[i]), '  File_index : ' + str(i))
@@ -59,7 +59,7 @@ print('\n')
 while True:
     s = input('selected target models : ')
     try:
-        if int(s) < len(ckpt_list) and int(s)>=0:
+        if int(s) < len(ckpt_list) and int(s) >= 0:
             weight_index = int(s)
             weight = ckpt_list[weight_index]
             break
@@ -68,7 +68,7 @@ while True:
     except:
         pass
 
-val_dir = 'val/'+file_id+ '/' + weight.split('.')[0]
+val_dir = 'val/' + file_id + '/' + weight.split('.')[0]
 os.makedirs(val_dir, exist_ok=True)
 
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -77,10 +77,10 @@ warnings.filterwarnings("ignore", category=UserWarning)
 config["splicing_num"] = 1
 config["occlusion_rate"] = 0
 config["batch_size"] = 1
-dataset_train = pred_loader_1(config, 'train')
-dataset_val = pred_loader_1(config, 'val')
-dataset_tot = pred_loader_1(config, 'orig')
-
+config["LC_multiple"] = 1
+dataset_train = pred_loader_1(config, 'train', mode='val')
+dataset_val = pred_loader_1(config, 'val', mode='val')
+dataset_tot = pred_loader_1(config, 'orig', mode='val')
 
 dataloader_train = DataLoader(dataset_train,
                               batch_size=config["batch_size"],
@@ -96,7 +96,7 @@ dataloader_tot = DataLoader(dataset_tot,
                             collate_fn=collate_fn)
 
 model = BackBone(config).cuda()
-weights = torch.load(ckpt_dir+'/'+weight)
+weights = torch.load(ckpt_dir + '/' + weight)
 model.load_state_dict(weights['model_state_dict'])
 
 correct_num_tot = 0
@@ -104,60 +104,70 @@ full_length_num_tot = 0
 loss_tot = 0
 loss_calc_num_tot = 0
 epoch_time = time.time()
-for i, data in enumerate(dataloader_train):
-    trajectory, traj_length = data
+
+pred_bag = [np.empty(shape=(1, 256)) for _ in range(10)]
+inst_num_bag = [0 for _ in range(10)]
+traj_bag = []
+maneuver_bag = []
+for i, data in enumerate(dataloader_tot):
+    trajectory, traj_length, conversion, maneuvers = data
     trajectory = trajectory.float().cuda()
 
-    batch_accuracy, loss, full_length_num, loss_calc_num = model(trajectory, traj_length, mode='val')
-    loss.backward()
-    optimizer.step()
-    lr = optimizer.update_learning_rate()
+    pred, target, valuable_traj, pred_steps = model(trajectory, traj_length, mode='val')
+    pred = pred.cpu().detach().numpy()
+    target = target.cpu().detach().numpy()
+    valuable_traj = valuable_traj.cpu().detach().numpy()
+    pred_steps = pred_steps.cpu().detach().numpy()
 
-    correct_num_tot += int(batch_accuracy * full_length_num)
-    full_length_num_tot += int(full_length_num)
-    loss_tot += -loss.item() * loss_calc_num
-    loss_calc_num_tot += loss_calc_num
+    traj_bag.append(valuable_traj)
+    if pred.shape[0] < config["max_pred_time"] * config["hz"]:
+        masking_num = config["max_pred_time"] * config["hz"] - pred.shape[0]
+        pred_steps = np.concatenate((np.array([config["max_pred_time"] * config["hz"] - k for k in range(masking_num)]), pred_steps), axis=0)
+        pred = np.concatenate((np.zeros_like(pred[:masking_num]), pred), axis=0)
 
-    if data[0].shape[0] == config['batch_size']:
-        print('Epoch: %d \t Time: %3.2f sec \t Data: %d/%d \t Loss: %7.5f' % (epoch+1, time.time() - epoch_time, config['batch_size'] * (i + 1), len(dataloader_train.dataset), loss.item()), end='\r')
+    if i == 0:
+        target_bag = target
+        maneuver_bag = np.expand_dims(maneuvers, axis=0)
+        conversion_bag = np.expand_dims(conversion, axis=0)
     else:
-        print('Epoch: %d \t Time: %3.2f sec \t Data: %d/%d \t Loss: %7.5f' % (epoch+1, time.time() - epoch_time, config['batch_size'] * i + data[0].shape[0], len(dataloader_train.dataset), loss.item()))
+        target_bag_tmp = target
+        target_bag = np.concatenate((target_bag, target_bag_tmp), axis=0)
+        maneuver_bag_tmp = np.expand_dims(maneuvers, axis=0)
+        maneuver_bag = np.concatenate((maneuver_bag, maneuver_bag_tmp), axis=0)
+        conversion_bag_tmp = np.expand_dims(conversion, axis=0)
+        conversion_bag = np.concatenate((conversion_bag, conversion_bag_tmp), axis=0)
 
-nce_tot = -loss_tot / loss_calc_num_tot
-logger.info('===> Train Epoch: {} \t Accuracy: {:.2f}%\tLoss: {:.8f}'.format(
-    epoch + 1, 100 * correct_num_tot / full_length_num_tot, nce_tot
-))
+    for j in range(pred.shape[0]):
+        if inst_num_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]] == 0:
+            pred_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]] = pred[j:j + 1, :]
+        else:
+            pred_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]] = np.concatenate((pred_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]], pred[j:j + 1, :]), axis=0)
+        inst_num_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]] += 1
 
-if (epoch + 1) % config['validataion_period'] == 0:
-    model.eval()
-    correct_num_tot_val = 0
-    full_length_num_tot_val = 0
-    loss_tot_val = 0
-    loss_calc_num_tot_val = 0
-    val_time = time.time()
-    for i, data in enumerate(dataloader_val):
-        trajectory, traj_length = data
-        trajectory = trajectory.float().cuda()
-        batch_accuracy, loss, full_length_num, loss_calc_num = model(trajectory, traj_length)
-        correct_num_tot_val += int(batch_accuracy * full_length_num)
-        full_length_num_tot_val += int(full_length_num)
-        loss_tot_val += -loss.item() * loss_calc_num
-        loss_calc_num_tot_val += loss_calc_num
 
-    nce_tot_val = -loss_tot_val / loss_calc_num_tot_val
-    logger.info('===> Validation after Training epoch: {} \t Accuracy: {:.2f}%\tLoss: {:.8f}'.format(
-        epoch + 1, 100 * correct_num_tot_val / full_length_num_tot_val, nce_tot_val
-    ))
-    model.train()
+n_components = 2
+tsne_target = TSNE(n_components=n_components,
+            perplexity=30,
+            verbose=True)
+tsne_pred = [TSNE(n_components=n_components,
+            perplexity=30,
+            verbose=True) for _ in range(10)]
 
-if (epoch + 1) % config['ckpt_period'] == 0:
-    EPOCH = epoch + 1
-    PATH = ckpt_dir + "/model_" + str(EPOCH) + ".pt"
-    LOSS = nce_tot
-    torch.save({
-        'epoch': EPOCH,
-        'model_state_dict': model.state_dict(),
-        'optimizer_state_dict': optimizer.state_dict(),
-        'loss': LOSS,
-    }, PATH)
-    print('Check point saved: %s' % PATH)
+color = np.zeros(shape=(target_bag.shape[0], 3))
+for i in range(maneuver_bag.shape[0]):
+    if maneuver_bag[i, 0] == 1:
+        color[i, 0] = 1
+    elif maneuver_bag[i, 1] == 1:
+        color[i, 1] = 1
+    elif maneuver_bag[i, 2] == 1:
+        color[i, 2] = 1
+    elif maneuver_bag[i, 3] == 1:
+        color[i, 0] = 1
+        color[i, 2] = 1
+
+target_tsne = tsne_target.fit(target_bag)
+plt.scatter(target_tsne[:,0], target_tsne[:,1], c=color)
+for i in range(10):
+    plt.figure()
+    pred_tsne = tsne_pred[i].fit(pred_bag[i])
+    plt.scatter(pred_tsne[:,0], pred_tsne[:,1], c=color)

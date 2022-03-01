@@ -5,6 +5,7 @@ from torch.utils.data import Dataset
 import torch
 import random
 
+
 class pred_loader_0(Dataset):
     def __init__(self, config):
         self.config = config
@@ -50,7 +51,7 @@ class pred_loader_0(Dataset):
                             break
                     for k in range(i, next_seen_idx):
                         hist_traj_raw[k] = hist_traj_raw[i - 1] + (k - i + 1) * (
-                                    hist_traj_raw[next_seen_idx] - hist_traj_raw[i - 1]) / (next_seen_idx - i + 1)
+                                hist_traj_raw[next_seen_idx] - hist_traj_raw[i - 1]) / (next_seen_idx - i + 1)
                     i = i + j
 
         hist_traj[:hist_traj_raw.shape[0]] = hist_traj_raw
@@ -59,8 +60,10 @@ class pred_loader_0(Dataset):
         outlet_state = np.load(self.data_dir + 'outlet_state/' + self.data_list[idx])
         return hist_traj, outlet_state, total_traj, maneuver_index
 
+
 class pred_loader_1(Dataset):
-    def __init__(self, config, label):
+    def __init__(self, config, label, mode='train'):
+        self.mode = mode
         self.config = config
         if label == 'train':
             self.data_dir = self.config["data_dir_train"]
@@ -95,8 +98,6 @@ class pred_loader_1(Dataset):
         return len(self.data_list_dup)
 
     def __getitem__(self, idx):
-        # observation_padding = np.zeros(shape=(self.total_traj_max, 3))
-        # conversion = np.load(self.data_dir + 'conversion/' + self.data_list_dup[idx])
         # link_idx = np.load(self.data_dir + 'link_idx/' + self.data_list_dup[idx])
         # maneuver_index = np.load(self.data_dir + 'maneuver_index/' + self.data_list_dup[idx])
         nearest_outlet_state = np.load(self.data_dir + 'nearest_outlet_state/' + self.data_list_dup[idx])
@@ -104,9 +105,14 @@ class pred_loader_1(Dataset):
         total_traj = np.load(self.data_dir + 'total_traj/' + self.data_list_dup[idx])
 
         outlet_index = np.where(total_traj[:, 0] == nearest_outlet_state[0, 0])[0][0]
-        total_traj = total_traj[:outlet_index+1,:]
+        total_traj = total_traj[:outlet_index + 1, :]
 
-        return total_traj
+        if self.mode == 'train':
+            return [total_traj]
+        elif self.mode == 'val':
+            maneuver_index = np.load(self.data_dir + 'maneuver_index/' + self.data_list_dup[idx])
+            conversion = np.load(self.data_dir + 'conversion/' + self.data_list_dup[idx])
+            return [total_traj, conversion, maneuver_index]
 
     def get_maneuver_distribution(self, data):
         maneuver_index_tot = np.zeros(shape=4)
@@ -115,9 +121,19 @@ class pred_loader_1(Dataset):
             maneuver_index_tot = maneuver_index_tot + maneuver_index
         return maneuver_index_tot
 
-def collate_fn(samples):
-    inputs = [torch.from_numpy(i) for i in samples]
-    trajectory = torch.nn.utils.rnn.pad_sequence(inputs, batch_first=True)
-    length = [inputs[i].shape[0] for i in range(len(inputs))]
 
-    return trajectory, length
+def collate_fn(samples):
+    if len(samples[0]) == 1:
+        inputs = [torch.from_numpy(i[0]) for i in samples]
+        trajectory = torch.nn.utils.rnn.pad_sequence(inputs, batch_first=True)
+        length = [inputs[i].shape[0] for i in range(len(inputs))]
+        return trajectory, length
+
+    else:
+        inputs = [torch.from_numpy(i[0]) for i in samples]
+        trajectory = torch.nn.utils.rnn.pad_sequence(inputs, batch_first=True)
+        length = [inputs[i].shape[0] for i in range(len(inputs))]
+
+        conversion = samples[0][1]
+        maneuver = samples[0][2]
+        return trajectory, length, conversion, maneuver

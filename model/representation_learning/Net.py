@@ -29,7 +29,7 @@ class BackBone(nn.Module):
             hz2_index = []
             j = 0
             while True:
-                idx_cand = int(traj_length[i] - 10 / model.config["hz"] * j)
+                idx_cand = int(traj_length[i] - 10 / self.config["hz"] * j)
                 if idx_cand >= 0:
                     hz2_index.append(idx_cand)
                     j = j + 1
@@ -49,12 +49,30 @@ class BackBone(nn.Module):
                     enc_in_tmp = trajectory[i:i + 1, hz2_index[k]:hz2_index[k + 1], :]
                     enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
         enc_in = torch.transpose(enc_in, 1, 2)
-        ar_in = model.encoder(enc_in)
-        representation = model.autoregressive(ar_in, seg_length)
+        ar_in = self.encoder(enc_in)
+        representation = self.autoregressive(ar_in, seg_length)
 
         if mode == 'val':
-            pass
-        else:
+            encode_samples = ar_in[-1:, :]
+            representations = torch.tensor([representation.shape[1] - time_index - 1 for time_index in range(self.config["max_pred_time"] * self.config["hz"], 0, -1)], device=encode_samples[0].device)
+            pred_steps = torch.tensor([time_index for time_index in range(self.config["max_pred_time"] * self.config["hz"], 0, -1)], device=encode_samples[0].device)
+
+            representations_mod = representations[representations > -1]
+            pred_steps = pred_steps[representations > -1]
+            representation_cur = representation[0,representations_mod]
+
+            preds = torch.empty((representation_cur.shape[0], len(seg_length), 256), device=encode_samples[0].device).float()  # e.g. size 12*8*512
+            for i in range(representation_cur.shape[0]):
+                linear = self.Wk[pred_steps[i]-1]
+                preds[i] = linear(representation_cur[i])
+
+            pred = torch.squeeze(preds)
+            target = encode_samples
+            valuable_traj = trajectory[0,hz2_index[0]:]
+
+            return pred, target, valuable_traj, pred_steps
+
+        elif mode == 'train':
             cur_time = []
             encode_samples = []
             for i in range(len(seg_length)):
@@ -93,4 +111,4 @@ class BackBone(nn.Module):
             nce /= -1. * calc_step
             accuracy = 1. * correct.item() / torch.sum(batch_idx)
 
-        return accuracy, nce, torch.sum(batch_idx), calc_step
+            return accuracy, nce, torch.sum(batch_idx), calc_step

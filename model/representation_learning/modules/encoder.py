@@ -43,10 +43,10 @@ class Encoder(nn.Module):
         n = config["n_hidden_after_deconv"]
         lateral = []
         for i in range(len(n_out)):
-            lateral.append(Conv1d(n_out[i], n, norm=norm, ng=ng, act=False))
+            lateral.append(Conv1d(n_out[i], n, norm=norm, ng=ng))
         self.lateral = nn.ModuleList(lateral)
 
-        self.output = Res1d(n, n, norm=norm, ng=ng)
+        self.output = Res1d(n, n, norm=norm, ng=ng, act=False)
 
     def forward(self, enc_in):
         out = enc_in
