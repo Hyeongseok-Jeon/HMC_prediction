@@ -60,6 +60,7 @@ class BackBone(nn.Module):
             representations_mod = representations[representations > -1]
             pred_steps = pred_steps[representations > -1]
             representation_cur = representation[0,representations_mod]
+            hist_feature = representation_cur
 
             preds = torch.empty((representation_cur.shape[0], len(seg_length), 256), device=encode_samples[0].device).float()  # e.g. size 12*8*512
             for i in range(representation_cur.shape[0]):
@@ -70,7 +71,7 @@ class BackBone(nn.Module):
             target = encode_samples
             valuable_traj = trajectory[0,hz2_index[0]:]
 
-            return pred, target, valuable_traj, pred_steps
+            return pred, target, valuable_traj, pred_steps, hist_feature
 
         elif mode == 'train':
             cur_time = []
