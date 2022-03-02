@@ -134,14 +134,14 @@ for i, data in enumerate(dataloader_tot):
 
     if i == 0:
         target_bag = target
-        maneuver_bag = np.expand_dims(maneuvers, axis=0)
-        conversion_bag = np.expand_dims(conversion, axis=0)
+        maneuver_bag = maneuvers
+        conversion_bag = conversion
     else:
         target_bag_tmp = target
         target_bag = np.concatenate((target_bag, target_bag_tmp), axis=0)
-        maneuver_bag_tmp = np.expand_dims(maneuvers, axis=0)
+        maneuver_bag_tmp = maneuvers
         maneuver_bag = np.concatenate((maneuver_bag, maneuver_bag_tmp), axis=0)
-        conversion_bag_tmp = np.expand_dims(conversion, axis=0)
+        conversion_bag_tmp = conversion
         conversion_bag = np.concatenate((conversion_bag, conversion_bag_tmp), axis=0)
 
     for j in range(pred.shape[0]):
