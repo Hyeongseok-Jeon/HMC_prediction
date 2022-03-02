@@ -92,8 +92,9 @@ loss_calc_num_tot = 0
 epoch_time = time.time()
 
 for i, data in enumerate(dataloader_train):
-    trajectory, traj_length, conversion, maneuvers = data
+    trajectory, traj_length, conversion, maneuver_gt = data
     trajectory = trajectory.float().cuda()
+    maneuver_gt = torch.cat(maneuver_gt, dim=0).float().cuda()
 
     hidden, num_per_batch = encoder(trajectory, traj_length, mode='downstream')
-    maneuver = decoder(hidden, num_per_batch)
+    maneuver = decoder(hidden, maneuver_gt, num_per_batch)

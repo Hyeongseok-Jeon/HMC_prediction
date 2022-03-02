@@ -19,10 +19,15 @@ class Downstream(nn.Module):
         self.softmax = nn.Softmax()
         self.lsoftmax = nn.LogSoftmax()
 
-    def forward(self, hidden, num_per_batch, mode='train'):
-        output = self.decoder(hidden)
+    def forward(self, hidden, maneuver_gt, num_per_batch, mode='train'):
+        output = decoder.decoder(hidden)
+        maneuver_gt_aug = []
+        for i in range(len(num_per_batch)):
+            maneuver_cur = maneuver_gt[i:i+1]
+            for _ in range(num_per_batch[i]):
+                maneuver_gt_aug.append(maneuver_cur)
+        maneuver_gt_aug = torch.cat(maneuver_gt_aug)
 
-
-        accuracy, nce, torch.sum(batch_idx), calc_step
+        
         return output
 
