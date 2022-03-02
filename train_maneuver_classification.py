@@ -1,20 +1,16 @@
-from model.representation_learning.data import pred_loader_1, collate_fn
+from data.drone_data import pred_loader_1, collate_fn
 from torch.utils.data import DataLoader
 from model.representation_learning.config import config as config_enc
-from model.maneuver_classification.config import config as config_dec
 from model.representation_learning.Net import BackBone
+from model.maneuver_classification.config import config as config_dec
+from model.maneuver_classification.Net import Downstream
 import torch
 import os
 import warnings
 import time
 import numpy as np
-from openTSNE import TSNE
-import matplotlib
-import matplotlib.pyplot as plt
 
-matplotlib.use('tkagg')
-
-GPU_NUM = config["GPU_id"]
+GPU_NUM = config_dec["GPU_id"]
 device = torch.device(f'cuda:{GPU_NUM}' if torch.cuda.is_available() else 'cpu')
 torch.cuda.set_device(device)  # change allocation of current GPU
 
@@ -45,7 +41,7 @@ while True:
     except:
         pass
 
-ckpt_dir = config['ckpt_dir'] + file_id
+ckpt_dir = config_enc['ckpt_dir'] + file_id
 ckpt_list = os.listdir(ckpt_dir)
 epoch_list = [int(ckpt_list[i].split('_')[1].split('.')[0]) for i in range(len(ckpt_list))]
 idx = sorted(range(len(epoch_list)), key=lambda k: epoch_list[k])
@@ -69,37 +65,25 @@ while True:
     except:
         pass
 
-val_dir = 'val/' + file_id + '/' + weight.split('.')[0]
-tsne_dir = val_dir + '/tsne_plot'
-os.makedirs(tsne_dir, exist_ok=True)
-
 warnings.filterwarnings("ignore", category=UserWarning)
 
 # dataset_original = pred_loader_1(config, 'orig')
-config["splicing_num"] = 1
-config["occlusion_rate"] = 0
-config["batch_size"] = 1
-config["LC_multiple"] = 1
-dataset_train = pred_loader_1(config, 'train', mode='val')
-dataset_val = pred_loader_1(config, 'val', mode='val')
-dataset_tot = pred_loader_1(config, 'orig', mode='val')
+dataset_train = pred_loader_1(config_dec, 'train', mode='val')
+dataset_val = pred_loader_1(config_dec, 'val', mode='val')
 
 dataloader_train = DataLoader(dataset_train,
-                              batch_size=config["batch_size"],
+                              batch_size=config_dec["batch_size"],
                               shuffle=True,
                               collate_fn=collate_fn)
 dataloader_val = DataLoader(dataset_val,
-                            batch_size=config["batch_size"],
-                            shuffle=True,
-                            collate_fn=collate_fn)
-dataloader_tot = DataLoader(dataset_tot,
-                            batch_size=config["batch_size"],
+                            batch_size=config_dec["batch_size"],
                             shuffle=True,
                             collate_fn=collate_fn)
 
-model = BackBone(config).cuda()
+encoder = BackBone(config_enc).cuda()
+decoder = Downstream(config_dec).cuda()
 weights = torch.load(ckpt_dir + '/' + weight)
-model.load_state_dict(weights['model_state_dict'])
+encoder.load_state_dict(weights['model_state_dict'])
 
 correct_num_tot = 0
 full_length_num_tot = 0
@@ -107,107 +91,13 @@ loss_tot = 0
 loss_calc_num_tot = 0
 epoch_time = time.time()
 
-pred_bag = [np.empty(shape=(1, 256)) for _ in range(10)]
-hist_bag = [np.empty(shape=(1, 128)) for _ in range(10)]
-inst_num_bag = [0 for _ in range(10)]
-traj_bag = []
-maneuver_bag = []
-for i, data in enumerate(dataloader_tot):
+for i, data in enumerate(dataloader_train):
     trajectory, traj_length, conversion, maneuvers = data
     trajectory = trajectory.float().cuda()
 
-    pred, target, valuable_traj, pred_steps, hist_feature = model(trajectory, traj_length, mode='val')
+    pred, target, valuable_traj, pred_steps, hist_feature = encoder(trajectory, traj_length, mode='val')
     pred = pred.cpu().detach().numpy()
     target = target.cpu().detach().numpy()
     valuable_traj = valuable_traj.cpu().detach().numpy()
     pred_steps = pred_steps.cpu().detach().numpy()
     hist_feature = hist_feature.cpu().detach().numpy()
-
-    traj_bag.append(valuable_traj)
-    if pred.shape[0] < config["max_pred_time"] * config["hz"]:
-        masking_num = config["max_pred_time"] * config["hz"] - pred.shape[0]
-        pred_steps = np.concatenate((np.array([config["max_pred_time"] * config["hz"] - k for k in range(masking_num)]), pred_steps), axis=0)
-        pred = np.concatenate((np.zeros_like(pred[:masking_num]), pred), axis=0)
-        hist_feature = np.concatenate((np.zeros_like(hist_feature[:masking_num]), hist_feature), axis=0)
-
-
-    if i == 0:
-        target_bag = target
-        maneuver_bag = np.expand_dims(maneuvers, axis=0)
-        conversion_bag = np.expand_dims(conversion, axis=0)
-    else:
-        target_bag_tmp = target
-        target_bag = np.concatenate((target_bag, target_bag_tmp), axis=0)
-        maneuver_bag_tmp = np.expand_dims(maneuvers, axis=0)
-        maneuver_bag = np.concatenate((maneuver_bag, maneuver_bag_tmp), axis=0)
-        conversion_bag_tmp = np.expand_dims(conversion, axis=0)
-        conversion_bag = np.concatenate((conversion_bag, conversion_bag_tmp), axis=0)
-
-    for j in range(pred.shape[0]):
-        if inst_num_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]] == 0:
-            pred_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]] = pred[j:j + 1, :]
-            hist_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]] = hist_feature[j:j + 1, :]
-        else:
-            pred_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]] = np.concatenate((pred_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]], pred[j:j + 1, :]), axis=0)
-            hist_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]] = np.concatenate((hist_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]], hist_feature[j:j + 1, :]), axis=0)
-        inst_num_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]] += 1
-
-
-n_components = 2
-tsne_target = TSNE(n_components=n_components,
-            perplexity=30,
-            verbose=True)
-
-
-target_tsne = tsne_target.fit(target_bag)
-target_tsne_u_turn = target_tsne[maneuver_bag[:,0] == 1]
-target_tsne_left_turn = target_tsne[maneuver_bag[:,1] == 1]
-target_tsne_go_straight = target_tsne[maneuver_bag[:,2] == 1]
-target_tsne_right_turn = target_tsne[maneuver_bag[:,3] == 1]
-plt.figure()
-plt.scatter(target_tsne_u_turn[:,0], target_tsne_u_turn[:,1], c='r', label='U-Turn')
-plt.scatter(target_tsne_left_turn[:,0], target_tsne_left_turn[:,1], c='g', label='Left Turn')
-plt.scatter(target_tsne_go_straight[:,0], target_tsne_go_straight[:,1], c='b', label='Go Straight')
-plt.scatter(target_tsne_right_turn[:,0], target_tsne_right_turn[:,1], c='c', label='Right Turn')
-plt.legend()
-plt.title('embeddings of outlet position')
-plt.savefig(tsne_dir+'/outlet_embedding.png')
-plt.close()
-
-for i in range(10):
-    hists = hist_bag[i][hist_bag[i][:, 0] != 0]
-    maneuver_bags = maneuver_bag[hist_bag[i][:, 0] != 0]
-    plt.figure()
-    hist_tsne_tmp = target_tsne.transform(hists)
-    hist_tsne_u_turn = hist_tsne_tmp[maneuver_bags[:, 0] == 1]
-    hist_tsne_left_turn = hist_tsne_tmp[maneuver_bags[:, 1] == 1]
-    hist_tsne_go_straight = hist_tsne_tmp[maneuver_bags[:, 2] == 1]
-    hist_tsne_right_turn = hist_tsne_tmp[maneuver_bags[:, 3] == 1]
-    plt.scatter(hist_tsne_u_turn[:, 0], hist_tsne_u_turn[:, 1], c='r', label='U-Turn')
-    plt.scatter(hist_tsne_left_turn[:, 0], hist_tsne_left_turn[:, 1], c='g', label='Left Turn')
-    plt.scatter(hist_tsne_go_straight[:, 0], hist_tsne_go_straight[:, 1], c='b', label='Go Straight')
-    plt.scatter(hist_tsne_right_turn[:, 0], hist_tsne_right_turn[:, 1], c='c', label='Right Turn')
-    plt.legend()
-    plt.title('embeddings of hist observations: ' + str(0.5 * (10 - i)) + 'sec before outlet')
-    plt.savefig(tsne_dir + '/hist_embedding_on_0.5sec_tSNE' + str(0.5 * (10 - i)) + 'sec_before.png')
-    plt.close()
-#
-# hist_total = np.concatenate(hist_bag)
-# hist_total_filter = hist_total[hist_total[:, 0] != 0]
-# maneuver_total = np.tile(maneuver_bags, (len(hist_bag),1))
-# maneuver_total_filter = maneuver_total[hist_total[:, 0] != 0]
-#
-# tsne_total = hist_tsne.transform(hist_total_filter)
-# plt.figure()
-# tsne_total_u_turn = tsne_total[maneuver_total_filter[:, 0] == 1]
-# tsne_total_left_turn = tsne_total[maneuver_total_filter[:, 1] == 1]
-# tsne_total_go_straight = tsne_total[maneuver_total_filter[:, 2] == 1]
-# tsne_total_right_turn = tsne_total[maneuver_total_filter[:, 3] == 1]
-# plt.scatter(tsne_total_u_turn[:, 0], tsne_total_u_turn[:, 1], c='r', label='U-Turn')
-# plt.scatter(tsne_total_left_turn[:, 0], tsne_total_left_turn[:, 1], c='g', label='Left Turn')
-# plt.scatter(tsne_total_go_straight[:, 0], tsne_total_go_straight[:, 1], c='b', label='Go Straight')
-# plt.scatter(tsne_total_right_turn[:, 0], tsne_total_right_turn[:, 1], c='c', label='Right Turn')
-# plt.legend()
-# plt.title('embeddings of hist observations: ' + str(0.5 * (10 - i)) + 'sec before outlet')
-# plt.savefig(tsne_dir + '/up_to_' + str(0.5 * (10 - i)) + 'sec_before.png')
-# plt.close()

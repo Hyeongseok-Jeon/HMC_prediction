@@ -1,4 +1,4 @@
-from model.representation_learning.data import pred_loader_1, collate_fn
+from data.drone_data import pred_loader_1, collate_fn
 from torch.utils.data import DataLoader
 from model.representation_learning.config import config
 from model.representation_learning.Net import BackBone

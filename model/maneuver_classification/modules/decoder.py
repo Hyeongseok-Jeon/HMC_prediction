@@ -16,17 +16,13 @@ class Decoder(nn.Module):
         super(Decoder, self).__init__()
         self.config = config
         linear = []
-        for i in range(len(config["n_linear_layer"])):
-            layer = nn.Linear(config["n_hidden_after_deconv"]/(2**i), config["n_hidden_after_deconv"]/(2**(i+1)))
+        for i in range(config["n_linear_layer"]):
+            layer = nn.Linear(int(config["n_hidden_after_deconv"]/(2**i)), int(config["n_hidden_after_deconv"]/(2**(i+1))))
             linear.append(layer)
             linear.append(nn.ReLU())
-        self.linear = nn.ModuleList(groups)
-
-
-        n_actor = config["n_actor"]
-
-        self.generator = nn.Linear(n_actor, 2 * config["num_preds"])
-        self.reconstructor = nn.Linear(n_actor, 2 * config["num_preds"])
+        self.linear = nn.ModuleList(linear)
+        self.out = nn.Linear(int(config["n_hidden_after_deconv"]/(2**config["n_linear_layer"])), 4)
+        self.softmax = nn.Softmax()
 
     def forward(self, actors: Tensor, actor_idcs_mod: List[Tensor], actor_ctrs_mod: List[Tensor]) -> Dict[str, List[Tensor]]:
         preds = []

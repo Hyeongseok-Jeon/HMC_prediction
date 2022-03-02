@@ -3,7 +3,7 @@ import sys
 
 # root_path = os.path.dirname(os.path.abspath(__file__))
 
-root_path = os.getcwd() + '/model/representation_learning/'
+root_path = os.getcwd() + '/model/maneuver_classification/'
 sys.path.insert(0, root_path)
 
 import torch
