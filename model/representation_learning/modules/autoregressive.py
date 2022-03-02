@@ -17,7 +17,7 @@ class AutoRegressive(nn.Module):
     def __init__(self, config):
         super(AutoRegressive, self).__init__()
         self.config = config
-        self.gru = nn.GRU(config["n_hidden_after_deconv"], int(config["n_hidden_after_deconv"]/2), num_layers=1, bidirectional=False, batch_first=True)
+        self.gru = nn.GRU(config["n_hidden_after_deconv"], config["n_hidden_after_deconv"], num_layers=1, bidirectional=False, batch_first=True)
 
     def forward(self, ar_in, seg_length):
         batch_list = []

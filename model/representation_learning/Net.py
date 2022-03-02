@@ -18,7 +18,7 @@ class BackBone(nn.Module):
         self.config = config
         self.encoder = Encoder(config)
         self.autoregressive = AutoRegressive(config)
-        self.Wk = nn.ModuleList([nn.Linear(int(config["n_hidden_after_deconv"] / 2), config["n_hidden_after_deconv"]) for i in range(config["max_pred_time"] * config["hz"])])
+        self.Wk = nn.ModuleList([nn.Linear(config["n_hidden_after_deconv"], config["n_hidden_after_deconv"]) for i in range(config["max_pred_time"] * config["hz"])])
         self.softmax = nn.Softmax()
         self.lsoftmax = nn.LogSoftmax()
 
