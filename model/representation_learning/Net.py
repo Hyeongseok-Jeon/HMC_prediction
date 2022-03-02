@@ -52,24 +52,39 @@ class BackBone(nn.Module):
         ar_in = self.encoder(enc_in)
         representation = self.autoregressive(ar_in, seg_length)
 
-        if mode == 'val':
+        if mode == 'downstream':
+            encode_samples = ar_in[-1:, :]
+            num_per_batch = []
+            for i in range(len(seg_length)):
+                idx_batch = torch.tensor([seg_length[i] - time_index - 1 for time_index in range(self.config["max_pred_time"] * self.config["hz"], 0, -1)], device=encode_samples[0].device)
+                idx_batch = idx_batch[idx_batch > -1]
+                num_per_batch.append(len(idx_batch))
+                if i == 0:
+                    repres_batch = representation[i, idx_batch, :]
+                else:
+                    repres_batch_tmp = representation[i, idx_batch, :]
+                    repres_batch = torch.cat((repres_batch, repres_batch_tmp), axis=0)
+
+            return repres_batch, num_per_batch
+
+        elif mode == 'val':
             encode_samples = ar_in[-1:, :]
             representations = torch.tensor([representation.shape[1] - time_index - 1 for time_index in range(self.config["max_pred_time"] * self.config["hz"], 0, -1)], device=encode_samples[0].device)
             pred_steps = torch.tensor([time_index for time_index in range(self.config["max_pred_time"] * self.config["hz"], 0, -1)], device=encode_samples[0].device)
 
             representations_mod = representations[representations > -1]
             pred_steps = pred_steps[representations > -1]
-            representation_cur = representation[0,representations_mod]
+            representation_cur = representation[0, representations_mod]
             hist_feature = representation_cur
 
             preds = torch.empty((representation_cur.shape[0], len(seg_length), 256), device=encode_samples[0].device).float()  # e.g. size 12*8*512
             for i in range(representation_cur.shape[0]):
-                linear = self.Wk[pred_steps[i]-1]
+                linear = self.Wk[pred_steps[i] - 1]
                 preds[i] = linear(representation_cur[i])
 
             pred = torch.squeeze(preds)
             target = encode_samples
-            valuable_traj = trajectory[0,hz2_index[0]:]
+            valuable_traj = trajectory[0, hz2_index[0]:]
 
             return pred, target, valuable_traj, pred_steps, hist_feature
 

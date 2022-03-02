@@ -95,9 +95,4 @@ for i, data in enumerate(dataloader_train):
     trajectory, traj_length, conversion, maneuvers = data
     trajectory = trajectory.float().cuda()
 
-    pred, target, valuable_traj, pred_steps, hist_feature = encoder(trajectory, traj_length, mode='val')
-    pred = pred.cpu().detach().numpy()
-    target = target.cpu().detach().numpy()
-    valuable_traj = valuable_traj.cpu().detach().numpy()
-    pred_steps = pred_steps.cpu().detach().numpy()
-    hist_feature = hist_feature.cpu().detach().numpy()
+    hidden, num_per_batch = encoder(trajectory, traj_length, mode='downstream')
