@@ -113,6 +113,8 @@ traj_bag = []
 maneuver_bag = []
 for i, data in enumerate(dataloader_tot):
     trajectory, traj_length, conversion, maneuvers = data
+    maneuvers = maneuvers[0]
+    conversion = conversion[0]
     trajectory = trajectory.float().cuda()
 
     pred, target, valuable_traj, pred_steps, hist_feature = model(trajectory, traj_length, mode='val')

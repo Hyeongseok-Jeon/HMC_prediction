@@ -134,6 +134,7 @@ def collate_fn(samples):
         trajectory = torch.nn.utils.rnn.pad_sequence(inputs, batch_first=True)
         length = [inputs[i].shape[0] for i in range(len(inputs))]
 
-        conversion = samples[0][1]
-        maneuver = samples[0][2]
+        conversion = [torch.from_numpy(i[1]) for i in samples]
+        maneuver = [torch.from_numpy(i[2]) for i in samples]
+
         return trajectory, length, conversion, maneuver

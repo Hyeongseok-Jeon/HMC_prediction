@@ -96,3 +96,4 @@ for i, data in enumerate(dataloader_train):
     trajectory = trajectory.float().cuda()
 
     hidden, num_per_batch = encoder(trajectory, traj_length, mode='downstream')
+    maneuver = decoder(hidden, num_per_batch)

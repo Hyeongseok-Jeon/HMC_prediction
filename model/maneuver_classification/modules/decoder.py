@@ -24,31 +24,11 @@ class Decoder(nn.Module):
         self.out = nn.Linear(int(config["n_hidden_after_deconv"]/(2**config["n_linear_layer"])), 4)
         self.softmax = nn.Softmax()
 
-    def forward(self, actors: Tensor, actor_idcs_mod: List[Tensor], actor_ctrs_mod: List[Tensor]) -> Dict[str, List[Tensor]]:
-        preds = []
-        recons = []
-
-        hid = self.decoder(actors)
-        preds.append(self.generator(hid))
-
-        hid_for_ego = torch.cat([hid[x[0]:x[0+1]] for x in actor_idcs_mod])
-        recons.append(self.reconstructor(hid_for_ego))
-
-        reg = torch.cat([x.unsqueeze(1) for x in preds], 1)
-        reg = reg.view(reg.size(0), reg.size(1), -1, 2)
-        reconstruction = torch.cat([x.unsqueeze(1) for x in recons], 1)
-        reconstruction = reconstruction.view(reconstruction.size(0), reconstruction.size(1), -1, 2)
-
-        for i in range(len(actor_idcs_mod)):
-            idcs = actor_idcs_mod[i]
-            ctrs = actor_ctrs_mod[i].view(-1, 1, 1, 2)
-            reg[idcs] = reg[idcs] + ctrs
-            reconstruction[i] = reconstruction[i] + ctrs[0]
-
-        out = dict()
-        out["reconstruction"], out["reg"] = [], []
-        for i in range(len(actor_idcs_mod)):
-            idcs = actor_idcs_mod[i]
-            out["reg"].append(reg[idcs])
-            out['reconstruction'].append(reconstruction[i,0])
+    def forward(self, hidden):
+        for i in range(len(self.linear)):
+            if i == 0:
+                out = self.linear[i](hidden)
+            else:
+                out = self.linear[i](out)
+        out = self.softmax(self.out(out))
         return out
