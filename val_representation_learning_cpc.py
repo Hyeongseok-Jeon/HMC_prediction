@@ -156,59 +156,87 @@ n_components = 2
 tsne_target = TSNE(n_components=n_components,
             perplexity=30,
             verbose=True)
-tsne_pred = [TSNE(n_components=n_components,
+tsne_hist = TSNE(n_components=n_components,
             perplexity=30,
-            verbose=True) for _ in range(10)]
-tsne_hist = [TSNE(n_components=n_components,
-            perplexity=30,
-            verbose=True) for _ in range(10)]
+            verbose=True)
+#
+# target_tsne = tsne_target.fit(target_bag)
+# target_tsne_u_turn = target_tsne[maneuver_bag[:,0] == 1]
+# target_tsne_left_turn = target_tsne[maneuver_bag[:,1] == 1]
+# target_tsne_go_straight = target_tsne[maneuver_bag[:,2] == 1]
+# target_tsne_right_turn = target_tsne[maneuver_bag[:,3] == 1]
+# plt.figure()
+# plt.scatter(target_tsne_u_turn[:,0], target_tsne_u_turn[:,1], c='r', label='U-Turn')
+# plt.scatter(target_tsne_left_turn[:,0], target_tsne_left_turn[:,1], c='g', label='Left Turn')
+# plt.scatter(target_tsne_go_straight[:,0], target_tsne_go_straight[:,1], c='b', label='Go Straight')
+# plt.scatter(target_tsne_right_turn[:,0], target_tsne_right_turn[:,1], c='c', label='Right Turn')
+# plt.legend(loc='upper right')
+# plt.xlim(-30, 50)
+# plt.ylim(-30, 50)
+# plt.title('embeddings of outlet position')
+# plt.savefig(tsne_dir+'/0_outlet_embedding_on_target_space.png')
+# plt.close()
+#
+# for i in range(10):
+#     maneuver_bags = maneuver_bag[pred_bag[i][:,0] != 0]
+#     hists = hist_bag[i][hist_bag[i][:,0] != 0]
+#     plt.figure()
+#     hist_tsne = target_tsne.transform(hists)
+#     hist_tsne_u_turn = hist_tsne[maneuver_bags[:, 0] == 1]
+#     hist_tsne_left_turn = hist_tsne[maneuver_bags[:, 1] == 1]
+#     hist_tsne_go_straight = hist_tsne[maneuver_bags[:, 2] == 1]
+#     hist_tsne_right_turn = hist_tsne[maneuver_bags[:, 3] == 1]
+#     plt.scatter(hist_tsne_u_turn[:, 0], hist_tsne_u_turn[:, 1], c='r', label='U-Turn')
+#     plt.scatter(hist_tsne_left_turn[:, 0], hist_tsne_left_turn[:, 1], c='g', label='Left Turn')
+#     plt.scatter(hist_tsne_go_straight[:, 0], hist_tsne_go_straight[:, 1], c='b', label='Go Straight')
+#     plt.scatter(hist_tsne_right_turn[:, 0], hist_tsne_right_turn[:, 1], c='c', label='Right Turn')
+#     plt.legend(loc='upper right')
+#     plt.xlim(-30, 50)
+#     plt.ylim(-30, 50)
+#     plt.title('embeddings of hist observations: ' + str(0.5*(10-i)) +'sec before outlet')
+#     plt.savefig(tsne_dir+'/0_hist_embedding_on_target_space_'+str(0.5*(10-i)) + 'sec_before.png')
+#     plt.close()
 
-target_tsne = tsne_target.fit(target_bag)
-target_tsne_u_turn = target_tsne[maneuver_bag[:,0] == 1]
-target_tsne_left_turn = target_tsne[maneuver_bag[:,1] == 1]
-target_tsne_go_straight = target_tsne[maneuver_bag[:,2] == 1]
-target_tsne_right_turn = target_tsne[maneuver_bag[:,3] == 1]
-plt.figure()
-plt.scatter(target_tsne_u_turn[:,0], target_tsne_u_turn[:,1], c='r', label='U-Turn')
-plt.scatter(target_tsne_left_turn[:,0], target_tsne_left_turn[:,1], c='g', label='Left Turn')
-plt.scatter(target_tsne_go_straight[:,0], target_tsne_go_straight[:,1], c='b', label='Go Straight')
-plt.scatter(target_tsne_right_turn[:,0], target_tsne_right_turn[:,1], c='c', label='Right Turn')
-plt.legend()
-plt.title('embeddings of outlet position')
-plt.savefig(tsne_dir+'/outlet_embedding.png')
-plt.close()
+
+i=9
+maneuver_bags = maneuver_bag[pred_bag[i][:,0] != 0]
+hists = hist_bag[i][hist_bag[i][:,0] != 0]
+hist_tsne = tsne_hist.fit(hists)
 
 for i in range(10):
-    preds = pred_bag[i][pred_bag[i][:,0] != 0]
     maneuver_bags = maneuver_bag[pred_bag[i][:,0] != 0]
-    plt.figure()
-    pred_tsne = tsne_pred[i].fit(preds)
-    pred_tsne_u_turn = pred_tsne[maneuver_bags[:, 0] == 1]
-    pred_tsne_left_turn = pred_tsne[maneuver_bags[:, 1] == 1]
-    pred_tsne_go_straight = pred_tsne[maneuver_bags[:, 2] == 1]
-    pred_tsne_right_turn = pred_tsne[maneuver_bags[:, 3] == 1]
-    plt.scatter(pred_tsne_u_turn[:, 0], pred_tsne_u_turn[:, 1], c='r', label='U-Turn')
-    plt.scatter(pred_tsne_left_turn[:, 0], pred_tsne_left_turn[:, 1], c='g', label='Left Turn')
-    plt.scatter(pred_tsne_go_straight[:, 0], pred_tsne_go_straight[:, 1], c='b', label='Go Straight')
-    plt.scatter(pred_tsne_right_turn[:, 0], pred_tsne_right_turn[:, 1], c='c', label='Right Turn')
-    plt.legend()
-    plt.title('embeddings of prediction: ' + str(0.5*(10-i)) +'sec before outlet')
-    plt.savefig(tsne_dir+'/'+str(0.5*(10-i)) + 'sec_pred.png')
-    plt.close()
-
     hists = hist_bag[i][hist_bag[i][:,0] != 0]
     plt.figure()
-    hist_tsne = tsne_hist[i].fit(hists)
-    hist_tsne_u_turn = hist_tsne[maneuver_bags[:, 0] == 1]
-    hist_tsne_left_turn = hist_tsne[maneuver_bags[:, 1] == 1]
-    hist_tsne_go_straight = hist_tsne[maneuver_bags[:, 2] == 1]
-    hist_tsne_right_turn = hist_tsne[maneuver_bags[:, 3] == 1]
+    hist_tsne_tmp = hist_tsne.transform(hists)
+    hist_tsne_u_turn = hist_tsne_tmp[maneuver_bags[:, 0] == 1]
+    hist_tsne_left_turn = hist_tsne_tmp[maneuver_bags[:, 1] == 1]
+    hist_tsne_go_straight = hist_tsne_tmp[maneuver_bags[:, 2] == 1]
+    hist_tsne_right_turn = hist_tsne_tmp[maneuver_bags[:, 3] == 1]
     plt.scatter(hist_tsne_u_turn[:, 0], hist_tsne_u_turn[:, 1], c='r', label='U-Turn')
     plt.scatter(hist_tsne_left_turn[:, 0], hist_tsne_left_turn[:, 1], c='g', label='Left Turn')
     plt.scatter(hist_tsne_go_straight[:, 0], hist_tsne_go_straight[:, 1], c='b', label='Go Straight')
     plt.scatter(hist_tsne_right_turn[:, 0], hist_tsne_right_turn[:, 1], c='c', label='Right Turn')
-    plt.legend()
+    plt.legend(loc='upper right')
+    plt.xlim(-30, 40)
+    plt.ylim(-40, 40)
     plt.title('embeddings of hist observations: ' + str(0.5*(10-i)) +'sec before outlet')
-    plt.savefig(tsne_dir+'/up_to_'+str(0.5*(10-i)) + 'sec_before.png')
+    plt.savefig(tsne_dir+'/1_hist_embedding_on_hist_space_'+str(0.5*(10-i)) + 'sec_before.png')
     plt.close()
-
+#
+#
+# target_tsne = hist_tsne.transform(target_bag)
+# target_tsne_u_turn = target_tsne[maneuver_bag[:,0] == 1]
+# target_tsne_left_turn = target_tsne[maneuver_bag[:,1] == 1]
+# target_tsne_go_straight = target_tsne[maneuver_bag[:,2] == 1]
+# target_tsne_right_turn = target_tsne[maneuver_bag[:,3] == 1]
+# plt.figure()
+# plt.scatter(target_tsne_u_turn[:,0], target_tsne_u_turn[:,1], c='r', label='U-Turn')
+# plt.scatter(target_tsne_left_turn[:,0], target_tsne_left_turn[:,1], c='g', label='Left Turn')
+# plt.scatter(target_tsne_go_straight[:,0], target_tsne_go_straight[:,1], c='b', label='Go Straight')
+# plt.scatter(target_tsne_right_turn[:,0], target_tsne_right_turn[:,1], c='c', label='Right Turn')
+# plt.legend(loc='upper right')
+# plt.xlim(-30, 40)
+# plt.ylim(-40, 40)
+# plt.title('embeddings of nearest-outlet position')
+# plt.savefig(tsne_dir+'/1_outlet_embedding_on_hist_space_'+str(0.5*(10-i)) + 'sec_before.png')
+# plt.close()
