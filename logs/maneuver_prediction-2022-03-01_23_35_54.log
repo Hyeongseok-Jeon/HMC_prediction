@@ -1,0 +1,243 @@
+2022-03-01 23:36:52,856 - ### Training Machine Ip address ###
+ 192.168.0.7
+
+2022-03-01 23:36:52,857 - ### Model summary below###
+ BackBone(
+  (encoder): Encoder(
+    (groups): ModuleList(
+      (0): Sequential(
+        (0): Res1d(
+          (conv1): Conv1d(3, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (conv2): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 32, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 32, eps=1e-05, affine=True)
+          (downsample): Sequential(
+            (0): Conv1d(3, 32, kernel_size=(1,), stride=(1,), bias=False)
+            (1): GroupNorm(1, 32, eps=1e-05, affine=True)
+          )
+        )
+        (1): Res1d(
+          (conv1): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (conv2): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 32, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 32, eps=1e-05, affine=True)
+        )
+      )
+      (1): Sequential(
+        (0): Res1d(
+          (conv1): Conv1d(32, 64, kernel_size=(3,), stride=(2,), padding=(1,), bias=False)
+          (conv2): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 64, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 64, eps=1e-05, affine=True)
+          (downsample): Sequential(
+            (0): Conv1d(32, 64, kernel_size=(1,), stride=(2,), bias=False)
+            (1): GroupNorm(1, 64, eps=1e-05, affine=True)
+          )
+        )
+        (1): Res1d(
+          (conv1): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (conv2): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 64, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 64, eps=1e-05, affine=True)
+        )
+      )
+      (2): Sequential(
+        (0): Res1d(
+          (conv1): Conv1d(64, 128, kernel_size=(3,), stride=(2,), padding=(1,), bias=False)
+          (conv2): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 128, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 128, eps=1e-05, affine=True)
+          (downsample): Sequential(
+            (0): Conv1d(64, 128, kernel_size=(1,), stride=(2,), bias=False)
+            (1): GroupNorm(1, 128, eps=1e-05, affine=True)
+          )
+        )
+        (1): Res1d(
+          (conv1): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (conv2): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+          (relu): ReLU(inplace=True)
+          (bn1): GroupNorm(1, 128, eps=1e-05, affine=True)
+          (bn2): GroupNorm(1, 128, eps=1e-05, affine=True)
+        )
+      )
+    )
+    (lateral): ModuleList(
+      (0): Conv1d(
+        (conv): Conv1d(32, 256, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+        (norm): GroupNorm(1, 256, eps=1e-05, affine=True)
+        (relu): ReLU(inplace=True)
+      )
+      (1): Conv1d(
+        (conv): Conv1d(64, 256, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+        (norm): GroupNorm(1, 256, eps=1e-05, affine=True)
+        (relu): ReLU(inplace=True)
+      )
+      (2): Conv1d(
+        (conv): Conv1d(128, 256, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+        (norm): GroupNorm(1, 256, eps=1e-05, affine=True)
+        (relu): ReLU(inplace=True)
+      )
+    )
+    (output): Res1d(
+      (conv1): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+      (conv2): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+      (relu): ReLU(inplace=True)
+      (bn1): GroupNorm(1, 256, eps=1e-05, affine=True)
+      (bn2): GroupNorm(1, 256, eps=1e-05, affine=True)
+    )
+  )
+  (autoregressive): AutoRegressive(
+    (gru): GRU(256, 128, batch_first=True)
+  )
+  (Wk): ModuleList(
+    (0): Linear(in_features=128, out_features=256, bias=True)
+    (1): Linear(in_features=128, out_features=256, bias=True)
+    (2): Linear(in_features=128, out_features=256, bias=True)
+    (3): Linear(in_features=128, out_features=256, bias=True)
+    (4): Linear(in_features=128, out_features=256, bias=True)
+    (5): Linear(in_features=128, out_features=256, bias=True)
+    (6): Linear(in_features=128, out_features=256, bias=True)
+    (7): Linear(in_features=128, out_features=256, bias=True)
+    (8): Linear(in_features=128, out_features=256, bias=True)
+    (9): Linear(in_features=128, out_features=256, bias=True)
+  )
+  (softmax): Softmax(dim=None)
+  (lsoftmax): LogSoftmax(dim=None)
+)
+
+2022-03-01 23:36:52,858 - ===> Configuration parameter
+                                    GPU_id: 0
+                                    batch_size: 64
+                                    epoch: 300
+                                    n_warmup_steps: 30
+                                    validataion_period: 5
+                                    ckpt_period: 5
+                                    ckpt_dir: C:\Users\VDCLAB\Desktop\hs\HMC_prediction/ckpt/
+                                    learning_rate: 5e-05
+                                    data_dir_train: C:\Users\VDCLAB\Desktop\hs\HMC_prediction/data/drone_data/processed/train/
+                                    data_dir_val: C:\Users\VDCLAB\Desktop\hs\HMC_prediction/data/drone_data/processed/val/
+                                    data_dir_orig: C:\Users\VDCLAB\Desktop\hs\HMC_prediction/data/drone_data/processed/archive/
+                                    occlusion_rate: 0.2
+                                    splicing_num: 128
+                                    LC_multiple: 5
+                                    FOV: 30
+                                    interpolate: False
+                                    max_pred_time: 5
+                                    max_hist_time: 10
+                                    hz: 2
+                                    val_rate: 0.2
+                                    n_hidden_after_deconv: 256
+                                    n_convgru_layer: 1
+                                    convgru_kernel_size: (3, 3)
+                                    convgru_output_layer_num: 4
+                                    convgru_output_channel_list: [16, 32, 64, 128]
+                                    convgru_output_kernel_size_list: [5, 5, 5, 5]
+                                    log_dir: logs/
+
+2022-03-01 23:36:52,858 - ===> Model total parameter: 1283392
+2022-03-01 23:36:52,859 - ===> Model Training Start
+2022-03-01 23:50:19,023 - ===> Train Epoch: 1 	 Accuracy: 41.48%	Loss: 1.54150951
+2022-03-02 00:03:42,594 - ===> Train Epoch: 2 	 Accuracy: 63.32%	Loss: 0.85769391
+2022-03-02 00:17:06,511 - ===> Train Epoch: 3 	 Accuracy: 71.30%	Loss: 0.67270976
+2022-03-02 00:30:25,101 - ===> Train Epoch: 4 	 Accuracy: 75.82%	Loss: 0.56606102
+2022-03-02 00:43:41,074 - ===> Train Epoch: 5 	 Accuracy: 79.22%	Loss: 0.48410645
+2022-03-02 00:45:21,114 - ===> Validation after Training epoch: 5 	 Accuracy: 28.79%	Loss: 2.86460423
+2022-03-02 00:58:37,452 - ===> Train Epoch: 6 	 Accuracy: 81.89%	Loss: 0.42392287
+2022-03-02 01:11:53,602 - ===> Train Epoch: 7 	 Accuracy: 84.29%	Loss: 0.37554172
+2022-03-02 01:25:09,735 - ===> Train Epoch: 8 	 Accuracy: 86.29%	Loss: 0.33240828
+2022-03-02 01:38:26,061 - ===> Train Epoch: 9 	 Accuracy: 87.96%	Loss: 0.30133092
+2022-03-02 01:51:42,342 - ===> Train Epoch: 10 	 Accuracy: 89.59%	Loss: 0.26395315
+2022-03-02 01:53:22,464 - ===> Validation after Training epoch: 10 	 Accuracy: 27.85%	Loss: 3.68616748
+2022-03-02 02:06:39,002 - ===> Train Epoch: 11 	 Accuracy: 90.77%	Loss: 0.24320535
+2022-03-02 02:19:55,367 - ===> Train Epoch: 12 	 Accuracy: 91.75%	Loss: 0.22266379
+2022-03-02 02:33:11,941 - ===> Train Epoch: 13 	 Accuracy: 92.40%	Loss: 0.20948130
+2022-03-02 02:46:28,797 - ===> Train Epoch: 14 	 Accuracy: 92.97%	Loss: 0.19766639
+2022-03-02 02:59:45,129 - ===> Train Epoch: 15 	 Accuracy: 93.73%	Loss: 0.18322721
+2022-03-02 03:01:25,256 - ===> Validation after Training epoch: 15 	 Accuracy: 26.60%	Loss: 4.22379875
+2022-03-02 03:14:41,644 - ===> Train Epoch: 16 	 Accuracy: 94.05%	Loss: 0.17295018
+2022-03-02 03:27:58,286 - ===> Train Epoch: 17 	 Accuracy: 94.37%	Loss: 0.16609301
+2022-03-02 03:41:14,596 - ===> Train Epoch: 18 	 Accuracy: 94.65%	Loss: 0.15603736
+2022-03-02 03:54:31,470 - ===> Train Epoch: 19 	 Accuracy: 94.52%	Loss: 0.15920866
+2022-03-02 04:07:47,676 - ===> Train Epoch: 20 	 Accuracy: 94.99%	Loss: 0.14630094
+2022-03-02 04:09:27,755 - ===> Validation after Training epoch: 20 	 Accuracy: 28.95%	Loss: 4.47855711
+2022-03-02 04:22:44,516 - ===> Train Epoch: 21 	 Accuracy: 95.12%	Loss: 0.14516364
+2022-03-02 04:36:01,153 - ===> Train Epoch: 22 	 Accuracy: 95.32%	Loss: 0.13997886
+2022-03-02 04:49:17,889 - ===> Train Epoch: 23 	 Accuracy: 95.47%	Loss: 0.13380380
+2022-03-02 05:02:34,622 - ===> Train Epoch: 24 	 Accuracy: 95.54%	Loss: 0.13304734
+2022-03-02 05:15:51,353 - ===> Train Epoch: 25 	 Accuracy: 95.77%	Loss: 0.12621018
+2022-03-02 05:17:31,266 - ===> Validation after Training epoch: 25 	 Accuracy: 28.89%	Loss: 4.69510651
+2022-03-02 05:30:47,955 - ===> Train Epoch: 26 	 Accuracy: 95.81%	Loss: 0.12117133
+2022-03-02 05:44:05,397 - ===> Train Epoch: 27 	 Accuracy: 95.76%	Loss: 0.11930005
+2022-03-02 05:57:22,220 - ===> Train Epoch: 28 	 Accuracy: 95.91%	Loss: 0.11767292
+2022-03-02 06:10:38,882 - ===> Train Epoch: 29 	 Accuracy: 96.10%	Loss: 0.11643216
+2022-03-02 06:23:55,516 - ===> Train Epoch: 30 	 Accuracy: 96.05%	Loss: 0.11430783
+2022-03-02 06:25:35,678 - ===> Validation after Training epoch: 30 	 Accuracy: 28.60%	Loss: 4.86095381
+2022-03-02 06:38:52,122 - ===> Train Epoch: 31 	 Accuracy: 96.22%	Loss: 0.11149037
+2022-03-02 06:52:08,819 - ===> Train Epoch: 32 	 Accuracy: 96.16%	Loss: 0.10964799
+2022-03-02 07:05:25,774 - ===> Train Epoch: 33 	 Accuracy: 96.35%	Loss: 0.10730226
+2022-03-02 07:18:42,488 - ===> Train Epoch: 34 	 Accuracy: 96.20%	Loss: 0.10718141
+2022-03-02 07:31:59,223 - ===> Train Epoch: 35 	 Accuracy: 96.35%	Loss: 0.10381256
+2022-03-02 07:33:39,483 - ===> Validation after Training epoch: 35 	 Accuracy: 28.60%	Loss: 4.94448519
+2022-03-02 07:46:56,236 - ===> Train Epoch: 36 	 Accuracy: 96.38%	Loss: 0.10472335
+2022-03-02 08:00:12,964 - ===> Train Epoch: 37 	 Accuracy: 96.34%	Loss: 0.10168822
+2022-03-02 08:13:29,846 - ===> Train Epoch: 38 	 Accuracy: 96.47%	Loss: 0.09817275
+2022-03-02 08:26:46,604 - ===> Train Epoch: 39 	 Accuracy: 96.57%	Loss: 0.09974422
+2022-03-02 08:40:03,411 - ===> Train Epoch: 40 	 Accuracy: 96.42%	Loss: 0.09794382
+2022-03-02 08:41:43,778 - ===> Validation after Training epoch: 40 	 Accuracy: 27.35%	Loss: 5.18972635
+2022-03-02 08:55:00,757 - ===> Train Epoch: 41 	 Accuracy: 96.46%	Loss: 0.09760826
+2022-03-02 09:08:17,492 - ===> Train Epoch: 42 	 Accuracy: 96.70%	Loss: 0.09447137
+2022-03-02 09:21:34,081 - ===> Train Epoch: 43 	 Accuracy: 96.57%	Loss: 0.09600645
+2022-03-02 09:34:50,669 - ===> Train Epoch: 44 	 Accuracy: 96.63%	Loss: 0.09340477
+2022-03-02 09:48:07,359 - ===> Train Epoch: 45 	 Accuracy: 96.64%	Loss: 0.09269731
+2022-03-02 09:49:47,594 - ===> Validation after Training epoch: 45 	 Accuracy: 27.93%	Loss: 5.22387075
+2022-03-02 10:03:04,152 - ===> Train Epoch: 46 	 Accuracy: 96.69%	Loss: 0.09121056
+2022-03-02 10:16:20,862 - ===> Train Epoch: 47 	 Accuracy: 96.61%	Loss: 0.09446749
+2022-03-02 10:29:37,409 - ===> Train Epoch: 48 	 Accuracy: 96.68%	Loss: 0.08941113
+2022-03-02 10:42:53,996 - ===> Train Epoch: 49 	 Accuracy: 96.63%	Loss: 0.08876873
+2022-03-02 10:56:10,796 - ===> Train Epoch: 50 	 Accuracy: 96.73%	Loss: 0.08949427
+2022-03-02 10:57:51,112 - ===> Validation after Training epoch: 50 	 Accuracy: 27.20%	Loss: 5.30060053
+2022-03-02 11:11:07,994 - ===> Train Epoch: 51 	 Accuracy: 96.76%	Loss: 0.08797081
+2022-03-02 11:24:24,961 - ===> Train Epoch: 52 	 Accuracy: 96.69%	Loss: 0.08608872
+2022-03-02 11:37:41,975 - ===> Train Epoch: 53 	 Accuracy: 96.72%	Loss: 0.08882009
+2022-03-02 11:50:59,021 - ===> Train Epoch: 54 	 Accuracy: 96.65%	Loss: 0.08598629
+2022-03-02 12:04:15,927 - ===> Train Epoch: 55 	 Accuracy: 96.74%	Loss: 0.08520382
+2022-03-02 12:05:56,154 - ===> Validation after Training epoch: 55 	 Accuracy: 27.71%	Loss: 5.48337412
+2022-03-02 12:19:13,262 - ===> Train Epoch: 56 	 Accuracy: 96.81%	Loss: 0.08348531
+2022-03-02 12:32:29,977 - ===> Train Epoch: 57 	 Accuracy: 96.84%	Loss: 0.08343162
+2022-03-02 12:45:46,598 - ===> Train Epoch: 58 	 Accuracy: 96.83%	Loss: 0.08321506
+2022-03-02 12:59:03,337 - ===> Train Epoch: 59 	 Accuracy: 96.83%	Loss: 0.08106857
+2022-03-02 13:12:20,215 - ===> Train Epoch: 60 	 Accuracy: 96.80%	Loss: 0.08329698
+2022-03-02 13:14:00,619 - ===> Validation after Training epoch: 60 	 Accuracy: 27.18%	Loss: 5.45769978
+2022-03-02 13:27:22,166 - ===> Train Epoch: 61 	 Accuracy: 96.79%	Loss: 0.08292685
+2022-03-02 13:40:46,404 - ===> Train Epoch: 62 	 Accuracy: 96.89%	Loss: 0.08122650
+2022-03-02 13:54:06,694 - ===> Train Epoch: 63 	 Accuracy: 96.95%	Loss: 0.07930773
+2022-03-02 14:07:24,323 - ===> Train Epoch: 64 	 Accuracy: 96.80%	Loss: 0.08132844
+2022-03-02 14:20:42,010 - ===> Train Epoch: 65 	 Accuracy: 96.94%	Loss: 0.08044349
+2022-03-02 14:22:23,314 - ===> Validation after Training epoch: 65 	 Accuracy: 27.81%	Loss: 5.57553959
+2022-03-02 14:35:41,846 - ===> Train Epoch: 66 	 Accuracy: 97.01%	Loss: 0.07885376
+2022-03-02 14:49:00,563 - ===> Train Epoch: 67 	 Accuracy: 96.92%	Loss: 0.07946971
+2022-03-02 15:02:19,273 - ===> Train Epoch: 68 	 Accuracy: 96.85%	Loss: 0.07945276
+2022-03-02 15:15:38,089 - ===> Train Epoch: 69 	 Accuracy: 96.92%	Loss: 0.07763012
+2022-03-02 15:28:56,574 - ===> Train Epoch: 70 	 Accuracy: 96.87%	Loss: 0.07980747
+2022-03-02 15:30:37,281 - ===> Validation after Training epoch: 70 	 Accuracy: 27.53%	Loss: 5.48858690
+2022-03-02 15:43:55,763 - ===> Train Epoch: 71 	 Accuracy: 96.88%	Loss: 0.07895891
+2022-03-02 15:57:14,511 - ===> Train Epoch: 72 	 Accuracy: 97.06%	Loss: 0.07741643
+2022-03-02 16:10:33,010 - ===> Train Epoch: 73 	 Accuracy: 96.99%	Loss: 0.07630471
+2022-03-02 16:23:51,924 - ===> Train Epoch: 74 	 Accuracy: 96.97%	Loss: 0.07654928
+2022-03-02 16:37:10,487 - ===> Train Epoch: 75 	 Accuracy: 97.10%	Loss: 0.07500117
+2022-03-02 16:38:51,339 - ===> Validation after Training epoch: 75 	 Accuracy: 27.21%	Loss: 5.63305902
+2022-03-02 16:52:10,313 - ===> Train Epoch: 76 	 Accuracy: 96.89%	Loss: 0.07585569
+2022-03-02 17:05:29,155 - ===> Train Epoch: 77 	 Accuracy: 96.99%	Loss: 0.07558191
+2022-03-02 17:18:48,024 - ===> Train Epoch: 78 	 Accuracy: 97.09%	Loss: 0.07603598
+2022-03-02 17:32:06,604 - ===> Train Epoch: 79 	 Accuracy: 97.03%	Loss: 0.07401025
+2022-03-02 17:45:25,314 - ===> Train Epoch: 80 	 Accuracy: 97.06%	Loss: 0.07313369
+2022-03-02 17:47:06,160 - ===> Validation after Training epoch: 80 	 Accuracy: 27.77%	Loss: 5.78156328
+2022-03-02 18:00:24,892 - ===> Train Epoch: 81 	 Accuracy: 96.91%	Loss: 0.07551005
+2022-03-02 18:13:43,205 - ===> Train Epoch: 82 	 Accuracy: 97.02%	Loss: 0.07488988
+2022-03-02 18:27:01,676 - ===> Train Epoch: 83 	 Accuracy: 97.08%	Loss: 0.07332671
+2022-03-02 18:40:20,258 - ===> Train Epoch: 84 	 Accuracy: 97.05%	Loss: 0.07338189
