@@ -8,6 +8,9 @@ import torch
 import os
 import warnings
 import time
+from logger.logger import setup_logs
+import socket
+
 import numpy as np
 
 GPU_NUM = config_dec["GPU_id"]
@@ -18,6 +21,15 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print('Device:', device)
 print('Current cuda device:', torch.cuda.current_device())
 print('Count of using GPUs:', torch.cuda.device_count())
+
+
+run_name = "decoder_training" + time.strftime("-%Y-%m-%d_%H_%M_%S")
+print(run_name)
+ckpt_dir = config_dec['ckpt_dir'] + run_name
+os.makedirs(ckpt_dir, exist_ok=True)
+logger = setup_logs(config_dec['log_dir'], run_name)
+
+warnings.filterwarnings("ignore", category=UserWarning)
 
 print('Data list loading ...\n')
 
@@ -30,16 +42,17 @@ print('------------------------------------------------------------')
 print('\n')
 
 while True:
-    s = input('selected target models : ')
+    s_model = input('selected target models : ')
     try:
-        if int(s) < len(file_list) and int(s) >= 0:
-            file_index = int(s)
+        if int(s_model) < len(file_list) and int(s_model) >= 0:
+            file_index = int(s_model)
             file_id = file_list[file_index].split('.')[0]
             break
         else:
             pass
     except:
         pass
+
 
 ckpt_dir = config_enc['ckpt_dir'] + file_id
 ckpt_list = os.listdir(ckpt_dir)
@@ -54,17 +67,16 @@ print('------------------------------------------------------------')
 print('\n')
 
 while True:
-    s = input('selected target models : ')
+    s_weight = input('selected target models : ')
     try:
-        if int(s) < len(ckpt_list) and int(s) >= 0:
-            weight_index = int(s)
+        if int(s_weight) < len(ckpt_list) and int(s_weight) >= 0:
+            weight_index = int(s_weight)
             weight = ckpt_list[weight_index]
             break
         else:
             pass
     except:
         pass
-
 warnings.filterwarnings("ignore", category=UserWarning)
 
 # dataset_original = pred_loader_1(config, 'orig')
@@ -82,11 +94,28 @@ dataloader_val = DataLoader(dataset_val,
 
 encoder = BackBone(config_enc).cuda()
 decoder = Downstream(config_dec).cuda()
+decoder_params = sum(p.numel() for p in decoder.parameters() if p.requires_grad)
 weights = torch.load(ckpt_dir + '/' + weight)
 encoder.load_state_dict(weights['model_state_dict'])
 
 
+for i in range(len(config_dec)):
+    if i == 0:
+        config_log = '                                    ' + list(config_dec.keys())[i] + ': ' + str(list(config_dec.values())[i]) + '\n'
+    else:
+        config_log = config_log + '                                    ' + list(config_dec.keys())[i] + ': ' + str(list(config_dec.values())[i]) + '\n'
+
+logger.info('### Training Machine Ip address ###\n {}\n'.format(socket.gethostbyname(socket.gethostname())))
+logger.info('### Model summary below###\n {}\n'.format(str(decoder)))
+logger.info('===> Configuration parameter\n{}'.format(config_log))
+logger.info('===> Model total parameter: {}'.format(decoder_params))
+logger.info('### Selected Encoder model >>> {}'.format('File_id : ' + str(file_id), '  File_index : ' + str(s_model)))
+logger.info('### Selected Encoder weight >>> {}'.format('weight_id : ' + str(weight), '  File_index : ' + str(s_weight)))
+
+decoder.train()
 optimizer = torch.optim.Adam(decoder.parameters(), lr=config_dec['learning_rate'])
+
+logger.info('===> Model Training Start')
 
 for epoch in range(config_dec['epoch']):
     correct_tot = 0
