@@ -151,10 +151,12 @@ for epoch in range(config_dec['epoch']):
     if (epoch + 1) % config_dec['validataion_period'] == 0:
         encoder.eval()
         decoder.eval()
-        correct_num_tot_val = 0
-        full_length_num_tot_val = 0
-        loss_tot_val = 0
-        loss_calc_num_tot_val = 0
+        correct_tot_sum = 0
+        num_tot_sum = 0
+        correct_before_inlet_sum = 0
+        num_before_inlet_sum = 0
+        correct_after_inlet_sum = 0
+        num_after_inlet_sum = 0
         val_time = time.time()
         for i, data in enumerate(dataloader_val):
             trajectory, traj_length, conversion, maneuver_gt = data
@@ -170,17 +172,21 @@ for epoch in range(config_dec['epoch']):
             before_inlet = torch.cat(before_inlet)
             num_tot, correct_tot, num_before_inlet, correct_before_inlet, num_after_inlet, correct_after_inlet = decoder(hidden, maneuver_gt, num_per_batch, before_inlet, mode='val')
 
-            correct_tot += correct
-            calc_tot += total
-            loss_tot += loss.item() * total
+            correct_tot_sum += correct_tot
+            num_tot_sum += num_tot
+            correct_before_inlet_sum += correct_before_inlet
+            num_before_inlet_sum += num_before_inlet
+            correct_after_inlet_sum += correct_after_inlet
+            num_after_inlet_sum += num_after_inlet
+
         loss_tot = loss_tot / calc_tot
         if config_dec["logging"]:
-            logger.info('===> Validation after Training epoch: {} \t Accuracy: {:.2f}%\tLoss: {:.8f}'.format(
-                epoch + 1, 100 * correct_tot / calc_tot, loss_tot
+            logger.info('===> Validation after Training epoch: {} \t Overall Accuracy: {:.2f}%\t Before inlet accuracy: {:.2f} \t After inlet accuracy: {:.2f}'.format(
+                epoch + 1, 100 * correct_tot_sum / num_tot_sum, correct_before_inlet_sum/num_before_inlet_sum, correct_after_inlet_sum/num_after_inlet_sum
             ))
         else:
-            print('===> Validation after Training epoch: {} \t Accuracy: {:.2f}%\tLoss: {:.8f}'.format(
-                epoch + 1, 100 * correct_tot / calc_tot, loss_tot
+            print('===> Validation after Training epoch: {} \t Overall Accuracy: {:.2f}%\t Before inlet accuracy: {:.2f} \t After inlet accuracy: {:.2f}'.format(
+                epoch + 1, 100 * correct_tot_sum / num_tot_sum, correct_before_inlet_sum / num_before_inlet_sum, correct_after_inlet_sum / num_after_inlet_sum
             ))
         encoder.train()
         decoder.train()

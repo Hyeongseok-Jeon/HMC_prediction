@@ -22,7 +22,7 @@ class Downstream(nn.Module):
         self.loss_mean = nn.CrossEntropyLoss(reduction='mean')
 
     def forward(self, hidden, maneuver_gt, num_per_batch, before_inlet, mode='train'):
-        output = decoder.decoder(hidden)
+        output = self.decoder(hidden)
         maneuver_gt_aug = []
         for i in range(len(num_per_batch)):
             maneuver_cur = maneuver_gt[i:i+1]
