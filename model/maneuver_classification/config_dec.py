@@ -15,7 +15,7 @@ gpu_name = torch.cuda.get_device_name(0)
 if '3070' in gpu_name:
     config["batch_size"] = 16
 elif '3090' in gpu_name:
-    config["batch_size"] = 16
+    config["batch_size"] = 64
 
 config["epoch"] = 300
 config["n_warmup_steps"] = 30
@@ -23,7 +23,7 @@ config["validataion_period"] = 1
 config["ckpt_period"] = 5
 config["ckpt_dir"] = root_path + '/ckpt/'
 config["learning_rate"] = 0.00001
-config["logging"] = False
+config["logging"] = True
 
 ''' data '''
 config["data_dir_train"] = data_dir + 'train/'
