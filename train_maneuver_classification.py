@@ -1,9 +1,9 @@
 from data.drone_data import pred_loader_1, collate_fn
 from torch.utils.data import DataLoader
-from model.representation_learning.config import config as config_enc
-from model.representation_learning.Net import BackBone
-from model.maneuver_classification.config import config as config_dec
-from model.maneuver_classification.Net import Downstream
+from model.representation_learning.config_enc import config as config_enc
+from model.representation_learning.Net_enc import BackBone
+from model.maneuver_classification.config_dec import config as config_dec
+from model.maneuver_classification.Net_dec import Downstream
 import torch
 import os
 import warnings
