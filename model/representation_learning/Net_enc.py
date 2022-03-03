@@ -67,7 +67,7 @@ class BackBone(nn.Module):
                     repres_batch_tmp = representation[i, :seg_length[i], :]
                     repres_batch = torch.cat((repres_batch, repres_batch_tmp), axis=0)
 
-            return repres_batch, seg_length
+            return repres_batch, seg_length, trajectory_aug
 
         else:
             seg_length = []

@@ -21,8 +21,8 @@ class Downstream(nn.Module):
 
         self.loss_mean = nn.CrossEntropyLoss(reduction='mean')
 
-    def forward(self, hidden, maneuver_gt, num_per_batch, mode='train'):
-        output = self.decoder(hidden)
+    def forward(self, hidden, maneuver_gt, num_per_batch, before_inlet, mode='train'):
+        output = decoder.decoder(hidden)
         maneuver_gt_aug = []
         for i in range(len(num_per_batch)):
             maneuver_cur = maneuver_gt[i:i+1]
@@ -39,3 +39,15 @@ class Downstream(nn.Module):
                 correct = (predicted == label).sum().item()
 
             return loss, total, correct,
+
+        elif mode == 'val':
+            with torch.no_grad():
+                _, predicted = torch.max(output.data, 1)
+                num_tot = maneuver_gt_aug.size(0)
+                correct_tot = (predicted == label).sum().item()
+                num_before_inlet = before_inlet.sum().item()
+                correct_before_inlet = ((predicted == label) * (before_inlet)).sum().item()
+                num_after_inlet = before_inlet.shape[0] - num_before_inlet
+                correct_after_inlet = ((predicted == label) * (~before_inlet)).sum().item()
+            return num_tot, correct_tot, num_before_inlet, correct_before_inlet, num_after_inlet, correct_after_inlet
+

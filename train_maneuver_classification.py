@@ -120,9 +120,9 @@ for epoch in range(config_dec['epoch']):
         trajectory = trajectory.float().cuda()
         maneuver_gt = torch.cat(maneuver_gt, dim=0).float().cuda()
 
-        hidden, num_per_batch = encoder(trajectory, traj_length, mode='downstream')
+        hidden, num_per_batch, _ = encoder(trajectory, traj_length, mode='downstream')
         hidden = hidden.detach()
-        loss, total, correct = decoder(hidden, maneuver_gt, num_per_batch)
+        loss, total, correct = decoder(hidden, maneuver_gt, num_per_batch, None, mode='train')
 
         optimizer.zero_grad()
         loss.backward()
@@ -161,9 +161,14 @@ for epoch in range(config_dec['epoch']):
             trajectory = trajectory.float().cuda()
             maneuver_gt = torch.cat(maneuver_gt, dim=0).float().cuda()
 
-            hidden, num_per_batch = encoder(trajectory, traj_length, mode='downstream')
+            hidden, num_per_batch, trajectory_aug = encoder(trajectory, traj_length, mode='downstream')
             hidden = hidden.detach()
-            loss, total, correct = decoder(hidden, maneuver_gt, num_per_batch)
+            trajectory_aug_2hz = [trajectory_aug[i][0,[trajectory_aug[i].shape[1]-1 - 5*j for j in range(num_per_batch[i]-1, -1, -1)],:] for i in range(len(trajectory_aug))]
+            before_inlet = []
+            for i in range(len(trajectory_aug_2hz)):
+                before_inlet.append(trajectory_aug_2hz[i][:,0] < 0)
+            before_inlet = torch.cat(before_inlet)
+            num_tot, correct_tot, num_before_inlet, correct_before_inlet, num_after_inlet, correct_after_inlet = decoder(hidden, maneuver_gt, num_per_batch, before_inlet, mode='val')
 
             correct_tot += correct
             calc_tot += total
