@@ -22,7 +22,7 @@ config["n_warmup_steps"] = 30
 config["validataion_period"] = 1
 config["ckpt_period"] = 5
 config["ckpt_dir"] = root_path + '/ckpt/'
-config["learning_rate"] = 0.000005
+config["learning_rate"] = 0.0001
 
 ''' data '''
 config["data_dir_train"] = data_dir + 'train/'

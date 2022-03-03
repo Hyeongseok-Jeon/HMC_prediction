@@ -85,16 +85,36 @@ decoder = Downstream(config_dec).cuda()
 weights = torch.load(ckpt_dir + '/' + weight)
 encoder.load_state_dict(weights['model_state_dict'])
 
-correct_num_tot = 0
-full_length_num_tot = 0
-loss_tot = 0
-loss_calc_num_tot = 0
-epoch_time = time.time()
 
-for i, data in enumerate(dataloader_train):
-    trajectory, traj_length, conversion, maneuver_gt = data
-    trajectory = trajectory.float().cuda()
-    maneuver_gt = torch.cat(maneuver_gt, dim=0).float().cuda()
+optimizer = torch.optim.Adam(decoder.parameters(), lr=config_dec['learning_rate'])
 
-    hidden, num_per_batch = encoder(trajectory, traj_length, mode='downstream')
-    maneuver = decoder(hidden, maneuver_gt, num_per_batch)
+for epoch in range(config_dec['epoch']):
+    correct_tot = 0
+    calc_tot = 0
+    loss_tot = 0
+    epoch_time = time.time()
+    for i, data in enumerate(dataloader_train):
+        trajectory, traj_length, conversion, maneuver_gt = data
+        trajectory = trajectory.float().cuda()
+        maneuver_gt = torch.cat(maneuver_gt, dim=0).float().cuda()
+
+        hidden, num_per_batch = encoder(trajectory, traj_length, mode='downstream')
+        hidden = hidden.detach()
+        loss, total, correct = decoder(hidden, maneuver_gt, num_per_batch)
+
+        loss.backward()
+        optimizer.step()
+
+        correct_tot += correct
+        calc_tot += total
+        loss_tot += loss.item()*total
+
+        if data[0].shape[0] == config_dec['batch_size']:
+            print('Epoch: %d \t Time: %3.2f sec \t Data: %d/%d \t Loss: %7.5f' % (epoch+1, time.time() - epoch_time, config_dec['batch_size'] * (i + 1), len(dataloader_train.dataset), loss.item()), end='\r')
+        else:
+            print('Epoch: %d \t Time: %3.2f sec \t Data: %d/%d \t Loss: %7.5f' % (epoch+1, time.time() - epoch_time, config_dec['batch_size'] * i + data[0].shape[0], len(dataloader_train.dataset), loss.item()))
+
+    loss_batch = loss_tot / calc_tot
+    logger.info('===> Train Epoch: {} \t Accuracy: {:.2f}%\tLoss: {:.8f}'.format(
+        epoch + 1, 100 * correct_tot / calc_tot, loss_batch
+    ))
