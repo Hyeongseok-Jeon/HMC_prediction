@@ -27,9 +27,9 @@ class BackBone(nn.Module):
             traj_length_aug = []
             trajectory_aug = []
             for i in range(len(traj_length)):
-                init_index = torch.randint(traj_length[i]-5, size=(1,))
-                end_index = torch.randint(init_index.item()+5, traj_length[i], size=(1,))
-                trajectory_aug.append(trajectory[i:i+1,init_index:end_index, :])
+                init_index = torch.randint(traj_length[i] - 5, size=(1,))
+                end_index = torch.randint(init_index.item() + 5, traj_length[i], size=(1,))
+                trajectory_aug.append(trajectory[i:i + 1, init_index:end_index, :])
                 traj_length_aug.append(trajectory_aug[i].shape[1])
             # hz2_index.reverse()
             seg_length = []
@@ -48,13 +48,13 @@ class BackBone(nn.Module):
                 if i == 0:
                     for k in range(len(hz2_index) - 1):
                         if k == 0:
-                            enc_in = trajectory_aug[i][:,hz2_index[k]:hz2_index[k + 1], :]
+                            enc_in = trajectory_aug[i][:, hz2_index[k]:hz2_index[k + 1], :]
                         else:
-                            enc_in_tmp = trajectory_aug[i][:,hz2_index[k]:hz2_index[k + 1], :]
+                            enc_in_tmp = trajectory_aug[i][:, hz2_index[k]:hz2_index[k + 1], :]
                             enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
                 else:
                     for k in range(len(hz2_index) - 1):
-                        enc_in_tmp = trajectory_aug[i][:,hz2_index[k]:hz2_index[k + 1], :]
+                        enc_in_tmp = trajectory_aug[i][:, hz2_index[k]:hz2_index[k + 1], :]
                         enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
             enc_in = torch.transpose(enc_in, 1, 2)
             ar_in = self.encoder(enc_in)
@@ -64,7 +64,7 @@ class BackBone(nn.Module):
                 if i == 0:
                     repres_batch = representation[i, :seg_length[i], :]
                 else:
-                    repres_batch_tmp =  representation[i, :seg_length[i], :]
+                    repres_batch_tmp = representation[i, :seg_length[i], :]
                     repres_batch = torch.cat((repres_batch, repres_batch_tmp), axis=0)
 
             return repres_batch, seg_length

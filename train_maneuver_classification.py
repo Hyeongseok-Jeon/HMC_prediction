@@ -95,7 +95,6 @@ for i in range(len(config_dec)):
     else:
         config_log = config_log + '                                    ' + list(config_dec.keys())[i] + ': ' + str(list(config_dec.values())[i]) + '\n'
 
-encoder.eval()
 decoder.train()
 optimizer = torch.optim.Adam(decoder.parameters(), lr=config_dec['learning_rate'])
 
@@ -122,8 +121,10 @@ for epoch in range(config_dec['epoch']):
         maneuver_gt = torch.cat(maneuver_gt, dim=0).float().cuda()
 
         hidden, num_per_batch = encoder(trajectory, traj_length, mode='downstream')
+        hidden = hidden.detach()
         loss, total, correct = decoder(hidden, maneuver_gt, num_per_batch)
 
+        optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
@@ -145,3 +146,48 @@ for epoch in range(config_dec['epoch']):
         print('===> Train Epoch: {} \t Accuracy: {:.2f}%\tLoss: {:.8f}'.format(
             epoch + 1, 100 * correct_tot / calc_tot, loss_batch
         ))
+
+
+    if (epoch + 1) % config_dec['validataion_period'] == 0:
+        encoder.eval()
+        decoder.eval()
+        correct_num_tot_val = 0
+        full_length_num_tot_val = 0
+        loss_tot_val = 0
+        loss_calc_num_tot_val = 0
+        val_time = time.time()
+        for i, data in enumerate(dataloader_val):
+            trajectory, traj_length, conversion, maneuver_gt = data
+            trajectory = trajectory.float().cuda()
+            maneuver_gt = torch.cat(maneuver_gt, dim=0).float().cuda()
+
+            hidden, num_per_batch = encoder(trajectory, traj_length, mode='downstream')
+            hidden = hidden.detach()
+            loss, total, correct = decoder(hidden, maneuver_gt, num_per_batch)
+
+            correct_tot += correct
+            calc_tot += total
+            loss_tot += loss.item() * total
+        loss_tot = loss_tot / calc_tot
+        if config_dec["logging"]:
+            logger.info('===> Validation after Training epoch: {} \t Accuracy: {:.2f}%\tLoss: {:.8f}'.format(
+                epoch + 1, 100 * correct_tot / calc_tot, loss_tot
+            ))
+        else:
+            print('===> Validation after Training epoch: {} \t Accuracy: {:.2f}%\tLoss: {:.8f}'.format(
+                epoch + 1, 100 * correct_tot / calc_tot, loss_tot
+            ))
+        encoder.train()
+        decoder.train()
+
+    if (epoch + 1) % config_dec['ckpt_period'] == 0:
+        EPOCH = epoch + 1
+        PATH = ckpt_dir + "/model_" + str(EPOCH) + ".pt"
+        LOSS = loss_tot
+        torch.save({
+            'epoch': EPOCH,
+            'model_state_dict': decoder.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            'loss': LOSS,
+        }, PATH)
+        print('Check point saved: %s' % PATH)
