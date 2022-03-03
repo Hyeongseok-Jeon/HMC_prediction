@@ -22,25 +22,18 @@ print('Device:', device)
 print('Current cuda device:', torch.cuda.current_device())
 print('Count of using GPUs:', torch.cuda.device_count())
 
-
 run_name = "decoder_training" + time.strftime("-%Y-%m-%d_%H_%M_%S")
 print(run_name)
-ckpt_dir = config_dec['ckpt_dir'] + run_name
-os.makedirs(ckpt_dir, exist_ok=True)
-logger = setup_logs(config_dec['log_dir'], run_name)
 
 warnings.filterwarnings("ignore", category=UserWarning)
-
 print('Data list loading ...\n')
 
 file_list = os.listdir(os.getcwd() + '\logs')
-
 print('------------------------------------------------------------')
 for i in range(len(file_list)):
     print('File_id : ' + str(file_list[i]), '  File_index : ' + str(i))
 print('------------------------------------------------------------')
 print('\n')
-
 while True:
     s_model = input('selected target models : ')
     try:
@@ -52,7 +45,6 @@ while True:
             pass
     except:
         pass
-
 
 ckpt_dir = config_enc['ckpt_dir'] + file_id
 ckpt_list = os.listdir(ckpt_dir)
@@ -77,7 +69,6 @@ while True:
             pass
     except:
         pass
-warnings.filterwarnings("ignore", category=UserWarning)
 
 # dataset_original = pred_loader_1(config, 'orig')
 dataset_train = pred_loader_1(config_dec, 'train', mode='val')
@@ -98,24 +89,27 @@ decoder_params = sum(p.numel() for p in decoder.parameters() if p.requires_grad)
 weights = torch.load(ckpt_dir + '/' + weight)
 encoder.load_state_dict(weights['model_state_dict'])
 
-
 for i in range(len(config_dec)):
     if i == 0:
         config_log = '                                    ' + list(config_dec.keys())[i] + ': ' + str(list(config_dec.values())[i]) + '\n'
     else:
         config_log = config_log + '                                    ' + list(config_dec.keys())[i] + ': ' + str(list(config_dec.values())[i]) + '\n'
 
-logger.info('### Training Machine Ip address ###\n {}\n'.format(socket.gethostbyname(socket.gethostname())))
-logger.info('### Model summary below###\n {}\n'.format(str(decoder)))
-logger.info('===> Configuration parameter\n{}'.format(config_log))
-logger.info('===> Model total parameter: {}'.format(decoder_params))
-logger.info('### Selected Encoder model >>> {}'.format('File_id : ' + str(file_id), '  File_index : ' + str(s_model)))
-logger.info('### Selected Encoder weight >>> {}'.format('weight_id : ' + str(weight), '  File_index : ' + str(s_weight)))
-
+encoder.eval()
 decoder.train()
 optimizer = torch.optim.Adam(decoder.parameters(), lr=config_dec['learning_rate'])
 
-logger.info('===> Model Training Start')
+if config_dec["logging"]:
+    ckpt_dir = config_dec['ckpt_dir'] + run_name
+    os.makedirs(ckpt_dir, exist_ok=True)
+    logger = setup_logs(config_dec['log_dir'], run_name)
+    logger.info('### Training Machine Ip address ###\n {}\n'.format(socket.gethostbyname(socket.gethostname())))
+    logger.info('### Model summary below###\n {}\n'.format(str(decoder)))
+    logger.info('===> Configuration parameter\n{}'.format(config_log))
+    logger.info('===> Model total parameter: {}'.format(decoder_params))
+    logger.info('### Selected Encoder model >>> {}'.format('File_id : ' + str(file_id), '  File_index : ' + str(s_model)))
+    logger.info('### Selected Encoder weight >>> {}'.format('weight_id : ' + str(weight), '  File_index : ' + str(s_weight)))
+    logger.info('===> Model Training Start')
 
 for epoch in range(config_dec['epoch']):
     correct_tot = 0
@@ -128,7 +122,6 @@ for epoch in range(config_dec['epoch']):
         maneuver_gt = torch.cat(maneuver_gt, dim=0).float().cuda()
 
         hidden, num_per_batch = encoder(trajectory, traj_length, mode='downstream')
-        hidden = hidden.detach()
         loss, total, correct = decoder(hidden, maneuver_gt, num_per_batch)
 
         loss.backward()
@@ -136,14 +129,19 @@ for epoch in range(config_dec['epoch']):
 
         correct_tot += correct
         calc_tot += total
-        loss_tot += loss.item()*total
+        loss_tot += loss.item() * total
 
         if data[0].shape[0] == config_dec['batch_size']:
-            print('Epoch: %d \t Time: %3.2f sec \t Data: %d/%d \t Loss: %7.5f' % (epoch+1, time.time() - epoch_time, config_dec['batch_size'] * (i + 1), len(dataloader_train.dataset), loss.item()), end='\r')
+            print('Epoch: %d \t Time: %3.2f sec \t Data: %d/%d \t Loss: %7.5f' % (epoch + 1, time.time() - epoch_time, config_dec['batch_size'] * (i + 1), len(dataloader_train.dataset), loss.item()), end='\r')
         else:
-            print('Epoch: %d \t Time: %3.2f sec \t Data: %d/%d \t Loss: %7.5f' % (epoch+1, time.time() - epoch_time, config_dec['batch_size'] * i + data[0].shape[0], len(dataloader_train.dataset), loss.item()))
+            print('Epoch: %d \t Time: %3.2f sec \t Data: %d/%d \t Loss: %7.5f' % (epoch + 1, time.time() - epoch_time, config_dec['batch_size'] * i + data[0].shape[0], len(dataloader_train.dataset), loss.item()))
 
     loss_batch = loss_tot / calc_tot
-    logger.info('===> Train Epoch: {} \t Accuracy: {:.2f}%\tLoss: {:.8f}'.format(
-        epoch + 1, 100 * correct_tot / calc_tot, loss_batch
-    ))
+    if config_dec["logging"]:
+        logger.info('===> Train Epoch: {} \t Accuracy: {:.2f}%\tLoss: {:.8f}'.format(
+            epoch + 1, 100 * correct_tot / calc_tot, loss_batch
+        ))
+    else:
+        print('===> Train Epoch: {} \t Accuracy: {:.2f}%\tLoss: {:.8f}'.format(
+            epoch + 1, 100 * correct_tot / calc_tot, loss_batch
+        ))
