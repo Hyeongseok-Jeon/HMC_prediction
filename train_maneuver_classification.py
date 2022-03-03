@@ -28,7 +28,7 @@ print(run_name)
 warnings.filterwarnings("ignore", category=UserWarning)
 print('Data list loading ...\n')
 
-file_list = os.listdir(os.getcwd() + '\logs')
+file_list = os.listdir(os.getcwd() + '/logs')
 print('------------------------------------------------------------')
 for i in range(len(file_list)):
     print('File_id : ' + str(file_list[i]), '  File_index : ' + str(i))
