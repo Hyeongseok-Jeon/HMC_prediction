@@ -181,11 +181,11 @@ for epoch in range(config_dec['epoch']):
 
         loss_tot = loss_tot / calc_tot
         if config_dec["logging"]:
-            logger.info('===> Validation after Training epoch: {} \t Overall Accuracy: {:.2f}%\t Before inlet accuracy: {:.2f} \t After inlet accuracy: {:.2f}'.format(
+            logger.info('===> Validation after Training epoch: {} \t Overall Accuracy: {:.2f}%\t Before inlet accuracy: {:.2f}% \t After inlet accuracy: {:.2f}%'.format(
                 epoch + 1, 100 * correct_tot_sum / num_tot_sum, correct_before_inlet_sum/num_before_inlet_sum, correct_after_inlet_sum/num_after_inlet_sum
             ))
         else:
-            print('===> Validation after Training epoch: {} \t Overall Accuracy: {:.2f}%\t Before inlet accuracy: {:.2f} \t After inlet accuracy: {:.2f}'.format(
+            print('===> Validation after Training epoch: {} \t Overall Accuracy: {:.2f}%\t Before inlet accuracy: {:.2f}% \t After inlet accuracy: {:.2f}%'.format(
                 epoch + 1, 100 * correct_tot_sum / num_tot_sum, correct_before_inlet_sum / num_before_inlet_sum, correct_after_inlet_sum / num_after_inlet_sum
             ))
         encoder.train()
