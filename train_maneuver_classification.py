@@ -122,7 +122,11 @@ if config_dec["logging"]:
     os.makedirs(ckpt_dir, exist_ok=True)
     logger = setup_logs(config_dec['log_dir'], run_name)
     logger.info('### Training Machine Ip address ###\n {}\n'.format(socket.gethostbyname(socket.gethostname())))
-    logger.info('### Model summary below###\n {}\n'.format(str(decoder)))
+    if int(s_weight) == -1:
+        weight = 'no_init_weight'
+        logger.info('### Model summary below###\n {}\n'.format(str(encoder) + str(decoder)))
+    else:
+        logger.info('### Model summary below###\n {}\n'.format(str(decoder)))
     logger.info('===> Configuration parameter\n{}'.format(config_log))
     logger.info('===> Model total parameter: {}'.format(decoder_params))
     logger.info('### Selected Encoder model >>> {}'.format('File_id : ' + str(file_id), '  File_index : ' + str(s_model)))
