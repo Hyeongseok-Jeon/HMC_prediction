@@ -22,9 +22,6 @@ print('Device:', device)
 print('Current cuda device:', torch.cuda.current_device())
 print('Count of using GPUs:', torch.cuda.device_count())
 
-run_name = "decoder_training" + time.strftime("-%Y-%m-%d_%H_%M_%S")
-print(run_name)
-
 warnings.filterwarnings("ignore", category=UserWarning)
 print('Data list loading ...\n')
 
@@ -53,6 +50,8 @@ idx = sorted(range(len(epoch_list)), key=lambda k: epoch_list[k])
 ckpt_list = [ckpt_list[idx[i]] for i in range(len(idx))]
 
 print('------------------------------------------------------------')
+print('File_id : Without pretrained encoder', '  File_index : -1')
+
 for i in range(len(ckpt_list)):
     print('File_id : ' + str(ckpt_list[i]), '  File_index : ' + str(i))
 print('------------------------------------------------------------')
@@ -61,10 +60,13 @@ print('\n')
 while True:
     s_weight = input('selected target models : ')
     try:
-        if int(s_weight) < len(ckpt_list) and int(s_weight) >= 0:
-            weight_index = int(s_weight)
-            weight = ckpt_list[weight_index]
-            break
+        if int(s_weight) < len(ckpt_list) and int(s_weight) >= -1:
+            if int(s_weight) == -1:
+                break
+            else:
+                weight_index = int(s_weight)
+                weight = ckpt_list[weight_index]
+                break
         else:
             pass
     except:
@@ -85,9 +87,12 @@ dataloader_val = DataLoader(dataset_val,
 
 encoder = BackBone(config_enc).cuda()
 decoder = Downstream(config_dec).cuda()
-decoder_params = sum(p.numel() for p in decoder.parameters() if p.requires_grad)
-weights = torch.load(ckpt_dir + '/' + weight)
-encoder.load_state_dict(weights['model_state_dict'])
+if int(s_weight) == -1:
+    pass
+else:
+    decoder_params = sum(p.numel() for p in decoder.parameters() if p.requires_grad)
+    weights = torch.load(ckpt_dir + '/' + weight)
+    encoder.load_state_dict(weights['model_state_dict'])
 
 for i in range(len(config_dec)):
     if i == 0:
@@ -95,8 +100,22 @@ for i in range(len(config_dec)):
     else:
         config_log = config_log + '                                    ' + list(config_dec.keys())[i] + ': ' + str(list(config_dec.values())[i]) + '\n'
 
+if int(s_weight) == -1:
+    encoder.train()
 decoder.train()
-optimizer = torch.optim.Adam(decoder.parameters(), lr=config_dec['learning_rate'])
+
+if int(s_weight) == -1:
+    params = list(encoder.parameters()) + list(decoder.parameters())
+else:
+    params = list(decoder.parameters())
+
+optimizer = torch.optim.Adam(params, lr=config_dec['learning_rate'])
+
+if int(s_weight) == -1:
+    run_name = "decoder_training_no_pretrained_encoder" + time.strftime("-%Y-%m-%d_%H_%M_%S")
+else:
+    run_name = "decoder_training" + time.strftime("-%Y-%m-%d_%H_%M_%S")
+print(run_name)
 
 if config_dec["logging"]:
     ckpt_dir = config_dec['ckpt_dir'] + run_name
@@ -121,7 +140,10 @@ for epoch in range(config_dec['epoch']):
         maneuver_gt = torch.cat(maneuver_gt, dim=0).float().cuda()
 
         hidden, num_per_batch, _ = encoder(trajectory, traj_length, mode='downstream')
-        hidden = hidden.detach()
+        if int(s_weight) == -1:
+            pass
+        else:
+            hidden = hidden.detach()
         loss, total, correct = decoder(hidden, maneuver_gt, num_per_batch, None, mode='train')
 
         optimizer.zero_grad()
