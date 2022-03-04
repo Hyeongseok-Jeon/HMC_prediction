@@ -158,3 +158,5 @@
 2022-03-04 22:46:43,149 - ### Selected Encoder model >>> File_id : maneuver_prediction-2022-03-02_19_18_02
 2022-03-04 22:46:43,149 - ### Selected Encoder weight >>> weight_id : no_init_weight
 2022-03-04 22:46:43,149 - ===> Model Training Start
+2022-03-04 22:51:33,825 - ===> Train Epoch: 1 	 Accuracy: 64.52%	Loss: 1.23035258
+2022-03-04 22:52:21,740 - ===> Validation after Training epoch: 1 	 Overall Accuracy: 73.18%	 Before inlet accuracy: 0.60% 	 After inlet accuracy: 0.79%
