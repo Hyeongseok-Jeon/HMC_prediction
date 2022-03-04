@@ -171,11 +171,11 @@ for epoch in range(config_dec['epoch']):
 
     loss_batch = loss_tot / calc_tot
     if config_dec["logging"]:
-        logger.info('===> Train Epoch: {} \t Accuracy: {:.2f}%\tLoss: {:.8f}'.format(
+        logger.info('===> Train Epoch: {} \t Accuracy: {:.2f}% \t Loss: {:.8f}'.format(
             epoch + 1, 100 * correct_tot / calc_tot, loss_batch
         ))
     else:
-        print('===> Train Epoch: {} \t Accuracy: {:.2f}%\tLoss: {:.8f}'.format(
+        print('===> Train Epoch: {} \t Accuracy: {:.2f}% \t Loss: {:.8f}'.format(
             epoch + 1, 100 * correct_tot / calc_tot, loss_batch
         ))
 
@@ -214,11 +214,11 @@ for epoch in range(config_dec['epoch']):
         loss_tot = loss_tot / calc_tot
         if config_dec["logging"]:
             logger.info('===> Validation after Training epoch: {} \t Overall Accuracy: {:.2f}%\t Before inlet accuracy: {:.2f}% \t After inlet accuracy: {:.2f}%'.format(
-                epoch + 1, 100 * correct_tot_sum / num_tot_sum, correct_before_inlet_sum/num_before_inlet_sum, correct_after_inlet_sum/num_after_inlet_sum
+                epoch + 1, 100 * correct_tot_sum / num_tot_sum, 100 * correct_before_inlet_sum/num_before_inlet_sum, 100 * correct_after_inlet_sum/num_after_inlet_sum
             ))
         else:
             print('===> Validation after Training epoch: {} \t Overall Accuracy: {:.2f}%\t Before inlet accuracy: {:.2f}% \t After inlet accuracy: {:.2f}%'.format(
-                epoch + 1, 100 * correct_tot_sum / num_tot_sum, correct_before_inlet_sum / num_before_inlet_sum, correct_after_inlet_sum / num_after_inlet_sum
+                epoch + 1, 100 * correct_tot_sum / num_tot_sum, 100 * correct_before_inlet_sum / num_before_inlet_sum, 100 * correct_after_inlet_sum / num_after_inlet_sum
             ))
         encoder.train()
         decoder.train()
