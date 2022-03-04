@@ -88,6 +88,10 @@ dataloader_val = DataLoader(dataset_val,
 encoder = BackBone(config_enc).cuda()
 decoder = Downstream(config_dec).cuda()
 if int(s_weight) == -1:
+    decoder_params = sum(p.numel() for p in decoder.parameters() if p.requires_grad)
+    encoder_params = sum(p.numel() for p in encoder.parameters() if p.requires_grad)
+    params_tot = encoder_params + decoder_params
+
     pass
 else:
     decoder_params = sum(p.numel() for p in decoder.parameters() if p.requires_grad)
@@ -125,10 +129,12 @@ if config_dec["logging"]:
     if int(s_weight) == -1:
         weight = 'no_init_weight'
         logger.info('### Model summary below###\n {}\n'.format(str(encoder) + str(decoder)))
+        logger.info('===> Configuration parameter\n{}'.format(config_log))
+        logger.info('===> Model total parameter: {}'.format(params_tot))
     else:
         logger.info('### Model summary below###\n {}\n'.format(str(decoder)))
-    logger.info('===> Configuration parameter\n{}'.format(config_log))
-    logger.info('===> Model total parameter: {}'.format(decoder_params))
+        logger.info('===> Configuration parameter\n{}'.format(config_log))
+        logger.info('===> Model total parameter: {}'.format(decoder_params))
     logger.info('### Selected Encoder model >>> {}'.format('File_id : ' + str(file_id), '  File_index : ' + str(s_model)))
     logger.info('### Selected Encoder weight >>> {}'.format('weight_id : ' + str(weight), '  File_index : ' + str(s_weight)))
     logger.info('===> Model Training Start')
