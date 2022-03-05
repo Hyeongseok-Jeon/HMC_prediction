@@ -83,3 +83,69 @@ def collate_fn(samples):
         maneuver = [torch.unsqueeze(torch.from_numpy(i[2]), dim=0) for i in samples]
 
         return trajectory, length, conversion, maneuver
+
+
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+
+matplotlib.use('Qt5Agg')
+
+x = [0, 2, 4, 6, 8, 10]
+years = ['Go straight', 'Left turn', 'Right turn', 'Left lane \n change', 'Right lane \n change', 'U-turn']
+values_argo_train = [92.8, 3.8, 2.3, 0.5, 0.6, 0.0]
+values_argo_val = [90.7, 4.9, 3.2, 0.7, 0.5, 0.0]
+values_KAIST_train = [47.3, 19.9, 32.6, 0.0, 0.0, 0.1]
+values_KAIST_val = [48.0, 22.2, 28.9, 0.0, 0.0, 0.9]
+
+plt.figure()
+plt.bar(x, values_argo_train)
+plt.xticks(x, years)
+plt.title('data distribution - argoverse training')
+plt.ylim(0, 100)
+for i, v in enumerate(x):
+    plt.text(v, values_argo_train[i], str(values_argo_train[i])+'%',
+             fontsize = 9,
+             color='black',
+             horizontalalignment='center',
+             verticalalignment='bottom')
+plt.show()
+
+plt.figure()
+plt.bar(x, values_argo_val)
+plt.xticks(x, years)
+plt.title('data distribution - argoverse validation')
+plt.ylim(0, 100)
+for i, v in enumerate(x):
+    plt.text(v, values_argo_val[i], str(values_argo_val[i])+'%',
+             fontsize = 9,
+             color='black',
+             horizontalalignment='center',
+             verticalalignment='bottom')
+plt.show()
+
+plt.figure()
+plt.bar(x, values_KAIST_train)
+plt.xticks(x, years)
+plt.title('data distribution - KAIST training (128x augmentation)')
+plt.ylim(0, 100)
+for i, v in enumerate(x):
+    plt.text(v, values_KAIST_train[i], str(values_KAIST_train[i])+'%',
+             fontsize = 9,
+             color='black',
+             horizontalalignment='center',
+             verticalalignment='bottom')
+plt.show()
+
+plt.figure()
+plt.bar(x, values_KAIST_val)
+plt.xticks(x, years)
+plt.title('data distribution - KAIST validation (128x augmentation)')
+plt.ylim(0, 100)
+for i, v in enumerate(x):
+    plt.text(v, values_KAIST_val[i], str(values_KAIST_val[i])+'%',
+             fontsize = 9,
+             color='black',
+             horizontalalignment='center',
+             verticalalignment='bottom')
+plt.show()
