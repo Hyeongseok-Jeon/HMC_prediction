@@ -45,19 +45,28 @@ class pred_loader_1(Dataset):
     def __getitem__(self, idx):
         # link_idx = np.load(self.data_dir + 'link_idx/' + self.data_list_dup[idx])
         # maneuver_index = np.load(self.data_dir + 'maneuver_index/' + self.data_list_dup[idx])
-        nearest_outlet_state = np.load(self.data_dir + 'nearest_outlet_state/' + self.data_list_dup[idx])
-        # outlet_node_state = np.load(self.data_dir + 'outlet_node_state/' + self.data_list_dup[idx])
-        total_traj = np.load(self.data_dir + 'total_traj/' + self.data_list_dup[idx])
+        #
 
-        outlet_index = np.where(total_traj[:, 0] == nearest_outlet_state[0, 0])[0][0]
-        total_traj = total_traj[:outlet_index + 1, :]
+        if self.mode == 'vis':
+            outlet_node_state = np.load(self.data_dir + 'outlet_node_state/' + self.data_list_dup[idx])
+            total_traj = np.load(self.data_dir + 'total_traj/' + self.data_list_dup[idx])
+            nearest_outlet_state = np.load(self.data_dir + 'nearest_outlet_state/' + self.data_list_dup[idx])
+            outlet_index = np.where(total_traj[:, 0] == nearest_outlet_state[0, 0])[0][0]
+            mod_traj = total_traj[:outlet_index + 1, :]
 
-        if self.mode == 'train':
-            return [total_traj]
-        elif self.mode == 'val':
-            maneuver_index = np.load(self.data_dir + 'maneuver_index/' + self.data_list_dup[idx])
-            conversion = np.load(self.data_dir + 'conversion/' + self.data_list_dup[idx])
-            return [total_traj, conversion, maneuver_index]
+            return [total_traj, mod_traj, outlet_node_state]
+        else:
+            nearest_outlet_state = np.load(self.data_dir + 'nearest_outlet_state/' + self.data_list_dup[idx])
+            total_traj = np.load(self.data_dir + 'total_traj/' + self.data_list_dup[idx])
+
+            outlet_index = np.where(total_traj[:, 0] == nearest_outlet_state[0, 0])[0][0]
+            total_traj = total_traj[:outlet_index + 1, :]
+            if self.mode == 'train':
+                return [total_traj]
+            elif self.mode == 'val':
+                maneuver_index = np.load(self.data_dir + 'maneuver_index/' + self.data_list_dup[idx])
+                conversion = np.load(self.data_dir + 'conversion/' + self.data_list_dup[idx])
+                return [total_traj, conversion, maneuver_index]
 
     def get_maneuver_distribution(self, data):
         maneuver_index_tot = np.zeros(shape=4)
@@ -83,70 +92,3 @@ def collate_fn(samples):
         maneuver = [torch.unsqueeze(torch.from_numpy(i[2]), dim=0) for i in samples]
 
         return trajectory, length, conversion, maneuver
-
-'''
-import matplotlib
-import matplotlib.pyplot as plt
-import numpy as np
-
-matplotlib.use('Qt5Agg')
-
-x = [0, 2, 4, 6, 8, 10]
-years = ['Go straight', 'Left turn', 'Right turn', 'Left lane \n change', 'Right lane \n change', 'U-turn']
-values_argo_train = [92.8, 3.8, 2.3, 0.5, 0.6, 0.0]
-values_argo_val = [90.7, 4.9, 3.2, 0.7, 0.5, 0.0]
-values_KAIST_train = [47.3, 19.9, 32.6, 0.0, 0.0, 0.1]
-values_KAIST_val = [48.0, 22.2, 28.9, 0.0, 0.0, 0.9]
-
-plt.figure()
-plt.bar(x, values_argo_train)
-plt.xticks(x, years)
-plt.title('data distribution - argoverse training')
-plt.ylim(0, 100)
-for i, v in enumerate(x):
-    plt.text(v, values_argo_train[i], str(values_argo_train[i])+'%',
-             fontsize = 9,
-             color='black',
-             horizontalalignment='center',
-             verticalalignment='bottom')
-plt.show()
-
-plt.figure()
-plt.bar(x, values_argo_val)
-plt.xticks(x, years)
-plt.title('data distribution - argoverse validation')
-plt.ylim(0, 100)
-for i, v in enumerate(x):
-    plt.text(v, values_argo_val[i], str(values_argo_val[i])+'%',
-             fontsize = 9,
-             color='black',
-             horizontalalignment='center',
-             verticalalignment='bottom')
-plt.show()
-
-plt.figure()
-plt.bar(x, values_KAIST_train)
-plt.xticks(x, years)
-plt.title('data distribution - KAIST training (128x augmentation)')
-plt.ylim(0, 100)
-for i, v in enumerate(x):
-    plt.text(v, values_KAIST_train[i], str(values_KAIST_train[i])+'%',
-             fontsize = 9,
-             color='black',
-             horizontalalignment='center',
-             verticalalignment='bottom')
-plt.show()
-
-plt.figure()
-plt.bar(x, values_KAIST_val)
-plt.xticks(x, years)
-plt.title('data distribution - KAIST validation (128x augmentation)')
-plt.ylim(0, 100)
-for i, v in enumerate(x):
-    plt.text(v, values_KAIST_val[i], str(values_KAIST_val[i])+'%',
-             fontsize = 9,
-             color='black',
-             horizontalalignment='center',
-             verticalalignment='bottom')
-plt.show()
-'''
