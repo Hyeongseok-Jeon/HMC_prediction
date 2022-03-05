@@ -84,7 +84,7 @@ def collate_fn(samples):
 
         return trajectory, length, conversion, maneuver
 
-
+'''
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -149,3 +149,4 @@ for i, v in enumerate(x):
              horizontalalignment='center',
              verticalalignment='bottom')
 plt.show()
+'''
