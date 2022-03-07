@@ -5,7 +5,6 @@ import pathlib
 from typing import Iterator
 
 import matplotlib
-matplotlib.use('tkagg')
 
 import matplotlib.pyplot as plt
 import pytest

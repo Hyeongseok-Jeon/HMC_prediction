@@ -10,7 +10,6 @@ from collections import defaultdict
 from typing import Dict, List, Optional
 
 import matplotlib
-matplotlib.use('tkagg')
 
 import matplotlib.lines as mlines
 import matplotlib.pyplot as plt

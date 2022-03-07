@@ -5,7 +5,6 @@ from collections import defaultdict
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 import matplotlib
-matplotlib.use('tkagg')
 
 import matplotlib.pyplot as plt
 import numpy as np

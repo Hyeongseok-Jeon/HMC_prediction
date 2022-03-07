@@ -3,7 +3,6 @@
 
 
 import matplotlib
-matplotlib.use('tkagg')
 
 import cv2
 import matplotlib.pyplot as plt

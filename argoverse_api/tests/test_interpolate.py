@@ -2,7 +2,6 @@
 """Interpolate tools unit tests."""
 
 import matplotlib
-matplotlib.use('tkagg')
 
 import matplotlib.pyplot as plt
 import numpy as np

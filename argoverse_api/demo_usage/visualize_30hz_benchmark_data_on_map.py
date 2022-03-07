@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import Any
 
 import matplotlib
-matplotlib.use('tkagg')
 
 import imageio
 import matplotlib.pyplot as plt

@@ -1,4 +1,13 @@
+# Copyright (c) 2020 Uber Technologies, Inc.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import os
+
+os.umask(0)
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+os.environ["OMP_NUM_THREADS"] = "1"
 
 import argparse
 import numpy as np
@@ -8,22 +17,20 @@ import time
 import shutil
 from importlib import import_module
 from numbers import Number
-
+import os
+from tqdm import tqdm
 import torch
 from torch.utils.data import Sampler, DataLoader
+from torch.utils.data.distributed import DistributedSampler
+from LaneGCN.utils import Logger, load_pretrain
+import LaneGCN.lanegcn as model
 
-
-from utils import Logger, load_pretrain
-
-
-
-root_path = os.path.dirname(os.path.abspath(__file__))
+root_path = os.getcwd() + '/LaneGCN'
 sys.path.insert(0, root_path)
-
 
 parser = argparse.ArgumentParser(description="Fuse Detection in Pytorch")
 parser.add_argument(
-    "-m", "--model", default="model", type=str, metavar="MODEL", help="model name"
+    "-m", "--model", default="lanegcn", type=str, metavar="MODEL", help="model name"
 )
 parser.add_argument("--eval", action="store_true")
 parser.add_argument(
@@ -33,17 +40,11 @@ parser.add_argument(
     "--weight", default="", type=str, metavar="WEIGHT", help="checkpoint path"
 )
 
+parser.add_argument("--port")
 
 def main():
-    seed = 0
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    np.random.seed(seed)
-    random.seed(seed)
-
     # Import all settings for experiment.
     args = parser.parse_args()
-    model = import_module(args.model)
     config, Dataset, collate_fn, net, loss, post_process, opt = model.get_model()
 
     if args.resume or args.weight:
@@ -59,13 +60,10 @@ def main():
     if args.eval:
         # Data loader for evaluation
         dataset = Dataset(config["val_split"], config, train=False)
-     
         val_loader = DataLoader(
             dataset,
             batch_size=config["val_batch_size"],
             num_workers=config["val_workers"],
-            # sampler=val_sampler,
-            shuffle=True,
             collate_fn=collate_fn,
             pin_memory=True,
         )
@@ -95,10 +93,8 @@ def main():
         dataset,
         batch_size=config["batch_size"],
         num_workers=config["workers"],
-        shuffle=True,
         collate_fn=collate_fn,
         pin_memory=True,
-        worker_init_fn=worker_init_fn,
         drop_last=True,
     )
 
@@ -108,11 +104,9 @@ def main():
         dataset,
         batch_size=config["val_batch_size"],
         num_workers=config["val_workers"],
-        shuffle=True,
         collate_fn=collate_fn,
         pin_memory=True,
     )
-
 
     epoch = config["epoch"]
     remaining_epochs = int(np.ceil(config["num_epochs"] - epoch))
@@ -120,15 +114,7 @@ def main():
         train(epoch + i, config, train_loader, net, loss, post_process, opt, val_loader)
 
 
-def worker_init_fn(pid):
-    np_seed = int(pid)
-    np.random.seed(np_seed)
-    random_seed = np.random.randint(2 ** 32 - 1)
-    random.seed(random_seed)
-
-
 def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=None):
-    train_loader.sampler.set_epoch(int(epoch))
     net.train()
 
     num_batches = len(train_loader)
@@ -141,7 +127,7 @@ def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=
 
     start_time = time.time()
     metrics = dict()
-    for i, data in enumerate(train_loader):
+    for i, data in tqdm(enumerate(train_loader)):
         epoch += epoch_per_batch
         data = dict(data)
 
@@ -160,7 +146,6 @@ def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=
 
         if num_iters % display_iters == 0:
             dt = time.time() - start_time
-            # metrics = sync(metrics)
             post_process.display(metrics, dt, epoch, lr)
             start_time = time.time()
             metrics = dict()
@@ -187,8 +172,6 @@ def val(config, data_loader, net, loss, post_process, epoch):
             post_process.append(metrics, loss_out, post_out)
 
     dt = time.time() - start_time
-    # metrics = sync(metrics)
-    # if hvd.rank() == 0:
     post_process.display(metrics, dt, epoch)
     net.train()
 
@@ -203,10 +186,9 @@ def save_ckpt(net, opt, save_dir, epoch):
 
     save_name = "%3.3f.ckpt" % epoch
     torch.save(
-        {"epoch": epoch, "state_dict": state_dict, "opt_state": opt.state_dict()},
+        {"epoch": epoch, "state_dict": state_dict, "opt_state": opt.opt.state_dict()},
         os.path.join(save_dir, save_name),
     )
-
 
 
 if __name__ == "__main__":

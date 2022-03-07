@@ -37,7 +37,6 @@ from argoverse.utils.se2 import SE2
 from .lane_segment import LaneSegment
 from .map_viz_helper import render_global_city_map_bev
 
-matplotlib.use('tkagg')
 
 GROUND_HEIGHT_THRESHOLD = 0.3  # 30 centimeters
 MAX_LABEL_DIST_TO_LANE = 20  # meters

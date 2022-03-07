@@ -5,17 +5,17 @@
 import numpy as np
 import os
 import sys
-from fractions import gcd
+from math import gcd
 from numbers import Number
 
 import torch
 from torch import Tensor, nn
 from torch.nn import functional as F
 
-from data import ArgoDataset, collate_fn
-from utils import gpu, to_long,  Optimizer, StepLR
+from LaneGCN.data import ArgoDataset, collate_fn
+from LaneGCN.utils import gpu, to_long,  Optimizer, StepLR
 
-from layers import Conv1d, Res1d, Linear, LinearRes, Null
+from LaneGCN.layers import Conv1d, Res1d, Linear, LinearRes, Null
 from numpy import float64, ndarray
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
