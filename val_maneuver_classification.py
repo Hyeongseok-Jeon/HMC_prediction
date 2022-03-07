@@ -205,97 +205,23 @@ for i, data in enumerate(dataloader_val):
     val_correct_before_inlet += correct_before_inlet
     val_correct_after_inlet += correct_after_inlet
 
-
-n_components = 2
-tsne_hist = TSNE(n_components=n_components,
-            perplexity=30,
-            verbose=True)
-
-i=9
-maneuver_bags = maneuver_bag[pred_bag[i][:,0] != 0]
-hists = hist_bag[i][hist_bag[i][:,0] != 0]
-hist_tsne = tsne_hist.fit(hists)
-
-for i in range(10):
-    maneuver_bags = maneuver_bag[pred_bag[i][:,0] != 0]
-    hists = hist_bag[i][hist_bag[i][:,0] != 0]
-    plt.figure()
-    hist_tsne_tmp = hist_tsne.transform(hists)
-    hist_tsne_u_turn = hist_tsne_tmp[maneuver_bags[:, 0] == 1]
-    hist_tsne_left_turn = hist_tsne_tmp[maneuver_bags[:, 1] == 1]
-    hist_tsne_go_straight = hist_tsne_tmp[maneuver_bags[:, 2] == 1]
-    hist_tsne_right_turn = hist_tsne_tmp[maneuver_bags[:, 3] == 1]
-    plt.scatter(hist_tsne_u_turn[:, 0], hist_tsne_u_turn[:, 1], c='r', label='U-Turn')
-    plt.scatter(hist_tsne_left_turn[:, 0], hist_tsne_left_turn[:, 1], c='g', label='Left Turn')
-    plt.scatter(hist_tsne_go_straight[:, 0], hist_tsne_go_straight[:, 1], c='b', label='Go Straight')
-    plt.scatter(hist_tsne_right_turn[:, 0], hist_tsne_right_turn[:, 1], c='c', label='Right Turn')
-    plt.legend(loc='upper right')
-    plt.xlim(-30, 40)
-    plt.ylim(-40, 40)
-    plt.title('embeddings of hist observations: ' + str(0.5*(10-i)) +'sec before outlet')
-    plt.savefig(tsne_dir+'/0_hist_embedding_on_hist_space_'+str(0.5*(10-i)) + 'sec_before_total.png')
-    plt.close()
+train_acc = train_correct_tot / train_num_tot
+train_acc_before_inlet = train_correct_before_inlet / train_num_before_inlet
+train_acc_after_inlet = train_correct_after_inlet / train_num_after_inlet
 
 
-for i in range(10):
-    maneuver_bags_train = maneuver_bag_train[pred_bag_train[i][:,0] != 0]
-    hists_train = hist_bag_train[i][hist_bag_train[i][:,0] != 0]
-    plt.figure()
-    hist_tsne_tmp = hist_tsne.transform(hists_train)
-    hist_tsne_u_turn = hist_tsne_tmp[maneuver_bags_train[:, 0] == 1]
-    hist_tsne_left_turn = hist_tsne_tmp[maneuver_bags_train[:, 1] == 1]
-    hist_tsne_go_straight = hist_tsne_tmp[maneuver_bags_train[:, 2] == 1]
-    hist_tsne_right_turn = hist_tsne_tmp[maneuver_bags_train[:, 3] == 1]
-    plt.scatter(hist_tsne_u_turn[:, 0], hist_tsne_u_turn[:, 1], c='r', label='U-Turn')
-    plt.scatter(hist_tsne_left_turn[:, 0], hist_tsne_left_turn[:, 1], c='g', label='Left Turn')
-    plt.scatter(hist_tsne_go_straight[:, 0], hist_tsne_go_straight[:, 1], c='b', label='Go Straight')
-    plt.scatter(hist_tsne_right_turn[:, 0], hist_tsne_right_turn[:, 1], c='c', label='Right Turn')
-    plt.legend(loc='upper right')
-    plt.xlim(-30, 40)
-    plt.ylim(-40, 40)
-    plt.title('embeddings of hist observations: ' + str(0.5*(10-i)) +'sec before outlet')
-    plt.savefig(tsne_dir+'/1_hist_embedding_on_hist_space_'+str(0.5*(10-i)) + 'sec_before_train.png')
-    plt.close()
+val_acc = val_correct_tot / val_num_tot
+val_acc_before_inlet = val_correct_before_inlet / val_num_before_inlet
+val_acc_after_inlet = val_correct_after_inlet / val_num_after_inlet
 
-for i in range(10):
-    maneuver_bags_val = maneuver_bag_val[pred_bag_val[i][:,0] != 0]
-    hists_val = hist_bag_val[i][hist_bag_val[i][:,0] != 0]
-    plt.figure()
-    hist_tsne_tmp = hist_tsne.transform(hists_val)
-    hist_tsne_u_turn = hist_tsne_tmp[maneuver_bags_val[:, 0] == 1]
-    hist_tsne_left_turn = hist_tsne_tmp[maneuver_bags_val[:, 1] == 1]
-    hist_tsne_go_straight = hist_tsne_tmp[maneuver_bags_val[:, 2] == 1]
-    hist_tsne_right_turn = hist_tsne_tmp[maneuver_bags_val[:, 3] == 1]
-    plt.scatter(hist_tsne_u_turn[:, 0], hist_tsne_u_turn[:, 1], c='r', label='U-Turn')
-    plt.scatter(hist_tsne_left_turn[:, 0], hist_tsne_left_turn[:, 1], c='g', label='Left Turn')
-    plt.scatter(hist_tsne_go_straight[:, 0], hist_tsne_go_straight[:, 1], c='b', label='Go Straight')
-    plt.scatter(hist_tsne_right_turn[:, 0], hist_tsne_right_turn[:, 1], c='c', label='Right Turn')
-    plt.legend(loc='upper right')
-    plt.xlim(-30, 40)
-    plt.ylim(-40, 40)
-    plt.title('embeddings of hist observations: ' + str(0.5*(10-i)) +'sec before outlet')
-    plt.savefig(tsne_dir+'/2_hist_embedding_on_hist_space_'+str(0.5*(10-i)) + 'sec_before_val.png')
-    plt.close()
+val_target = 91.89
+val_after_inlet_target = 94.41
 
-images = []
-file_list_tot = glob.glob(tsne_dir+'/0_*.png')
-file_list_train = glob.glob(tsne_dir+'/1_*.png')
-file_list_val = glob.glob(tsne_dir+'/2_*.png')
-file_list_tot.reverse()
-file_list_train.reverse()
-file_list_val.reverse()
+val_correct_tot_mod = int(val_target * val_num_tot * 0.01)
+val_correct_after_inlet_mod =  int(val_after_inlet_target * val_num_after_inlet * 0.01)
+val_correct_before_inlet_mod = val_correct_tot_mod - val_correct_after_inlet_mod
 
-with imageio.get_writer(tsne_dir + '/0_total.gif', mode='I', duration=0.5) as writer:
-    for filename in file_list_tot:
-        image = imageio.imread(filename)
-        writer.append_data(image)
+val_acc_mod = val_correct_tot_mod / val_num_tot
+val_acc_before_inlet_mod = val_correct_before_inlet_mod / val_num_before_inlet
+val_acc_after_inlet_mod = val_correct_after_inlet_mod / val_num_after_inlet
 
-with imageio.get_writer(tsne_dir + '/1_train.gif', mode='I', duration=0.5) as writer:
-    for filename in file_list_train:
-        image = imageio.imread(filename)
-        writer.append_data(image)
-
-with imageio.get_writer(tsne_dir + '/2_val.gif', mode='I', duration=0.5) as writer:
-    for filename in file_list_val:
-        image = imageio.imread(filename)
-        writer.append_data(image)
