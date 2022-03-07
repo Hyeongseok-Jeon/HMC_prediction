@@ -7,6 +7,8 @@ import torch
 from torch.utils.data import Dataset
 from scipy import sparse
 import os
+import sys
+sys.path.append(os.getcwd())
 import copy
 from argoverse_api.argoverse.data_loading.argoverse_forecasting_loader import ArgoverseForecastingLoader
 from argoverse_api.argoverse.map_representation.map_api import ArgoverseMap

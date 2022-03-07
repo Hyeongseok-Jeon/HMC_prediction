@@ -22,8 +22,8 @@ from tqdm import tqdm
 import torch
 from torch.utils.data import Sampler, DataLoader
 from torch.utils.data.distributed import DistributedSampler
-from LaneGCN.utils import Logger, load_pretrain
-import LaneGCN.lanegcn as model
+from utils import Logger, load_pretrain
+import lanegcn as model
 
 root_path = os.getcwd() + '/LaneGCN'
 sys.path.insert(0, root_path)
