@@ -4,6 +4,9 @@
 import glob
 from typing import Set, Tuple
 
+import matplotlib
+matplotlib.use('tkagg')
+
 import matplotlib.pyplot as plt
 import numpy as np
 

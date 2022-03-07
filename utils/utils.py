@@ -5,7 +5,7 @@ def data_distribution_bar_graph():
     import matplotlib
     import matplotlib.pyplot as plt
 
-    matplotlib.use('Qt5Agg')
+    matplotlib.use('tkagg')
 
     x = [0, 2, 4, 6, 8, 10]
     years = ['Go straight', 'Left turn', 'Right turn', 'Left lane \n change', 'Right lane \n change', 'U-turn']
@@ -73,7 +73,7 @@ def trajectory_plot():
     import matplotlib
     import matplotlib.pyplot as plt
     import numpy as np
-    matplotlib.use('Qt5Agg')
+    matplotlib.use('tkagg')
 
     config["splicing_num"] = 1
     config["occlusion_rate"] = 0

@@ -3,6 +3,9 @@
 
 from typing import Optional
 
+import matplotlib
+matplotlib.use('tkagg')
+
 import numpy as np
 from matplotlib.axes import Axes
 

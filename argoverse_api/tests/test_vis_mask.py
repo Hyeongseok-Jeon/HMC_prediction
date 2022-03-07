@@ -2,6 +2,9 @@
 """Smoketest our "mask" drawing utility, e.g. for drawing Mask RCNN masks on an image."""
 
 
+import matplotlib
+matplotlib.use('tkagg')
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np

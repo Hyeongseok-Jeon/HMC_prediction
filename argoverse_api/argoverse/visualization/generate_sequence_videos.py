@@ -8,6 +8,9 @@ import shutil
 import sys
 from typing import List
 
+import matplotlib
+matplotlib.use('tkagg')
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd

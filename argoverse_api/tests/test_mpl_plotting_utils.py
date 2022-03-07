@@ -1,5 +1,8 @@
 # <Copyright 2019, Argo AI, LLC. Released under the MIT license.>
 
+import matplotlib
+matplotlib.use('tkagg')
+
 import matplotlib.pyplot as plt
 import numpy as np
 

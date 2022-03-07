@@ -21,6 +21,9 @@ https://github.com/facebookresearch/Detectron/blob/master/detectron/utils/vis.py
 import os
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
+import matplotlib
+matplotlib.use('tkagg')
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np

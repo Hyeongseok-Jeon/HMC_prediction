@@ -41,7 +41,7 @@ from argoverse.map_representation.map_api import ArgoverseMap
 from argoverse.utils.se3 import SE3
 from argoverse.utils.transform import quat_argo2scipy_vectorized
 
-matplotlib.use("Agg")  # isort:skip
+matplotlib.use("tkagg")  # isort:skip
 import matplotlib.pyplot as plt  # isort:skip  # noqa: E402
 
 logger = logging.getLogger(__name__)

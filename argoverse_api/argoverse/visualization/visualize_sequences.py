@@ -1,8 +1,16 @@
 #!/usr/bin/env python
+import os
+import sys
+cur_path = os.path.abspath(__file__)
+root = os.path.dirname(os.path.dirname(os.path.dirname(cur_path)))
+sys.path.append(root)
 
 """A simple python script template."""
 from collections import defaultdict
 from typing import Dict, List, Optional
+
+import matplotlib
+matplotlib.use('tkagg')
 
 import matplotlib.lines as mlines
 import matplotlib.pyplot as plt

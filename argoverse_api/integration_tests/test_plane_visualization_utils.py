@@ -1,6 +1,9 @@
 import os
 import pathlib
 
+import matplotlib
+matplotlib.use('tkagg')
+
 import matplotlib.pyplot as plt
 import pytest
 

@@ -2,7 +2,6 @@
 
 import glob
 import logging
-import os
 from typing import Dict, Iterator, List, Optional, Union, cast
 
 import numpy as np

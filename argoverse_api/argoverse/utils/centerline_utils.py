@@ -4,6 +4,9 @@ import datetime
 import math
 from typing import Iterable, List, Sequence, Set, Tuple
 
+import matplotlib
+matplotlib.use('tkagg')
+
 import matplotlib.pyplot as plt
 import numpy as np
 from shapely.geometry import LinearRing, LineString, Point

@@ -3,6 +3,9 @@
 
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+import matplotlib
+matplotlib.use('tkagg')
+
 import matplotlib.pyplot as plt
 import numpy as np
 from descartes.patch import PolygonPatch
