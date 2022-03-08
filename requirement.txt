@@ -1,0 +1,5 @@
+scikit-image 
+IPython 
+tqdm 
+ipdb
+mpi4py
