@@ -38,10 +38,11 @@ config["lr"] = [1e-3, 1e-4]
 config["lr_epochs"] = [32]
 config["lr_func"] = StepLR(config["lr"], config["lr_epochs"])
 
+cur_time = time.strftime("-%Y-%m-%d_%H_%M_%S")
 
 if "save_dir" not in config:
     config["save_dir"] = os.path.join(
-        root_path, "results", model_name
+        root_path, "results", model_name + '_' + cur_time
     )
 
 if not os.path.isabs(config["save_dir"]):
