@@ -30,8 +30,6 @@ cur_path = os.path.abspath(__file__)
 root_path = os.path.dirname(os.path.dirname(cur_path)) + '/LaneGCN'
 sys.path.append(root_path)
 
-print(root_path)
-
 parser = argparse.ArgumentParser(description="Fuse Detection in Pytorch")
 parser.add_argument(
     "-m", "--model", default="lanegcn", type=str, metavar="MODEL", help="model name"
