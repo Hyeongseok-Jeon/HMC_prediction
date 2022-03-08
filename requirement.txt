@@ -5,4 +5,4 @@ ipdb
 mpi4py
 torch
 torchvision
-cudatoolkit
+cudatoolkit=10.2
