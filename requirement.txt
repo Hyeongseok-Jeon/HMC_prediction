@@ -3,3 +3,6 @@ IPython
 tqdm 
 ipdb
 mpi4py
+torch
+torchvision
+cudatoolkit
