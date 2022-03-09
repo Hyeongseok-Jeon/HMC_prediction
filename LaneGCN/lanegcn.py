@@ -49,7 +49,7 @@ cur_time = time.strftime("-%Y-%m-%d_%H_%M_%S")
 
 if "save_dir" not in config:
     config["save_dir"] = os.path.join(
-        root_path, "results", model_name + '_' + cur_time
+        root_path, "results", model_name + cur_time
     )
 
 if not os.path.isabs(config["save_dir"]):
