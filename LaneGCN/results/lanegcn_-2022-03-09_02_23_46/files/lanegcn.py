@@ -25,8 +25,8 @@ except:
 from numpy import float64, ndarray
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
-from model.representation_learning.Net_enc import BackBone as ActorNet_jhs
-
+from model.representation_learning.modules.encoder import Encoder as ActorNet_jhs
+print('Actornet loaded succesfully')
 file_path = os.path.abspath(__file__)
 root_path = os.path.dirname(file_path)
 model_name = os.path.basename(file_path).split(".")[0]
@@ -80,10 +80,6 @@ config["preprocess_val"] = os.path.join(
 config['preprocess_test'] = os.path.join(root_path, "dataset",'preprocess', 'test_test.p')
 
 """Model"""
-config["n_hidden_after_deconv"] = 256
-config["max_pred_time"] = 5
-config["hz"] = 2
-
 config["rot_aug"] = False
 config["pred_range"] = [-100.0, 100.0, -100.0, 100.0]
 config["num_scales"] = 6
@@ -126,8 +122,6 @@ class Net(nn.Module):
         super(Net, self).__init__()
         self.config = config
 
-        self.actor_net_jhs = ActorNet_jhs(config)
-        self.mapping = nn.Linear(config["n_hidden_after_deconv"], config["n_actor"])
         self.actor_net = ActorNet(config)
         self.map_net = MapNet(config)
 
@@ -138,54 +132,11 @@ class Net(nn.Module):
 
         self.pred_net = PredNet(config)
 
-    def forward(self, data: Dict, mode='official') -> Dict[str, List[Tensor]]:
+    def forward(self, data: Dict) -> Dict[str, List[Tensor]]:
         # construct actor feature
         actors, actor_idcs = actor_gather(gpu(data["feats"]))
         actor_ctrs = gpu(data["ctrs"])
-        if mode == 'official':
-            actors = self.actor_net(actors)
-        elif mode == 'custom':
-            actors = torch.transpose(actors, 1, 2)
-            traj_length = []
-            for i in range(actors.shape[0]):
-                path = actors[i]
-                path_conv = path.clone()
-                for j in range(path.shape[0]):
-                    path_conv[j,:2] = torch.sum(path[:j+1,:2], dim=0)
-
-                init_idx = torch.where(path[:, -1] == 1)[0][0]
-                traj_cand = path_conv[init_idx:]
-                origin = traj_cand[-1, :2]
-                traj_cand[:,:2] = traj_cand[:,:2] - origin
-                cur_heading = torch.atan2(traj_cand[-1,1] - traj_cand[-2,1],traj_cand[-1,0] - traj_cand[-2,0])
-                rot = torch.tensor([[torch.cos(cur_heading), -torch.sin(cur_heading)], [torch.sin(cur_heading), torch.cos(cur_heading)]], device=traj_cand.device)
-                traj_cand[:,:2] = torch.matmul(rot, traj_cand[:,:2].T).T
-                while traj_cand.shape[0] < 5:
-                    new_point = traj_cand[0:1] - traj_cand[1:2] + traj_cand[0]
-                    traj_cand = torch.cat((new_point, traj_cand), dim=0)
-
-                for j in range(traj_cand.shape[0]):
-                    if j == 0:
-                        heading = torch.rad2deg(torch.atan2(traj_cand[j+1,1]-traj_cand[j+0,1], traj_cand[j+1,0]-traj_cand[j+0,0]))
-
-                    elif j < traj_cand.shape[0] -1:
-                        heading_1 = torch.rad2deg(torch.atan2(traj_cand[j+1,1]-traj_cand[j+0,1], traj_cand[j+1,0]-traj_cand[j+0,0]))
-                        heading_2 = torch.rad2deg(torch.atan2(traj_cand[j,1]-traj_cand[j-1,1], traj_cand[j,0]-traj_cand[j-1,0]))
-                        heading = (heading_1 + heading_2)/2
-                    else:
-                        heading = torch.rad2deg(torch.atan2(traj_cand[j,1]-traj_cand[j-1,1], traj_cand[j,0]-traj_cand[j-1,0]))
-                    traj_cand[j,2] = heading
-
-                traj_length.append(int(traj_cand.shape[0]/5))
-                if i == 0:
-                    trajectory = torch.unsqueeze(traj_cand, dim=0)
-                else:
-                    trajectory_tmp = torch.unsqueeze(traj_cand, dim=0)
-                    trajectory = torch.cat((trajectory, trajectory_tmp), dim=0)
-
-
-            # trajectory, traj_length
-            actors = self.actor_net_jhs(trajectory, traj_length, mode='lanegcn')
+        actors = self.actor_net(actors)
 
         # construct map features
         graph = graph_gather(to_long(gpu(data["graph"])))

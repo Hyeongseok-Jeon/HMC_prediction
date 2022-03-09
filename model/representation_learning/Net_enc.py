@@ -69,6 +69,29 @@ class BackBone(nn.Module):
 
             return repres_batch, seg_length, trajectory_aug
 
+        elif mode == 'lanegcn':
+            traj_length_aug = traj_length.copy()
+            trajectory_aug = []
+            for i in range(len(traj_length)):
+                trajectory_aug.append(trajectory[i:i + 1, :traj_length_aug[i], :])
+            # hz2_index.reverse()
+            seg_length = []
+            for i in range(len(traj_length_aug)):
+                seg_length.append(int(traj_length_aug[i]/5))
+
+            enc_in = torch.transpose(enc_in, 1, 2)
+            ar_in = self.encoder(enc_in)
+            representation = self.autoregressive(ar_in, seg_length)
+
+            for i in range(len(seg_length)):
+                if i == 0:
+                    repres_batch = representation[i, :seg_length[i], :]
+                else:
+                    repres_batch_tmp = representation[i, :seg_length[i], :]
+                    repres_batch = torch.cat((repres_batch, repres_batch_tmp), axis=0)
+
+            return repres_batch, seg_length, trajectory_aug
+
         else:
             seg_length = []
             for i in range(len(traj_length)):

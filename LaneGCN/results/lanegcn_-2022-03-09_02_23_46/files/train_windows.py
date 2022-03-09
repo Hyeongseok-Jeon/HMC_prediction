@@ -32,8 +32,7 @@ except:
     from LaneGCN.utils import Logger, load_pretrain
 
 
-# cur_path = os.path.abspath(__file__)
-cur_path = os.getcwd() + '/LaneGCN/train_window.py'
+cur_path = os.path.abspath(__file__)
 root_path = os.path.dirname(os.path.dirname(cur_path)) + '/LaneGCN'
 sys.path.append(root_path)
 
