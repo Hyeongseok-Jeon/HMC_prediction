@@ -176,7 +176,7 @@ def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=
         epoch += epoch_per_batch
         data = dict(data)
 
-        output = net(data)
+        output = net(data, mode='custom')
         loss_out = loss(output, data)
         post_out = post_process(output, data)
         post_process.append(metrics, loss_out, post_out)
@@ -215,7 +215,7 @@ def val(config, data_loader, net, loss, post_process, epoch):
     for i, data in enumerate(data_loader):
         data = dict(data)
         with torch.no_grad():
-            output = net(data)
+            output = net(data, mode='custom')
             loss_out = loss(output, data)
             post_out = post_process(output, data)
             post_process.append(metrics, loss_out, post_out)
