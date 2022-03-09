@@ -68,18 +68,20 @@ for epoch in range(config["epoch"]):
     correct_num_tot = 0
     calc_num_tot = 0
     loss_tot = 0
+    full_length_num_tot = 0
     epoch_time = time.time()
     for i, data in enumerate(dataloader_train):
         trajectory, traj_length = data
         trajectory = trajectory.float().cuda()
         optimizer.zero_grad()
 
-        batch_accuracy, batch_loss, batch_num = model(trajectory, traj_length)
+        batch_accuracy, batch_loss, batch_num, full_length_num = model(trajectory, traj_length)
         batch_loss.backward()
         optimizer.step()
         lr = optimizer.update_learning_rate()
 
-        correct_num_tot += int(batch_accuracy * batch_num)
+        correct_num_tot += int(batch_accuracy * full_length_num)
+        full_length_num_tot += full_length_num
         calc_num_tot += batch_num
         loss_tot += -batch_loss.item() * batch_num
 
@@ -88,9 +90,8 @@ for epoch in range(config["epoch"]):
         else:
             print('Epoch: %d \t Time: %3.2f sec \t Data: %d/%d \t Loss: %7.5f' % (epoch+1, time.time() - epoch_time, config['batch_size'] * i + data[0].shape[0], len(dataloader_train.dataset), batch_loss.item()))
 
-    nce_tot = -loss_tot / calc_num_tot
     logger.info('===> Train Epoch: {} \t Accuracy: {:.2f}% \t Loss: {:.8f}'.format(
-        epoch + 1, 100 * correct_num_tot / calc_num_tot, nce_tot
+        epoch + 1, 100 * correct_num_tot / full_length_num_tot, -loss_tot / calc_num_tot
     ))
 
     if (epoch + 1) % config['validataion_period'] == 0:
@@ -98,25 +99,28 @@ for epoch in range(config["epoch"]):
         correct_num_tot_val = 0
         calc_num_tot_val = 0
         loss_tot_val = 0
+        full_length_num_tot_val = 0
+
         val_time = time.time()
         for i, data in enumerate(dataloader_val):
             trajectory, traj_length = data
             trajectory = trajectory.float().cuda()
-            batch_accuracy, batch_loss, batch_num = model(trajectory, traj_length)
-            correct_num_tot_val += int(batch_accuracy * batch_num)
+            batch_accuracy, batch_loss, batch_num, full_length_num = model(trajectory, traj_length)
+
+            correct_num_tot_val += int(batch_accuracy * full_length_num)
+            full_length_num_tot_val += full_length_num
             calc_num_tot_val += batch_num
             loss_tot_val += -batch_loss.item() * batch_num
 
-        nce_tot_val = -loss_tot_val / calc_num_tot_val
         logger.info('===> Validation after Training epoch: {} \t Accuracy: {:.2f}%\tLoss: {:.8f}'.format(
-            epoch + 1, 100 * correct_num_tot_val / calc_num_tot_val, nce_tot_val
+            epoch + 1, 100 * correct_num_tot_val / full_length_num_tot_val, -loss_tot_val / calc_num_tot_val
         ))
         model.train()
 
     if (epoch + 1) % config['ckpt_period'] == 0:
         EPOCH = epoch + 1
         PATH = ckpt_dir + "/model_" + str(EPOCH) + ".pt"
-        LOSS = nce_tot
+        LOSS = -loss_tot / calc_num_tot
         torch.save({
             'epoch': EPOCH,
             'model_state_dict': model.state_dict(),

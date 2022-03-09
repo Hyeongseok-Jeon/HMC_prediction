@@ -203,6 +203,7 @@ class BackBone(nn.Module):
                         correct = torch.sum(torch.eq(torch.argmax(self.softmax(total), dim=0), torch.arange(0, torch.sum(batch_idx), device=encode_samples[0].device)))  # correct is a tensor
 
                 nce /= -1. * calc_num
-                accuracy = 1. * correct.item() / calc_num
+                full_length_num = torch.sum(batch_idx)
+                accuracy = 1. * correct.item() / full_length_num
 
-                return accuracy, nce, calc_num
+                return accuracy, nce, calc_num, full_length_num
