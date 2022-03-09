@@ -77,9 +77,9 @@ class BackBone(nn.Module):
 
             for i in range(len(seg_length)):
                 if i == 0:
-                    repres_batch = representation[i, seg_length[i]-1:seg_length[i], :]
+                    repres_batch = representation[i, seg_length[i] - 1:seg_length[i], :]
                 else:
-                    repres_batch_tmp = representation[i, seg_length[i]-1:seg_length[i], :]
+                    repres_batch_tmp = representation[i, seg_length[i] - 1:seg_length[i], :]
                     repres_batch = torch.cat((repres_batch, repres_batch_tmp), axis=0)
 
             return repres_batch
@@ -137,12 +137,23 @@ class BackBone(nn.Module):
             elif mode == 'train':
                 seg_length = []
                 cur_times = []
-
                 for i in range(len(traj_length)):
                     if traj_length[i] - 10 * self.config["max_pred_time"] < 5:
                         cur_time = torch.tensor([4])
                     else:
                         cur_time = torch.randint(4, traj_length[i] - 10 * self.config["max_pred_time"], size=(1,))
+                    origin = trajectory[i, cur_time[0], :2]
+                    heading = -trajectory[i, cur_time[0], 2]
+                    rot = torch.tensor([[torch.cos(torch.deg2rad(heading)), -torch.sin(torch.deg2rad(heading))], [torch.sin(torch.deg2rad(heading)), torch.cos(torch.deg2rad(heading))]], device=trajectory[0].device)
+
+                    # plt.scatter(trajectory[i, :, 0].cpu(), trajectory[i, :, 1].cpu())
+                    # plt.scatter(origin[0].cpu(), origin[1].cpu())
+                    # plt.axis('equal')
+
+                    trajectory[i, :, :2] = trajectory[i, :, :2] - origin
+                    trajectory[i, :, :2] = torch.transpose(torch.mm(rot, torch.transpose(trajectory[i, :, :2], 0, 1)), 0, 1)
+                    trajectory[i, :, 2] = torch.deg2rad(torch.fmod(trajectory[i, :, 2] + heading + 720, 360))
+                    trajectory[i, trajectory[i, :, 2] > torch.pi, 2] = trajectory[i, trajectory[i, :, 2] > torch.pi, 2] - 2*torch.pi
                     hz2_index = []
                     j = 0
                     while True:
@@ -152,23 +163,23 @@ class BackBone(nn.Module):
                             j = j + 1
                         else:
                             break
-                    hz2_index = hz2_index + [cur_time.item()+5*(k+1) for k in range(10)]
-                    hz2_index.append(min(hz2_index)-5)
+                    hz2_index = hz2_index + [cur_time.item() + 5 * (k + 1) for k in range(10)]
+                    hz2_index.append(min(hz2_index) - 5)
                     hz2_index.sort()
                     hz2_index = [hz2_index[asdf] for asdf in range(len(hz2_index)) if hz2_index[asdf] < traj_length[i]]
-                    cur_times.append(hz2_index.index(cur_time)-1)
+                    cur_times.append(hz2_index.index(cur_time) - 1)
                     if i == 0:
-                        for k in range(len(hz2_index)-1):
+                        for k in range(len(hz2_index) - 1):
                             if k == 0:
-                                enc_in = trajectory[i:i + 1, hz2_index[k]+1:hz2_index[k+1]+1, :]
+                                enc_in = trajectory[i:i + 1, hz2_index[k] + 1:hz2_index[k + 1] + 1, :]
                             else:
-                                enc_in_tmp = trajectory[i:i + 1, hz2_index[k]+1:hz2_index[k+1]+1, :]
+                                enc_in_tmp = trajectory[i:i + 1, hz2_index[k] + 1:hz2_index[k + 1] + 1, :]
                                 enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
                     else:
                         for k in range(len(hz2_index) - 1):
-                            enc_in_tmp = trajectory[i:i + 1, hz2_index[k]+1:hz2_index[k+1]+1, :]
+                            enc_in_tmp = trajectory[i:i + 1, hz2_index[k] + 1:hz2_index[k + 1] + 1, :]
                             enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
-                    seg_length.append(len(hz2_index)-1)
+                    seg_length.append(len(hz2_index) - 1)
 
                 enc_in = torch.transpose(enc_in, 1, 2)
                 ar_in = self.encoder(enc_in)
@@ -177,10 +188,10 @@ class BackBone(nn.Module):
                 encode_samples = []
                 for i in range(len(seg_length)):
                     if i == 0:
-                        encode_samples.append(torch.unsqueeze(ar_in[cur_times[i]+1:cur_times[i] + self.config["max_pred_time"] * self.config["hz"] + 1], dim=1))
-                        representation_cur = representation[i:i+1, cur_times[i], :]
+                        encode_samples.append(torch.unsqueeze(ar_in[cur_times[i] + 1:cur_times[i] + self.config["max_pred_time"] * self.config["hz"] + 1], dim=1))
+                        representation_cur = representation[i:i + 1, cur_times[i], :]
                     else:
-                        representation_cur_tmp = representation[i:i+1, cur_times[i], :]
+                        representation_cur_tmp = representation[i:i + 1, cur_times[i], :]
                         encode_samples.append(torch.unsqueeze(ar_in[sum(seg_length[:i]) + cur_times[i] + 1:sum(seg_length[:i]) + cur_times[i] + self.config["max_pred_time"] * self.config["hz"] + 1], dim=1))
                         representation_cur = torch.cat((representation_cur, representation_cur_tmp), dim=0)
 
@@ -188,7 +199,7 @@ class BackBone(nn.Module):
                 for i in range(self.config["max_pred_time"] * self.config["hz"]):
                     linear = self.Wk[i]
                     pred[i] = linear(representation_cur)  # Wk*c_t e.g. size 8*512
-                pred_steps = torch.tensor([10 if seg_length[i] > 10 else seg_length[i]-1 for i in range(len(seg_length))])
+                pred_steps = torch.tensor([10 if seg_length[i] > 10 else seg_length[i] - 1 for i in range(len(seg_length))])
 
                 nce = 0
                 calc_num = 0
