@@ -185,6 +185,7 @@ class Net(nn.Module):
                     else:
                         trajectory = torch.cat((trajectory, trajectory_tmp), dim=0)
             actors = self.actor_net_jhs(trajectory, traj_length, mode='lanegcn')
+            actors = self.mapping(actors)
 
         # construct map features
         graph = graph_gather(to_long(gpu(data["graph"])))

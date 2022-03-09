@@ -75,7 +75,14 @@ class BackBone(nn.Module):
             ar_in = self.encoder(enc_in)
             representation = self.autoregressive(ar_in, seg_length)
 
-            return representation
+            for i in range(len(seg_length)):
+                if i == 0:
+                    repres_batch = representation[i, seg_length[i]-1:seg_length[i], :]
+                else:
+                    repres_batch_tmp = representation[i, seg_length[i]-1:seg_length[i], :]
+                    repres_batch = torch.cat((repres_batch, repres_batch_tmp), axis=0)
+
+            return repres_batch
 
         else:
             seg_length = []
