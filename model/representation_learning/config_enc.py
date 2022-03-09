@@ -25,6 +25,7 @@ config["ckpt_dir"] = root_path + '/ckpt/'
 config["learning_rate"] = 0.000005
 
 ''' data '''
+config["coordinate_conv"] = True
 config["data_dir_train"] = data_dir + 'train/'
 config["data_dir_val"] = data_dir + 'val/'
 config["data_dir_orig"] = data_dir + 'archive/'

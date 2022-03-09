@@ -85,34 +85,35 @@ class BackBone(nn.Module):
             return repres_batch
 
         else:
-            seg_length = []
-            for i in range(len(traj_length)):
-                hz2_index = []
-                j = 0
-                while True:
-                    idx_cand = int(traj_length[i] - 10 / self.config["hz"] * j)
-                    if idx_cand >= 0:
-                        hz2_index.append(idx_cand)
-                        j = j + 1
-                    else:
-                        break
-                hz2_index.sort()
-                seg_length.append(len(hz2_index) - 1)
-                if i == 0:
-                    for k in range(len(hz2_index) - 1):
-                        if k == 0:
-                            enc_in = trajectory[i:i + 1, hz2_index[k]:hz2_index[k + 1], :]
+            if mode == 'val':
+                seg_length = []
+                for i in range(len(traj_length)):
+                    hz2_index = []
+                    j = 0
+                    while True:
+                        idx_cand = int(traj_length[i] - 10 / self.config["hz"] * j)
+                        if idx_cand >= 0:
+                            hz2_index.append(idx_cand)
+                            j = j + 1
                         else:
+                            break
+                    hz2_index.sort()
+                    seg_length.append(len(hz2_index) - 1)
+                    if i == 0:
+                        for k in range(len(hz2_index) - 1):
+                            if k == 0:
+                                enc_in = trajectory[i:i + 1, hz2_index[k]:hz2_index[k + 1], :]
+                            else:
+                                enc_in_tmp = trajectory[i:i + 1, hz2_index[k]:hz2_index[k + 1], :]
+                                enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
+                    else:
+                        for k in range(len(hz2_index) - 1):
                             enc_in_tmp = trajectory[i:i + 1, hz2_index[k]:hz2_index[k + 1], :]
                             enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
-                else:
-                    for k in range(len(hz2_index) - 1):
-                        enc_in_tmp = trajectory[i:i + 1, hz2_index[k]:hz2_index[k + 1], :]
-                        enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
-            enc_in = torch.transpose(enc_in, 1, 2)
-            ar_in = self.encoder(enc_in)
-            representation = self.autoregressive(ar_in, seg_length)
-            if mode == 'val':
+                enc_in = torch.transpose(enc_in, 1, 2)
+                ar_in = self.encoder(enc_in)
+                representation = self.autoregressive(ar_in, seg_length)
+
                 encode_samples = ar_in[-1:, :]
                 representations = torch.tensor([representation.shape[1] - time_index - 1 for time_index in range(self.config["max_pred_time"] * self.config["hz"], 0, -1)], device=encode_samples[0].device)
                 pred_steps = torch.tensor([time_index for time_index in range(self.config["max_pred_time"] * self.config["hz"], 0, -1)], device=encode_samples[0].device)
@@ -134,42 +135,74 @@ class BackBone(nn.Module):
                 return pred, target, valuable_traj, pred_steps, hist_feature
 
             elif mode == 'train':
-                cur_time = []
+                seg_length = []
+                cur_times = []
+
+                for i in range(len(traj_length)):
+                    if traj_length[i] - 10 * self.config["max_pred_time"] < 5:
+                        cur_time = torch.tensor([4])
+                    else:
+                        cur_time = torch.randint(4, traj_length[i] - 10 * self.config["max_pred_time"], size=(1,))
+                    hz2_index = []
+                    j = 0
+                    while True:
+                        idx_cand = int(cur_time - 10 / self.config["hz"] * j)
+                        if idx_cand >= 4:
+                            hz2_index.append(idx_cand)
+                            j = j + 1
+                        else:
+                            break
+                    hz2_index = hz2_index + [cur_time.item()+5*(k+1) for k in range(10)]
+                    hz2_index.append(min(hz2_index)-5)
+                    hz2_index.sort()
+                    hz2_index = [hz2_index[asdf] for asdf in range(len(hz2_index)) if hz2_index[asdf] < traj_length[i]]
+                    cur_times.append(hz2_index.index(cur_time)-1)
+                    if i == 0:
+                        for k in range(len(hz2_index)-1):
+                            if k == 0:
+                                enc_in = trajectory[i:i + 1, hz2_index[k]+1:hz2_index[k+1]+1, :]
+                            else:
+                                enc_in_tmp = trajectory[i:i + 1, hz2_index[k]+1:hz2_index[k+1]+1, :]
+                                enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
+                    else:
+                        for k in range(len(hz2_index) - 1):
+                            enc_in_tmp = trajectory[i:i + 1, hz2_index[k]+1:hz2_index[k+1]+1, :]
+                            enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
+                    seg_length.append(len(hz2_index)-1)
+
+                enc_in = torch.transpose(enc_in, 1, 2)
+                ar_in = self.encoder(enc_in)
+                representation = self.autoregressive(ar_in, seg_length)
+
                 encode_samples = []
                 for i in range(len(seg_length)):
-                    if seg_length[i] > self.config["max_pred_time"] * self.config["hz"] + 1:
-                        cur_time.append(torch.randint(seg_length[i] - self.config["max_pred_time"] * self.config["hz"] - 1, size=(1,)))
-                    else:
-                        cur_time.append(torch.randint(1, size=(1,)))
                     if i == 0:
-                        encode_samples.append(torch.unsqueeze(ar_in[cur_time[i] + 1:cur_time[i] + self.config["max_pred_time"] * self.config["hz"] + 1], dim=1))
-                        representation_cur = representation[i, cur_time[i], :]
+                        encode_samples.append(torch.unsqueeze(ar_in[cur_times[i]+1:cur_times[i] + self.config["max_pred_time"] * self.config["hz"] + 1], dim=1))
+                        representation_cur = representation[i:i+1, cur_times[i], :]
                     else:
-                        representation_cur_tmp = representation[i, cur_time[i], :]
-                        encode_samples.append(torch.unsqueeze(ar_in[sum(seg_length[:i]) + cur_time[i] + 1:sum(seg_length[:i]) + cur_time[i] + self.config["max_pred_time"] * self.config["hz"] + 1], dim=1))
+                        representation_cur_tmp = representation[i:i+1, cur_times[i], :]
+                        encode_samples.append(torch.unsqueeze(ar_in[sum(seg_length[:i]) + cur_times[i] + 1:sum(seg_length[:i]) + cur_times[i] + self.config["max_pred_time"] * self.config["hz"] + 1], dim=1))
                         representation_cur = torch.cat((representation_cur, representation_cur_tmp), dim=0)
 
                 pred = torch.empty((self.config["max_pred_time"] * self.config["hz"], len(seg_length), 256), device=encode_samples[0].device).float()  # e.g. size 12*8*512
                 for i in range(self.config["max_pred_time"] * self.config["hz"]):
                     linear = self.Wk[i]
                     pred[i] = linear(representation_cur)  # Wk*c_t e.g. size 8*512
-                pred_steps = seg_length.copy()
-                for i in range(len(pred_steps)):
-                    pred_steps[i] -= 1
-                pred_steps = torch.tensor(pred_steps, device=encode_samples[0].device)
+                pred_steps = torch.tensor([10 if seg_length[i] > 10 else seg_length[i]-1 for i in range(len(seg_length))])
 
                 nce = 0
+                calc_num = 0
                 for i in range(self.config["max_pred_time"] * self.config["hz"]):
                     batch_idx = pred_steps > i
                     if torch.sum(batch_idx) == 0:
                         pass
                     else:
                         total = torch.mm(torch.cat([encode_samples[j][i] for j in range(len(pred_steps)) if batch_idx[j] == True], dim=0), torch.transpose(pred[i, batch_idx], 0, 1))  # e.g. size 8*8
+                        calc_num += torch.diag(self.lsoftmax(total)).shape[0]
                         nce += torch.sum(torch.diag(self.lsoftmax(total)))  # nce is a tensor
                         correct = torch.sum(torch.eq(torch.argmax(self.softmax(total), dim=0), torch.arange(0, torch.sum(batch_idx), device=encode_samples[0].device)))  # correct is a tensor
 
-                calc_step = sum([torch.tensor(self.config["max_pred_time"] * self.config["hz"], device=encode_samples[0].device) if pred_steps[i] > self.config["max_pred_time"] * self.config["hz"] - 1 else pred_steps[i] for i in range(len(pred_steps))])
-                nce /= -1. * calc_step
-                accuracy = 1. * correct.item() / torch.sum(batch_idx)
+                nce /= -1. * calc_num
+                accuracy = 1. * correct.item() / calc_num
 
-                return accuracy, nce, torch.sum(batch_idx), calc_step
+                return accuracy, nce, calc_num
