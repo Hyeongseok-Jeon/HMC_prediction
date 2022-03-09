@@ -157,34 +157,33 @@ class Net(nn.Module):
                 traj_cand = path_conv[init_idx:]
                 origin = traj_cand[-1, :2]
                 traj_cand[:,:2] = traj_cand[:,:2] - origin
-                cur_heading = torch.atan2(traj_cand[-1,1] - traj_cand[-2,1],traj_cand[-1,0] - traj_cand[-2,0])
+                if traj_cand.shape[0] == 1:
+                    cur_heading = torch.tensor(0, device=traj_cand.device)
+                else:
+                    cur_heading = torch.atan2(traj_cand[-1,1] - traj_cand[-2,1],traj_cand[-1,0] - traj_cand[-2,0])
                 rot = torch.tensor([[torch.cos(cur_heading), -torch.sin(cur_heading)], [torch.sin(cur_heading), torch.cos(cur_heading)]], device=traj_cand.device)
                 traj_cand[:,:2] = torch.matmul(rot, traj_cand[:,:2].T).T
+
                 while traj_cand.shape[0] < 5:
-                    new_point = traj_cand[0:1] - traj_cand[1:2] + traj_cand[0]
+                    if traj_cand.shape[0] == 1:
+                        new_point = traj_cand.clone()
+                    else:
+                        new_point = traj_cand[0:1] - traj_cand[1:2] + traj_cand[0]
                     traj_cand = torch.cat((new_point, traj_cand), dim=0)
 
-                for j in range(traj_cand.shape[0]):
-                    if j == 0:
-                        heading = torch.rad2deg(torch.atan2(traj_cand[j+1,1]-traj_cand[j+0,1], traj_cand[j+1,0]-traj_cand[j+0,0]))
-
-                    elif j < traj_cand.shape[0] -1:
-                        heading_1 = torch.rad2deg(torch.atan2(traj_cand[j+1,1]-traj_cand[j+0,1], traj_cand[j+1,0]-traj_cand[j+0,0]))
-                        heading_2 = torch.rad2deg(torch.atan2(traj_cand[j,1]-traj_cand[j-1,1], traj_cand[j,0]-traj_cand[j-1,0]))
-                        heading = (heading_1 + heading_2)/2
-                    else:
-                        heading = torch.rad2deg(torch.atan2(traj_cand[j,1]-traj_cand[j-1,1], traj_cand[j,0]-traj_cand[j-1,0]))
-                    traj_cand[j,2] = heading
+                disp = traj_cand[1:, :2] - traj_cand[:-1, :2]
+                angle = torch.rad2deg(torch.atan2(disp[:,1], disp[:,0]))
+                angles = (angle[:-1] + angle[1:])/2
+                angles_tot = torch.cat((angle[0:1], angles, angle[-1:]))
+                traj_cand[:,2] = angles_tot
 
                 traj_length.append(int(traj_cand.shape[0]/5))
-                if i == 0:
-                    trajectory = torch.unsqueeze(traj_cand, dim=0)
-                else:
-                    trajectory_tmp = torch.unsqueeze(traj_cand, dim=0)
-                    trajectory = torch.cat((trajectory, trajectory_tmp), dim=0)
-
-
-            # trajectory, traj_length
+                for j in range(traj_length[i]-1, -1, -1):
+                    trajectory_tmp = torch.unsqueeze(traj_cand[traj_cand.shape[0] - 5*(j+1): traj_cand.shape[0] - 5*j,:], dim= 0)
+                    if i == 0 and j == traj_length[i]-1:
+                        trajectory = trajectory_tmp
+                    else:
+                        trajectory = torch.cat((trajectory, trajectory_tmp), dim=0)
             actors = self.actor_net_jhs(trajectory, traj_length, mode='lanegcn')
 
         # construct map features
