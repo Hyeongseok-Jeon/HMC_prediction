@@ -334,3 +334,7 @@
 2022-03-10 23:17:35,611 - ===> Validation after Training epoch: 95 	 Accuracy: 26.45%	Loss: 4.76416644
 2022-03-10 23:28:14,036 - ===> Train Epoch: 96 	 Accuracy: 99.35% 	 Loss: 0.07046122
 2022-03-10 23:29:41,952 - ===> Validation after Training epoch: 96 	 Accuracy: 26.05%	Loss: 4.82300168
+2022-03-10 23:40:20,455 - ===> Train Epoch: 97 	 Accuracy: 99.33% 	 Loss: 0.07108746
+2022-03-10 23:41:48,266 - ===> Validation after Training epoch: 97 	 Accuracy: 26.17%	Loss: 4.80251792
+2022-03-10 23:52:26,459 - ===> Train Epoch: 98 	 Accuracy: 99.29% 	 Loss: 0.07126884
+2022-03-10 23:53:54,248 - ===> Validation after Training epoch: 98 	 Accuracy: 26.70%	Loss: 4.83420129
