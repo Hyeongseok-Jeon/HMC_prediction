@@ -325,3 +325,12 @@
 2022-03-10 22:27:39,180 - ===> Train Epoch: 91 	 Accuracy: 99.26% 	 Loss: 0.07342795
 2022-03-10 22:29:07,035 - ===> Validation after Training epoch: 91 	 Accuracy: 26.74%	Loss: 4.76749401
 2022-03-10 22:39:53,909 - ===> Train Epoch: 92 	 Accuracy: 99.32% 	 Loss: 0.07297451
+2022-03-10 22:41:21,046 - ===> Validation after Training epoch: 92 	 Accuracy: 26.14%	Loss: 4.80110232
+2022-03-10 22:52:00,051 - ===> Train Epoch: 93 	 Accuracy: 99.34% 	 Loss: 0.07227098
+2022-03-10 22:53:27,726 - ===> Validation after Training epoch: 93 	 Accuracy: 26.51%	Loss: 4.77904648
+2022-03-10 23:04:02,906 - ===> Train Epoch: 94 	 Accuracy: 99.34% 	 Loss: 0.07149507
+2022-03-10 23:05:30,870 - ===> Validation after Training epoch: 94 	 Accuracy: 26.11%	Loss: 4.80954955
+2022-03-10 23:16:07,435 - ===> Train Epoch: 95 	 Accuracy: 99.33% 	 Loss: 0.07151373
+2022-03-10 23:17:35,611 - ===> Validation after Training epoch: 95 	 Accuracy: 26.45%	Loss: 4.76416644
+2022-03-10 23:28:14,036 - ===> Train Epoch: 96 	 Accuracy: 99.35% 	 Loss: 0.07046122
+2022-03-10 23:29:41,952 - ===> Validation after Training epoch: 96 	 Accuracy: 26.05%	Loss: 4.82300168
