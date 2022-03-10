@@ -109,18 +109,6 @@ loss_tot = 0
 loss_calc_num_tot = 0
 epoch_time = time.time()
 
-pred_bag = [np.empty(shape=(1, 256)) for _ in range(10)]
-pred_bag_train = [np.empty(shape=(1, 256)) for _ in range(10)]
-pred_bag_val = [np.empty(shape=(1, 256)) for _ in range(10)]
-hist_bag = [np.empty(shape=(1, 128)) for _ in range(10)]
-hist_bag_train = [np.empty(shape=(1, 128)) for _ in range(10)]
-hist_bag_val = [np.empty(shape=(1, 128)) for _ in range(10)]
-inst_num_bag = [0 for _ in range(10)]
-inst_num_bag_train = [0 for _ in range(10)]
-inst_num_bag_val = [0 for _ in range(10)]
-traj_bag = []
-traj_bag_train = []
-traj_bag_val = []
 maneuver_bag = []
 maneuver_bag_train = []
 maneuver_bag_val = []
@@ -133,40 +121,15 @@ for i, data in enumerate(dataloader_tot):
 
     representation_time_bag = model(trajectory, traj_length, mode='val')
 
-    pred = pred.cpu().detach().numpy()
-    target = target.cpu().detach().numpy()
-    valuable_traj = valuable_traj.cpu().detach().numpy()
-    pred_steps = pred_steps.cpu().detach().numpy()
-    hist_feature = hist_feature.cpu().detach().numpy()
-
-    traj_bag.append(valuable_traj)
-    if pred.shape[0] < config["max_pred_time"] * config["hz"]:
-        masking_num = config["max_pred_time"] * config["hz"] - pred.shape[0]
-        pred_steps = np.concatenate((np.array([config["max_pred_time"] * config["hz"] - k for k in range(masking_num)]), pred_steps), axis=0)
-        pred = np.concatenate((np.zeros_like(pred[:masking_num]), pred), axis=0)
-        hist_feature = np.concatenate((np.zeros_like(hist_feature[:masking_num]), hist_feature), axis=0)
-
-
+#TODO: maneuver bag 처리해야댐
     if i == 0:
-        target_bag = target
-        maneuver_bag = maneuvers
-        conversion_bag = conversion
+        context_bag = [repres.cpu().detach().numpy() for repres in representation_time_bag]
     else:
-        target_bag_tmp = target
-        target_bag = np.concatenate((target_bag, target_bag_tmp), axis=0)
-        maneuver_bag_tmp = maneuvers
-        maneuver_bag = np.concatenate((maneuver_bag, maneuver_bag_tmp), axis=0)
-        conversion_bag_tmp = conversion
-        conversion_bag = np.concatenate((conversion_bag, conversion_bag_tmp), axis=0)
-
-    for j in range(pred.shape[0]):
-        if inst_num_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]] == 0:
-            pred_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]] = pred[j:j + 1, :]
-            hist_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]] = hist_feature[j:j + 1, :]
-        else:
-            pred_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]] = np.concatenate((pred_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]], pred[j:j + 1, :]), axis=0)
-            hist_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]] = np.concatenate((hist_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]], hist_feature[j:j + 1, :]), axis=0)
-        inst_num_bag[config["max_pred_time"] * config["hz"] - pred_steps[j]] += 1
+        for j in range(len(representation_time_bag)):
+            if representation_time_bag[j] == None:
+                pass
+            else:
+                context_bag[j] = np.concatenate((context_bag[j], representation_time_bag[j].cpu().detach().numpy()), axis=0)
 
 
 for i, data in enumerate(dataloader_train):
