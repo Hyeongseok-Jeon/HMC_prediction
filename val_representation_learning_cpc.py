@@ -84,17 +84,12 @@ config["batch_size"] = 1
 config["LC_multiple"] = 1
 dataset_train = pred_loader_1(config, 'train', mode='val')
 dataset_val = pred_loader_1(config, 'val', mode='val')
-dataset_tot = pred_loader_1(config, 'orig', mode='val')
 
 dataloader_train = DataLoader(dataset_train,
                               batch_size=config["batch_size"],
                               shuffle=True,
                               collate_fn=collate_fn)
 dataloader_val = DataLoader(dataset_val,
-                            batch_size=config["batch_size"],
-                            shuffle=True,
-                            collate_fn=collate_fn)
-dataloader_tot = DataLoader(dataset_tot,
                             batch_size=config["batch_size"],
                             shuffle=True,
                             collate_fn=collate_fn)
@@ -109,113 +104,54 @@ loss_tot = 0
 loss_calc_num_tot = 0
 epoch_time = time.time()
 
-maneuver_bag = []
-maneuver_bag_train = []
-maneuver_bag_val = []
-
-for i, data in enumerate(dataloader_tot):
+for i, data in enumerate(dataloader_train):
     trajectory, traj_length, conversion, maneuvers = data
-    maneuvers = maneuvers[0]
-    conversion = conversion[0]
+    maneuvers = maneuvers[0].numpy()
     trajectory = trajectory.float().cuda()
 
     representation_time_bag = model(trajectory, traj_length, mode='val')
-
-#TODO: maneuver bag 처리해야댐
     if i == 0:
-        context_bag = [repres.cpu().detach().numpy() for repres in representation_time_bag]
+        context_bag_train = [repres.cpu().detach().numpy() for repres in representation_time_bag]
+        maneuver_bag_train = [np.repeat(maneuvers, config["val_augmentation"], axis=0) for _ in range(11)]
+        context_bag_tot = [repres.cpu().detach().numpy() for repres in representation_time_bag]
+        maneuver_bag_tot = [np.repeat(maneuvers, config["val_augmentation"], axis=0) for _ in range(11)]
     else:
         for j in range(len(representation_time_bag)):
             if representation_time_bag[j] == None:
                 pass
             else:
-                context_bag[j] = np.concatenate((context_bag[j], representation_time_bag[j].cpu().detach().numpy()), axis=0)
-
-
-for i, data in enumerate(dataloader_train):
-    trajectory, traj_length, conversion, maneuvers = data
-    maneuvers = maneuvers[0]
-    conversion = conversion[0]
-    trajectory = trajectory.float().cuda()
-
-    pred, target, valuable_traj, pred_steps, hist_feature = model(trajectory, traj_length, mode='val')
-    pred = pred.cpu().detach().numpy()
-    target = target.cpu().detach().numpy()
-    valuable_traj = valuable_traj.cpu().detach().numpy()
-    pred_steps = pred_steps.cpu().detach().numpy()
-    hist_feature = hist_feature.cpu().detach().numpy()
-
-    traj_bag_train.append(valuable_traj)
-    if pred.shape[0] < config["max_pred_time"] * config["hz"]:
-        masking_num = config["max_pred_time"] * config["hz"] - pred.shape[0]
-        pred_steps = np.concatenate((np.array([config["max_pred_time"] * config["hz"] - k for k in range(masking_num)]), pred_steps), axis=0)
-        pred = np.concatenate((np.zeros_like(pred[:masking_num]), pred), axis=0)
-        hist_feature = np.concatenate((np.zeros_like(hist_feature[:masking_num]), hist_feature), axis=0)
-
-
-    if i == 0:
-        target_bag_train = target
-        maneuver_bag_train = maneuvers
-        conversion_bag_train = conversion
-    else:
-        target_bag_tmp = target
-        target_bag_train = np.concatenate((target_bag_train, target_bag_tmp), axis=0)
-        maneuver_bag_tmp = maneuvers
-        maneuver_bag_train = np.concatenate((maneuver_bag_train, maneuver_bag_tmp), axis=0)
-        conversion_bag_tmp = conversion
-        conversion_bag_train = np.concatenate((conversion_bag_train, conversion_bag_tmp), axis=0)
-
-    for j in range(pred.shape[0]):
-        if inst_num_bag_train[config["max_pred_time"] * config["hz"] - pred_steps[j]] == 0:
-            pred_bag_train[config["max_pred_time"] * config["hz"] - pred_steps[j]] = pred[j:j + 1, :]
-            hist_bag_train[config["max_pred_time"] * config["hz"] - pred_steps[j]] = hist_feature[j:j + 1, :]
-        else:
-            pred_bag_train[config["max_pred_time"] * config["hz"] - pred_steps[j]] = np.concatenate((pred_bag_train[config["max_pred_time"] * config["hz"] - pred_steps[j]], pred[j:j + 1, :]), axis=0)
-            hist_bag_train[config["max_pred_time"] * config["hz"] - pred_steps[j]] = np.concatenate((hist_bag_train[config["max_pred_time"] * config["hz"] - pred_steps[j]], hist_feature[j:j + 1, :]), axis=0)
-        inst_num_bag_train[config["max_pred_time"] * config["hz"] - pred_steps[j]] += 1
+                context_bag_train[j] = np.concatenate((context_bag_train[j], representation_time_bag[j].cpu().detach().numpy()), axis=0)
+                maneuver_bag_train[j] = np.concatenate((maneuver_bag_train[j], np.repeat(maneuvers, config["val_augmentation"], axis=0)), axis=0)
+                context_bag_tot[j] = np.concatenate((context_bag_tot[j], representation_time_bag[j].cpu().detach().numpy()), axis=0)
+                maneuver_bag_tot[j] = np.concatenate((maneuver_bag_tot[j], np.repeat(maneuvers, config["val_augmentation"], axis=0)), axis=0)
 
 
 for i, data in enumerate(dataloader_val):
     trajectory, traj_length, conversion, maneuvers = data
-    maneuvers = maneuvers[0]
-    conversion = conversion[0]
+    maneuvers = maneuvers[0].numpy()
     trajectory = trajectory.float().cuda()
 
-    pred, target, valuable_traj, pred_steps, hist_feature = model(trajectory, traj_length, mode='val')
-    pred = pred.cpu().detach().numpy()
-    target = target.cpu().detach().numpy()
-    valuable_traj = valuable_traj.cpu().detach().numpy()
-    pred_steps = pred_steps.cpu().detach().numpy()
-    hist_feature = hist_feature.cpu().detach().numpy()
-
-    traj_bag_val.append(valuable_traj)
-    if pred.shape[0] < config["max_pred_time"] * config["hz"]:
-        masking_num = config["max_pred_time"] * config["hz"] - pred.shape[0]
-        pred_steps = np.concatenate((np.array([config["max_pred_time"] * config["hz"] - k for k in range(masking_num)]), pred_steps), axis=0)
-        pred = np.concatenate((np.zeros_like(pred[:masking_num]), pred), axis=0)
-        hist_feature = np.concatenate((np.zeros_like(hist_feature[:masking_num]), hist_feature), axis=0)
-
-
+    representation_time_bag = model(trajectory, traj_length, mode='val')
     if i == 0:
-        target_bag_val = target
-        maneuver_bag_val = maneuvers
-        conversion_bag_val = conversion
+        context_bag_val = [None if repres == None else repres.cpu().detach().numpy() for repres in representation_time_bag]
+        maneuver_bag_val = [None if context_bag_val[i] is None else np.repeat(maneuvers, config["val_augmentation"], axis=0) for i in range(11)]
+        context_bag_tot[j] = np.concatenate((context_bag_tot[j], representation_time_bag[j].cpu().detach().numpy()), axis=0)
+        maneuver_bag_tot[j] = np.concatenate((maneuver_bag_tot[j], np.repeat(maneuvers, config["val_augmentation"], axis=0)), axis=0)
     else:
-        target_bag_tmp = target
-        target_bag_val = np.concatenate((target_bag_val, target_bag_tmp), axis=0)
-        maneuver_bag_tmp = maneuvers
-        maneuver_bag_val = np.concatenate((maneuver_bag_val, maneuver_bag_tmp), axis=0)
-        conversion_bag_tmp = conversion
-        conversion_bag_val = np.concatenate((conversion_bag_val, conversion_bag_tmp), axis=0)
-
-    for j in range(pred.shape[0]):
-        if inst_num_bag_val[config["max_pred_time"] * config["hz"] - pred_steps[j]] == 0:
-            pred_bag_val[config["max_pred_time"] * config["hz"] - pred_steps[j]] = pred[j:j + 1, :]
-            hist_bag_val[config["max_pred_time"] * config["hz"] - pred_steps[j]] = hist_feature[j:j + 1, :]
-        else:
-            pred_bag_val[config["max_pred_time"] * config["hz"] - pred_steps[j]] = np.concatenate((pred_bag_val[config["max_pred_time"] * config["hz"] - pred_steps[j]], pred[j:j + 1, :]), axis=0)
-            hist_bag_val[config["max_pred_time"] * config["hz"] - pred_steps[j]] = np.concatenate((hist_bag_val[config["max_pred_time"] * config["hz"] - pred_steps[j]], hist_feature[j:j + 1, :]), axis=0)
-        inst_num_bag_val[config["max_pred_time"] * config["hz"] - pred_steps[j]] += 1
+        for j in range(len(representation_time_bag)):
+            if representation_time_bag[j] is None:
+                pass
+            else:
+                if context_bag_val[j] is None:
+                    context_bag_val[j] = representation_time_bag[j].cpu().detach().numpy()
+                    maneuver_bag_val[j] = np.repeat(maneuvers, config["val_augmentation"], axis=0)
+                    context_bag_tot[j] = np.concatenate((context_bag_tot[j], representation_time_bag[j].cpu().detach().numpy()), axis=0)
+                    maneuver_bag_tot[j] = np.concatenate((maneuver_bag_tot[j], np.repeat(maneuvers, config["val_augmentation"], axis=0)), axis=0)
+                else:
+                    context_bag_val[j] = np.concatenate((context_bag_val[j], representation_time_bag[j].cpu().detach().numpy()), axis=0)
+                    maneuver_bag_val[j] = np.concatenate((maneuver_bag_val[j], np.repeat(maneuvers, config["val_augmentation"], axis=0)), axis=0)
+                    context_bag_tot[j] = np.concatenate((context_bag_tot[j], representation_time_bag[j].cpu().detach().numpy()), axis=0)
+                    maneuver_bag_tot[j] = np.concatenate((maneuver_bag_tot[j], np.repeat(maneuvers, config["val_augmentation"], axis=0)), axis=0)
 
 
 n_components = 2
@@ -223,68 +159,64 @@ tsne_hist = TSNE(n_components=n_components,
             perplexity=30,
             verbose=True)
 
-i=9
-maneuver_bags = maneuver_bag[pred_bag[i][:,0] != 0]
-hists = hist_bag[i][hist_bag[i][:,0] != 0]
-hist_tsne = tsne_hist.fit(hists)
+contexts_outlet = context_bag_tot[-1]
+context_tsne = tsne_hist.fit(contexts_outlet)
 
 for i in range(10):
-    maneuver_bags = maneuver_bag[pred_bag[i][:,0] != 0]
-    hists = hist_bag[i][hist_bag[i][:,0] != 0]
+    contexts = context_bag_tot[i]
     plt.figure()
-    hist_tsne_tmp = hist_tsne.transform(hists)
-    hist_tsne_u_turn = hist_tsne_tmp[maneuver_bags[:, 0] == 1]
-    hist_tsne_left_turn = hist_tsne_tmp[maneuver_bags[:, 1] == 1]
-    hist_tsne_go_straight = hist_tsne_tmp[maneuver_bags[:, 2] == 1]
-    hist_tsne_right_turn = hist_tsne_tmp[maneuver_bags[:, 3] == 1]
-    plt.scatter(hist_tsne_u_turn[:, 0], hist_tsne_u_turn[:, 1], c='r', label='U-Turn')
-    plt.scatter(hist_tsne_left_turn[:, 0], hist_tsne_left_turn[:, 1], c='g', label='Left Turn')
-    plt.scatter(hist_tsne_go_straight[:, 0], hist_tsne_go_straight[:, 1], c='b', label='Go Straight')
-    plt.scatter(hist_tsne_right_turn[:, 0], hist_tsne_right_turn[:, 1], c='c', label='Right Turn')
+    context_low_dim = context_tsne.transform(contexts)
+    context_low_dim_u_turn = context_low_dim[maneuver_bag_tot[i][:, 0] == 1]
+    context_low_dim_left_turn = context_low_dim[maneuver_bag_tot[i][:, 1] == 1]
+    context_low_dim_go_straight = context_low_dim[maneuver_bag_tot[i][:, 2] == 1]
+    context_low_dim_right_turn = context_low_dim[maneuver_bag_tot[i][:, 3] == 1]
+    plt.scatter(context_low_dim_go_straight[:, 0], context_low_dim_go_straight[:, 1], c='b', label='Go Straight')
+    plt.scatter(context_low_dim_right_turn[:, 0], context_low_dim_right_turn[:, 1], c='c', label='Right Turn')
+    plt.scatter(context_low_dim_left_turn[:, 0], context_low_dim_left_turn[:, 1], c='g', label='Left Turn')
+    plt.scatter(context_low_dim_u_turn[:, 0], context_low_dim_u_turn[:, 1], c='r', label='U-Turn')
     plt.legend(loc='upper right')
-    plt.xlim(-30, 40)
-    plt.ylim(-40, 40)
+    plt.xlim(-100, 120)
+    plt.ylim(-100, 120)
     plt.title('embeddings of hist observations: ' + str(0.5*(10-i)) +'sec before outlet')
     plt.savefig(tsne_dir+'/0_hist_embedding_on_hist_space_'+str(0.5*(10-i)) + 'sec_before_total.png')
     plt.close()
 
 
+
 for i in range(10):
-    maneuver_bags_train = maneuver_bag_train[pred_bag_train[i][:,0] != 0]
-    hists_train = hist_bag_train[i][hist_bag_train[i][:,0] != 0]
+    contexts = context_bag_train[i]
     plt.figure()
-    hist_tsne_tmp = hist_tsne.transform(hists_train)
-    hist_tsne_u_turn = hist_tsne_tmp[maneuver_bags_train[:, 0] == 1]
-    hist_tsne_left_turn = hist_tsne_tmp[maneuver_bags_train[:, 1] == 1]
-    hist_tsne_go_straight = hist_tsne_tmp[maneuver_bags_train[:, 2] == 1]
-    hist_tsne_right_turn = hist_tsne_tmp[maneuver_bags_train[:, 3] == 1]
-    plt.scatter(hist_tsne_u_turn[:, 0], hist_tsne_u_turn[:, 1], c='r', label='U-Turn')
-    plt.scatter(hist_tsne_left_turn[:, 0], hist_tsne_left_turn[:, 1], c='g', label='Left Turn')
-    plt.scatter(hist_tsne_go_straight[:, 0], hist_tsne_go_straight[:, 1], c='b', label='Go Straight')
-    plt.scatter(hist_tsne_right_turn[:, 0], hist_tsne_right_turn[:, 1], c='c', label='Right Turn')
+    context_low_dim = context_tsne.transform(contexts)
+    context_low_dim_u_turn = context_low_dim[maneuver_bag_train[i][:, 0] == 1]
+    context_low_dim_left_turn = context_low_dim[maneuver_bag_train[i][:, 1] == 1]
+    context_low_dim_go_straight = context_low_dim[maneuver_bag_train[i][:, 2] == 1]
+    context_low_dim_right_turn = context_low_dim[maneuver_bag_train[i][:, 3] == 1]
+    plt.scatter(context_low_dim_go_straight[:, 0], context_low_dim_go_straight[:, 1], c='b', label='Go Straight')
+    plt.scatter(context_low_dim_right_turn[:, 0], context_low_dim_right_turn[:, 1], c='c', label='Right Turn')
+    plt.scatter(context_low_dim_left_turn[:, 0], context_low_dim_left_turn[:, 1], c='g', label='Left Turn')
+    plt.scatter(context_low_dim_u_turn[:, 0], context_low_dim_u_turn[:, 1], c='r', label='U-Turn')
     plt.legend(loc='upper right')
-    plt.xlim(-30, 40)
-    plt.ylim(-40, 40)
+    plt.xlim(-100, 120)
+    plt.ylim(-100, 120)
     plt.title('embeddings of hist observations: ' + str(0.5*(10-i)) +'sec before outlet')
     plt.savefig(tsne_dir+'/1_hist_embedding_on_hist_space_'+str(0.5*(10-i)) + 'sec_before_train.png')
     plt.close()
 
 for i in range(10):
-    maneuver_bags_val = maneuver_bag_val[pred_bag_val[i][:,0] != 0]
-    hists_val = hist_bag_val[i][hist_bag_val[i][:,0] != 0]
+    contexts = context_bag_val[i]
     plt.figure()
-    hist_tsne_tmp = hist_tsne.transform(hists_val)
-    hist_tsne_u_turn = hist_tsne_tmp[maneuver_bags_val[:, 0] == 1]
-    hist_tsne_left_turn = hist_tsne_tmp[maneuver_bags_val[:, 1] == 1]
-    hist_tsne_go_straight = hist_tsne_tmp[maneuver_bags_val[:, 2] == 1]
-    hist_tsne_right_turn = hist_tsne_tmp[maneuver_bags_val[:, 3] == 1]
-    plt.scatter(hist_tsne_u_turn[:, 0], hist_tsne_u_turn[:, 1], c='r', label='U-Turn')
-    plt.scatter(hist_tsne_left_turn[:, 0], hist_tsne_left_turn[:, 1], c='g', label='Left Turn')
-    plt.scatter(hist_tsne_go_straight[:, 0], hist_tsne_go_straight[:, 1], c='b', label='Go Straight')
-    plt.scatter(hist_tsne_right_turn[:, 0], hist_tsne_right_turn[:, 1], c='c', label='Right Turn')
+    context_low_dim = context_tsne.transform(contexts)
+    context_low_dim_u_turn = context_low_dim[maneuver_bag_val[i][:, 0] == 1]
+    context_low_dim_left_turn = context_low_dim[maneuver_bag_val[i][:, 1] == 1]
+    context_low_dim_go_straight = context_low_dim[maneuver_bag_val[i][:, 2] == 1]
+    context_low_dim_right_turn = context_low_dim[maneuver_bag_val[i][:, 3] == 1]
+    plt.scatter(context_low_dim_go_straight[:, 0], context_low_dim_go_straight[:, 1], c='b', label='Go Straight')
+    plt.scatter(context_low_dim_right_turn[:, 0], context_low_dim_right_turn[:, 1], c='c', label='Right Turn')
+    plt.scatter(context_low_dim_left_turn[:, 0], context_low_dim_left_turn[:, 1], c='g', label='Left Turn')
+    plt.scatter(context_low_dim_u_turn[:, 0], context_low_dim_u_turn[:, 1], c='r', label='U-Turn')
     plt.legend(loc='upper right')
-    plt.xlim(-30, 40)
-    plt.ylim(-40, 40)
+    plt.xlim(-100, 120)
+    plt.ylim(-100, 120)
     plt.title('embeddings of hist observations: ' + str(0.5*(10-i)) +'sec before outlet')
     plt.savefig(tsne_dir+'/2_hist_embedding_on_hist_space_'+str(0.5*(10-i)) + 'sec_before_val.png')
     plt.close()
