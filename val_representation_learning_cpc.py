@@ -121,6 +121,27 @@ for test in range(len(ckpt_list_seq)):
 
         representation_time_bag = model(trajectory, traj_length, mode='val')
         if i == 0:
+            context_bag_train = [None if repres == None else repres.cpu().detach().numpy() for repres in representation_time_bag]
+            maneuver_bag_train = [None if context_bag_train[i] is None else np.repeat(maneuvers, config["val_augmentation"], axis=0) for i in range(11)]
+            context_bag_tot = [None if repres == None else repres.cpu().detach().numpy() for repres in representation_time_bag]
+            maneuver_bag_tot = [None if context_bag_train[i] is None else np.repeat(maneuvers, config["val_augmentation"], axis=0) for i in range(11)]
+        else:
+            for j in range(len(representation_time_bag)):
+                if representation_time_bag[j] is None:
+                    pass
+                else:
+                    if context_bag_train[j] is None:
+                        context_bag_train[j] = representation_time_bag[j].cpu().detach().numpy()
+                        maneuver_bag_train[j] = np.repeat(maneuvers, config["val_augmentation"], axis=0)
+                        context_bag_tot[j] = np.concatenate((context_bag_tot[j], representation_time_bag[j].cpu().detach().numpy()), axis=0)
+                        maneuver_bag_tot[j] = np.concatenate((maneuver_bag_tot[j], np.repeat(maneuvers, config["val_augmentation"], axis=0)), axis=0)
+                    else:
+                        context_bag_train[j] = np.concatenate((context_bag_train[j], representation_time_bag[j].cpu().detach().numpy()), axis=0)
+                        maneuver_bag_train[j] = np.concatenate((maneuver_bag_train[j], np.repeat(maneuvers, config["val_augmentation"], axis=0)), axis=0)
+                        context_bag_tot[j] = np.concatenate((context_bag_tot[j], representation_time_bag[j].cpu().detach().numpy()), axis=0)
+                        maneuver_bag_tot[j] = np.concatenate((maneuver_bag_tot[j], np.repeat(maneuvers, config["val_augmentation"], axis=0)), axis=0)
+'''                        
+        if i == 0:
             context_bag_train = [repres.cpu().detach().numpy() for repres in representation_time_bag]
             maneuver_bag_train = [np.repeat(maneuvers, config["val_augmentation"], axis=0) for _ in range(11)]
             context_bag_tot = [repres.cpu().detach().numpy() for repres in representation_time_bag]
@@ -134,7 +155,7 @@ for test in range(len(ckpt_list_seq)):
                     maneuver_bag_train[j] = np.concatenate((maneuver_bag_train[j], np.repeat(maneuvers, config["val_augmentation"], axis=0)), axis=0)
                     context_bag_tot[j] = np.concatenate((context_bag_tot[j], representation_time_bag[j].cpu().detach().numpy()), axis=0)
                     maneuver_bag_tot[j] = np.concatenate((maneuver_bag_tot[j], np.repeat(maneuvers, config["val_augmentation"], axis=0)), axis=0)
-
+'''
 
     for i, data in enumerate(dataloader_val):
         print(weight, 100*i/len(dataloader_val.dataset))
