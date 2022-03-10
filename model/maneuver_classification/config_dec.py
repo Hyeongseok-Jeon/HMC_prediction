@@ -23,14 +23,14 @@ config["validataion_period"] = 1
 config["ckpt_period"] = 5
 config["ckpt_dir"] = root_path + '/ckpt/'
 config["learning_rate"] = 0.00001
-config["logging"] = True
+config["logging"] = False
 
 ''' data '''
 config["data_dir_train"] = data_dir + 'train/'
 config["data_dir_val"] = data_dir + 'val/'
 config["data_dir_orig"] = data_dir + 'archive/'
 config["occlusion_rate"] = 0.2
-config["splicing_num"] = 128
+config["splicing_num"] = 1
 config["LC_multiple"] = 5
 config["FOV"] = 30
 config["interpolate"] = False

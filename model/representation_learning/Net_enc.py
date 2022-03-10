@@ -29,7 +29,15 @@ class BackBone(nn.Module):
             for i in range(len(traj_length)):
                 init_index = torch.randint(traj_length[i] - 5, size=(1,))
                 end_index = torch.randint(init_index.item() + 5, traj_length[i], size=(1,))
-                trajectory_aug.append(trajectory[i:i + 1, init_index:end_index, :])
+                traj_tmp = trajectory.clone()
+                origin = traj_tmp[i,end_index-1,:2]
+                heading = -trajectory[i, end_index-1, 2]
+                rot = torch.tensor([[torch.cos(torch.deg2rad(heading)), -torch.sin(torch.deg2rad(heading))], [torch.sin(torch.deg2rad(heading)), torch.cos(torch.deg2rad(heading))]], device=trajectory[0].device)
+                traj_tmp[i, :, :2] = traj_tmp[i, :, :2] - origin
+                traj_tmp[i, :, :2] = torch.transpose(torch.mm(rot, torch.transpose(traj_tmp[i, :, :2], 0, 1)), 0, 1)
+                traj_tmp[i, :, 2] = torch.deg2rad(torch.fmod(traj_tmp[i, :, 2] + heading + 720, 360))
+                traj_tmp[i, traj_tmp[i, :, 2] > torch.pi, 2] = traj_tmp[i, traj_tmp[i, :, 2] > torch.pi, 2] - 2 * torch.pi
+                trajectory_aug.append(traj_tmp[i:i + 1, init_index:end_index, :])
                 traj_length_aug.append(trajectory_aug[i].shape[1])
             # hz2_index.reverse()
             seg_length = []
