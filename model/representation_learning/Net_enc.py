@@ -127,7 +127,7 @@ class BackBone(nn.Module):
                         pass
                     else:
                         for j in range(self.config["val_augmentation"]):
-                            tmp = representation[32*i+j:32*i+j+1, seg_length[32*i+j]-1]
+                            tmp = representation[self.config["val_augmentation"]*i+j:self.config["val_augmentation"]*i+j+1, seg_length[self.config["val_augmentation"]*i+j]-1]
                             if j == 0:
                                 representation_time_bag[i] = tmp
                             else:
