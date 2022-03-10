@@ -87,52 +87,170 @@ class BackBone(nn.Module):
         else:
             if mode == 'val':
                 seg_length = []
-                for i in range(len(traj_length)):
-                    hz2_index = []
-                    j = 0
-                    while True:
-                        idx_cand = int(traj_length[i] - 10 / self.config["hz"] * j)
-                        if idx_cand >= 0:
-                            hz2_index.append(idx_cand)
-                            j = j + 1
-                        else:
-                            break
-                    hz2_index.sort()
-                    seg_length.append(len(hz2_index) - 1)
-                    if i == 0:
-                        for k in range(len(hz2_index) - 1):
-                            if k == 0:
-                                enc_in = trajectory[i:i + 1, hz2_index[k]:hz2_index[k + 1], :]
-                            else:
-                                enc_in_tmp = trajectory[i:i + 1, hz2_index[k]:hz2_index[k + 1], :]
-                                enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
+                enc_tot = []
+                representation_time_bag = [None for _ in range(11)]
+                for i in range(self.config["max_pred_time"] * self.config["hz"], -1, -1):
+                    cur_index = trajectory.shape[1]-5*i-1
+                    if cur_index < 4:
+                        for j in range(self.config["val_augmentation"]):
+                            seg_length.append(0)
+                        pass
                     else:
-                        for k in range(len(hz2_index) - 1):
-                            enc_in_tmp = trajectory[i:i + 1, hz2_index[k]:hz2_index[k + 1], :]
-                            enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
-                enc_in = torch.transpose(enc_in, 1, 2)
+                        origin = trajectory[0, cur_index, :2]
+                        heading = -trajectory[0, cur_index, 2]
+                        rot = torch.tensor([[torch.cos(torch.deg2rad(heading)), -torch.sin(torch.deg2rad(heading))], [torch.sin(torch.deg2rad(heading)), torch.cos(torch.deg2rad(heading))]], device=trajectory[0].device)
+                        trajectory_tmp = trajectory.clone()
+                        trajectory_tmp[0, :, :2] = trajectory_tmp[0, :, :2] - origin
+                        trajectory_tmp[0, :, :2] = torch.transpose(torch.mm(rot, torch.transpose(trajectory_tmp[0, :, :2], 0, 1)), 0, 1)
+                        trajectory_tmp[0, :, 2] = torch.deg2rad(torch.fmod(trajectory_tmp[0, :, 2] + heading + 720, 360))
+                        trajectory_tmp[0, trajectory_tmp[0, :, 2] > torch.pi, 2] = trajectory_tmp[0, trajectory_tmp[0, :, 2] > torch.pi, 2] - 2 * torch.pi
+
+                        indx_cand = [cur_index - 5 * i for i in range(cur_index + 1) if cur_index - 5 * i > 3]
+
+                        for j in range(self.config["val_augmentation"]):
+                            start_index = indx_cand[torch.randint(len(indx_cand), size=(1,))]
+                            for k in range(int((cur_index - start_index) / 5) + 1):
+                                tmp = trajectory_tmp[0:1, start_index - 4 + 5 * k:start_index - 4 + 5 * (k + 1), :]
+                                if k == 0:
+                                    enc_in = tmp
+                                else:
+                                    enc_in = torch.cat((enc_in, tmp), dim=0)
+                            enc_tot.append(enc_in)
+                            seg_length.append(enc_in.shape[0])
+                enc_tot_t = torch.cat(enc_tot)
+                enc_in = torch.transpose(enc_tot_t, 1, 2)
                 ar_in = self.encoder(enc_in)
                 representation = self.autoregressive(ar_in, seg_length)
+                for i in range(11):
+                    cur_index = trajectory.shape[1]-5*(10-i)-1
+                    if cur_index < 4:
+                        pass
+                    else:
+                        for j in range(self.config["val_augmentation"]):
+                            tmp = representation[32*i+j:32*i+j+1, seg_length[32*i+j]-1]
+                            if j == 0:
+                                representation_time_bag[i] = tmp
+                            else:
+                                representation_time_bag[i] = torch.cat((representation_time_bag[i], tmp), dim=0)
 
-                encode_samples = ar_in[-1:, :]
-                representations = torch.tensor([representation.shape[1] - time_index - 1 for time_index in range(self.config["max_pred_time"] * self.config["hz"], 0, -1)], device=encode_samples[0].device)
-                pred_steps = torch.tensor([time_index for time_index in range(self.config["max_pred_time"] * self.config["hz"], 0, -1)], device=encode_samples[0].device)
+                return representation_time_bag
 
-                representations_mod = representations[representations > -1]
-                pred_steps = pred_steps[representations > -1]
-                representation_cur = representation[0, representations_mod]
-                hist_feature = representation_cur
+                # seg_length = []
+                # for i in range(len(traj_length)):
+                #     hz2_index = []
+                #     j = 0
+                #     while True:
+                #         idx_cand = int(traj_length[i] - 10 / self.config["hz"] * j)
+                #         if idx_cand >= 0:
+                #             hz2_index.append(idx_cand)
+                #             j = j + 1
+                #         else:
+                #             break
+                #     hz2_index.sort()
+                #     seg_length.append(len(hz2_index) - 1)
+                #     if i == 0:
+                #         for k in range(len(hz2_index) - 1):
+                #             if k == 0:
+                #                 enc_in = trajectory[i:i + 1, hz2_index[k]:hz2_index[k + 1], :]
+                #             else:
+                #                 enc_in_tmp = trajectory[i:i + 1, hz2_index[k]:hz2_index[k + 1], :]
+                #                 enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
+                #     else:
+                #         for k in range(len(hz2_index) - 1):
+                #             enc_in_tmp = trajectory[i:i + 1, hz2_index[k]:hz2_index[k + 1], :]
+                #             enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
+                # enc_in = torch.transpose(enc_in, 1, 2)
+                # ar_in = self.encoder(enc_in)
+                # representation = self.autoregressive(ar_in, seg_length)
+                #
+                # encode_samples = ar_in[-1:, :]
+                # representations = torch.tensor([representation.shape[1] - time_index - 1 for time_index in range(self.config["max_pred_time"] * self.config["hz"], 0, -1)], device=encode_samples[0].device)
+                # pred_steps = torch.tensor([time_index for time_index in range(self.config["max_pred_time"] * self.config["hz"], 0, -1)], device=encode_samples[0].device)
+                #
+                # representations_mod = representations[representations > -1]
+                # pred_steps = pred_steps[representations > -1]
+                # representation_cur = representation[0, representations_mod]
+                # hist_feature = representation_cur
+                #
+                # preds = torch.empty((representation_cur.shape[0], len(seg_length), 256), device=encode_samples[0].device).float()  # e.g. size 12*8*512
+                # for i in range(representation_cur.shape[0]):
+                #     linear = self.Wk[pred_steps[i] - 1]
+                #     preds[i] = linear(representation_cur[i])
+                #
+                # pred = torch.squeeze(preds)
+                # target = encode_samples
+                # valuable_traj = trajectory[0, hz2_index[0]:]
+                #
+                # return pred, target, valuable_traj, pred_steps, hist_feature
 
-                preds = torch.empty((representation_cur.shape[0], len(seg_length), 256), device=encode_samples[0].device).float()  # e.g. size 12*8*512
-                for i in range(representation_cur.shape[0]):
-                    linear = self.Wk[pred_steps[i] - 1]
-                    preds[i] = linear(representation_cur[i])
 
-                pred = torch.squeeze(preds)
-                target = encode_samples
-                valuable_traj = trajectory[0, hz2_index[0]:]
-
-                return pred, target, valuable_traj, pred_steps, hist_feature
+                # before_inlet_index = torch.where(trajectory[0, :, 0] > 0)[0][0].item()
+                # seg_length_before = []
+                # seg_length_after = []
+                # for i in range(model.config["max_pred_time"] * model.config["hz"]):
+                #     for j in range(model.config["val_augmentation"]):
+                #         end_indexes_before = torch.randint(4, before_inlet_index + 1, size=(1,))
+                #         indx_cand = [(end_indexes_before - 5 * i).item() for i in range(before_inlet_index + 1) if end_indexes_before - 5 * i > 3]
+                #         start_indexes_before = indx_cand[torch.randint(len(indx_cand), size=(1,))]
+                #
+                #         origin = trajectory[0, end_indexes_before, :2]
+                #         heading = -trajectory[0, end_indexes_before, 2]
+                #         rot = torch.tensor([[torch.cos(torch.deg2rad(heading)), -torch.sin(torch.deg2rad(heading))], [torch.sin(torch.deg2rad(heading)), torch.cos(torch.deg2rad(heading))]], device=trajectory[0].device)
+                #         trajectory_tmp = trajectory.clone()
+                #         trajectory_tmp[0, :, :2] = trajectory_tmp[0, :, :2] - origin
+                #         trajectory_tmp[0, :, :2] = torch.transpose(torch.mm(rot, torch.transpose(trajectory_tmp[0, :, :2], 0, 1)), 0, 1)
+                #         trajectory_tmp[0, :, 2] = torch.deg2rad(torch.fmod(trajectory_tmp[0, :, 2] + heading + 720, 360))
+                #         trajectory_tmp[0, trajectory_tmp[0, :, 2] > torch.pi, 2] = trajectory_tmp[0, trajectory_tmp[0, :, 2] > torch.pi, 2] - 2 * torch.pi
+                #         for k in range(int((end_indexes_before - start_indexes_before) / 5) + 1):
+                #             tmp = torch.unsqueeze(trajectory_tmp[0, start_indexes_before - 4 + 5 * k:start_indexes_before - 4 + 5 * (k + 1), :], dim=0)
+                #             if k == 0:
+                #                 enc_in_before_tmp = tmp
+                #             else:
+                #                 enc_in_before_tmp = torch.cat((enc_in_before_tmp, tmp), dim=0)
+                #         seg_length_before.append(enc_in_before_tmp.shape[0])
+                #
+                #         end_indexes_after = torch.randint(before_inlet_index, traj_length[0], size=(1,))
+                #         indx_cand = [(end_indexes_after - 5 * i).item() for i in range(traj_length[0]) if end_indexes_after - 5 * i > 3]
+                #         start_indexes_after = indx_cand[torch.randint(len(indx_cand), size=(1,))]
+                #         origin = trajectory[0, end_indexes_after, :2]
+                #         heading = -trajectory[0, end_indexes_after, 2]
+                #         rot = torch.tensor([[torch.cos(torch.deg2rad(heading)), -torch.sin(torch.deg2rad(heading))], [torch.sin(torch.deg2rad(heading)), torch.cos(torch.deg2rad(heading))]], device=trajectory[0].device)
+                #         trajectory_tmp = trajectory.clone()
+                #         trajectory_tmp[0, :, :2] = trajectory_tmp[0, :, :2] - origin
+                #         trajectory_tmp[0, :, :2] = torch.transpose(torch.mm(rot, torch.transpose(trajectory_tmp[0, :, :2], 0, 1)), 0, 1)
+                #         trajectory_tmp[0, :, 2] = torch.deg2rad(torch.fmod(trajectory_tmp[0, :, 2] + heading + 720, 360))
+                #         trajectory_tmp[0, trajectory_tmp[0, :, 2] > torch.pi, 2] = trajectory_tmp[0, trajectory_tmp[0, :, 2] > torch.pi, 2] - 2 * torch.pi
+                #         for k in range(int((end_indexes_after - start_indexes_after) / 5) + 1):
+                #             tmp = torch.unsqueeze(trajectory_tmp[0, start_indexes_after - 4 + 5 * k:start_indexes_after - 4 + 5 * (k + 1), :], dim=0)
+                #             if k == 0:
+                #                 enc_in_after_tmp = tmp
+                #             else:
+                #                 enc_in_after_tmp = torch.cat((enc_in_after_tmp, tmp), dim=0)
+                #         seg_length_after.append(enc_in_after_tmp.shape[0])
+                #
+                #         if i == 0 and j == 0:
+                #             enc_in_before = enc_in_before_tmp
+                #             enc_in_after = enc_in_after_tmp
+                #         else:
+                #             enc_in_before = torch.cat((enc_in_before, enc_in_before_tmp), dim=0)
+                #             enc_in_after = torch.cat((enc_in_after, enc_in_after_tmp), dim=0)
+                #
+                # seg_length_tot = seg_length_before + seg_length_after
+                # enc_in_tot = torch.cat((enc_in_before, enc_in_after), dim=0)
+                #
+                # enc_in = torch.transpose(enc_in_tot, 1, 2)
+                # ar_in = model.encoder(enc_in)
+                # representation = model.autoregressive(ar_in, seg_length_tot)
+                #
+                # representation_before = representation[:int(representation.shape[0]/2)]
+                # representation_after = representation[int(representation.shape[0]/2):]
+                #
+                # representation_before_time = [representation_before[model.config["val_augmentation"]*i:model.config["val_augmentation"]*(i+1),seg_length_before[i]] for i in range(model.config["max_pred_time"] * model.config["hz"])]
+                # representation_after_time = [representation_after[model.config["val_augmentation"]*i:model.config["val_augmentation"]*(i+1),seg_length_after[i]] for i in range(model.config["max_pred_time"] * model.config["hz"])]
+                # for i in range()
+                #
+                #
+                # return pred, target, valuable_traj, pred_steps, hist_feature
 
             elif mode == 'train':
                 seg_length = []
@@ -153,7 +271,7 @@ class BackBone(nn.Module):
                     trajectory[i, :, :2] = trajectory[i, :, :2] - origin
                     trajectory[i, :, :2] = torch.transpose(torch.mm(rot, torch.transpose(trajectory[i, :, :2], 0, 1)), 0, 1)
                     trajectory[i, :, 2] = torch.deg2rad(torch.fmod(trajectory[i, :, 2] + heading + 720, 360))
-                    trajectory[i, trajectory[i, :, 2] > torch.pi, 2] = trajectory[i, trajectory[i, :, 2] > torch.pi, 2] - 2*torch.pi
+                    trajectory[i, trajectory[i, :, 2] > torch.pi, 2] = trajectory[i, trajectory[i, :, 2] > torch.pi, 2] - 2 * torch.pi
                     hz2_index = []
                     j = 0
                     while True:

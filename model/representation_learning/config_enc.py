@@ -38,6 +38,7 @@ config["max_pred_time"] = 5
 config["max_hist_time"] = 10
 config["hz"] = 2
 config["val_rate"] = 0.2
+config["val_augmentation"] = 32
 
 ''' network '''
 config["n_hidden_after_deconv"] = 256

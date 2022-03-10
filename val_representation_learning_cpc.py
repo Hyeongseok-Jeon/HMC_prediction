@@ -9,11 +9,12 @@ import time
 import numpy as np
 from openTSNE import TSNE
 import matplotlib
+matplotlib.use('tkagg')
+
 import matplotlib.pyplot as plt
 import imageio
 import glob
 
-matplotlib.use('tkagg')
 
 GPU_NUM = config["GPU_id"]
 device = torch.device(f'cuda:{GPU_NUM}' if torch.cuda.is_available() else 'cpu')
@@ -130,7 +131,8 @@ for i, data in enumerate(dataloader_tot):
     conversion = conversion[0]
     trajectory = trajectory.float().cuda()
 
-    pred, target, valuable_traj, pred_steps, hist_feature = model(trajectory, traj_length, mode='val')
+    representation_time_bag = model(trajectory, traj_length, mode='val')
+
     pred = pred.cpu().detach().numpy()
     target = target.cpu().detach().numpy()
     valuable_traj = valuable_traj.cpu().detach().numpy()
