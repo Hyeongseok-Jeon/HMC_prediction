@@ -52,3 +52,4 @@
 2022-03-12 05:29:25,634 - ### Selected Encoder model >>> File_id : maneuver_prediction-2022-03-10_04_02_34
 2022-03-12 05:29:25,634 - ### Selected Encoder weight >>> weight_id : model_105.pt
 2022-03-12 05:29:25,634 - ===> Model Training Start
+2022-03-12 05:42:36,229 - ===> Train Epoch: 1 	 Accuracy: 39.67% 	 Loss: 1.38342538

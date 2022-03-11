@@ -53,3 +53,4 @@
 2022-03-12 05:26:42,099 - ### Selected Encoder weight >>> weight_id : model_20.pt
 2022-03-12 05:26:42,099 - ===> Model Training Start
 2022-03-12 05:39:32,115 - ===> Train Epoch: 1 	 Accuracy: 26.68% 	 Loss: 1.38195094
+2022-03-12 05:44:54,779 - ===> Validation after Training epoch: 1 	 Overall Accuracy: 40.36%	 Before inlet accuracy: 38.34% 	 After inlet accuracy: 49.49%
