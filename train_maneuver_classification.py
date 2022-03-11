@@ -87,8 +87,6 @@ dataloader_val = DataLoader(dataset_val,
 encoder = BackBone(config_enc).cuda(device)
 decoder = Downstream(config_dec).cuda(device)
 
-time.sleep(2)
-print(dfjieji)
 if int(s_weight) == -1:
     decoder_params = sum(p.numel() for p in decoder.parameters() if p.requires_grad)
     encoder_params = sum(p.numel() for p in encoder.parameters() if p.requires_grad)
@@ -97,7 +95,7 @@ if int(s_weight) == -1:
     pass
 else:
     decoder_params = sum(p.numel() for p in decoder.parameters() if p.requires_grad)
-    weights = torch.load(ckpt_dir + '/' + weight)
+    weights = torch.load(ckpt_dir + '/' + weight, map_location=device)
     encoder.load_state_dict(weights['model_state_dict'])
 
 for i in range(len(config_dec)):
