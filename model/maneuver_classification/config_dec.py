@@ -9,7 +9,6 @@ config = dict()
 
 ''' environment '''
 config["GPU_id"] = 1
-os.environ['CUDA_VISIBLE_DEVICES'] = str(config["GPU_id"] )
 
 ''' training '''
 gpu_name = torch.cuda.get_device_name(0)
@@ -31,7 +30,7 @@ config["data_dir_train"] = data_dir + 'train/'
 config["data_dir_val"] = data_dir + 'val/'
 config["data_dir_orig"] = data_dir + 'archive/'
 config["occlusion_rate"] = 0.2
-config["splicing_num"] = 2
+config["splicing_num"] = 1
 config["LC_multiple"] = 5
 config["FOV"] = 30
 config["interpolate"] = False
