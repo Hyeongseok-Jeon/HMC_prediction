@@ -16,7 +16,6 @@ import numpy as np
 GPU_NUM = config_dec["GPU_id"]
 os.environ['CUDA_VISIBLE_DEVICES'] = str(GPU_NUM)
 device = torch.device(f'cuda:{GPU_NUM}' if torch.cuda.is_available() else 'cpu')
-torch.cuda.set_device(device)  # change allocation of current GPU
 
 print('Device:', device)
 print('Current cuda device:', torch.cuda.current_device())
