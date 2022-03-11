@@ -86,7 +86,7 @@ dataloader_val = DataLoader(dataset_val,
 
 encoder = BackBone(config_enc).cuda(device)
 decoder = Downstream(config_dec).cuda(device)
-print(dfjieji)
+
 if int(s_weight) == -1:
     decoder_params = sum(p.numel() for p in decoder.parameters() if p.requires_grad)
     encoder_params = sum(p.numel() for p in encoder.parameters() if p.requires_grad)
@@ -97,7 +97,8 @@ else:
     decoder_params = sum(p.numel() for p in decoder.parameters() if p.requires_grad)
     weights = torch.load(ckpt_dir + '/' + weight)
     encoder.load_state_dict(weights['model_state_dict'])
-
+time.sleep(5)
+print(dfjieji)
 for i in range(len(config_dec)):
     if i == 0:
         config_log = '                                    ' + list(config_dec.keys())[i] + ': ' + str(list(config_dec.values())[i]) + '\n'
