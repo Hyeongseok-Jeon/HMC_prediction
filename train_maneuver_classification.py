@@ -85,7 +85,8 @@ dataloader_val = DataLoader(dataset_val,
                             collate_fn=collate_fn)
 
 encoder = BackBone(config_enc).cuda(device)
-#decoder = Downstream(config_dec).cuda(device)
+decoder = Downstream(config_dec).cuda(device)
+print(dfjieji)
 if int(s_weight) == -1:
     decoder_params = sum(p.numel() for p in decoder.parameters() if p.requires_grad)
     encoder_params = sum(p.numel() for p in encoder.parameters() if p.requires_grad)
