@@ -137,99 +137,100 @@ if config_dec["logging"]:
     logger.info('### Selected Encoder model >>> {}'.format('File_id : ' + str(file_id), '  File_index : ' + str(s_model)))
     logger.info('### Selected Encoder weight >>> {}'.format('weight_id : ' + str(weight), '  File_index : ' + str(s_weight)))
     logger.info('===> Model Training Start')
-
-for epoch in range(config_dec['epoch']):
-    correct_tot = 0
-    calc_tot = 0
-    loss_tot = 0
-    epoch_time = time.time()
-    for i, data in enumerate(dataloader_train):
-        trajectory, traj_length, conversion, maneuver_gt = data
-        trajectory = trajectory.float().cuda(device)
-        maneuver_gt = torch.cat(maneuver_gt, dim=0).float().cuda(device)
-
-        hidden, num_per_batch, _ = encoder(trajectory, traj_length, mode='downstream')
-        if int(s_weight) == -1:
-            pass
-        else:
-            hidden = hidden.detach()
-        loss, total, correct = decoder(hidden, maneuver_gt, num_per_batch, None, mode='train')
-
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-
-        correct_tot += correct
-        calc_tot += total
-        loss_tot += loss.item() * total
-
-        if data[0].shape[0] == config_dec['batch_size']:
-            print('Epoch: %d \t Time: %3.2f sec \t Data: %d/%d \t Loss: %7.5f' % (epoch + 1, time.time() - epoch_time, config_dec['batch_size'] * (i + 1), len(dataloader_train.dataset), loss.item()), end='\r')
-        else:
-            print('Epoch: %d \t Time: %3.2f sec \t Data: %d/%d \t Loss: %7.5f' % (epoch + 1, time.time() - epoch_time, config_dec['batch_size'] * i + data[0].shape[0], len(dataloader_train.dataset), loss.item()))
-
-    loss_batch = loss_tot / calc_tot
-    if config_dec["logging"]:
-        logger.info('===> Train Epoch: {} \t Accuracy: {:.2f}% \t Loss: {:.8f}'.format(
-            epoch + 1, 100 * correct_tot / calc_tot, loss_batch
-        ))
-    else:
-        print('===> Train Epoch: {} \t Accuracy: {:.2f}% \t Loss: {:.8f}'.format(
-            epoch + 1, 100 * correct_tot / calc_tot, loss_batch
-        ))
-
-
-    if (epoch + 1) % config_dec['validataion_period'] == 0:
-        encoder.eval()
-        decoder.eval()
-        correct_tot_sum = 0
-        num_tot_sum = 0
-        correct_before_inlet_sum = 0
-        num_before_inlet_sum = 0
-        correct_after_inlet_sum = 0
-        num_after_inlet_sum = 0
-        val_time = time.time()
-        for i, data in enumerate(dataloader_val):
+    
+if False:
+    for epoch in range(config_dec['epoch']):
+        correct_tot = 0
+        calc_tot = 0
+        loss_tot = 0
+        epoch_time = time.time()
+        for i, data in enumerate(dataloader_train):
             trajectory, traj_length, conversion, maneuver_gt = data
             trajectory = trajectory.float().cuda(device)
             maneuver_gt = torch.cat(maneuver_gt, dim=0).float().cuda(device)
 
-            hidden, num_per_batch, trajectory_aug = encoder(trajectory, traj_length, mode='downstream')
-            hidden = hidden.detach()
-            trajectory_aug_2hz = [trajectory_aug[i][0,[trajectory_aug[i].shape[1]-1 - 5*j for j in range(num_per_batch[i]-1, -1, -1)],:] for i in range(len(trajectory_aug))]
-            before_inlet = []
-            for i in range(len(trajectory_aug_2hz)):
-                before_inlet.append(trajectory_aug_2hz[i][:,0] < 0)
-            before_inlet = torch.cat(before_inlet)
-            num_tot, correct_tot, num_before_inlet, correct_before_inlet, num_after_inlet, correct_after_inlet = decoder(hidden, maneuver_gt, num_per_batch, before_inlet, mode='val')
+            hidden, num_per_batch, _ = encoder(trajectory, traj_length, mode='downstream')
+            if int(s_weight) == -1:
+                pass
+            else:
+                hidden = hidden.detach()
+            loss, total, correct = decoder(hidden, maneuver_gt, num_per_batch, None, mode='train')
 
-            correct_tot_sum += correct_tot
-            num_tot_sum += num_tot
-            correct_before_inlet_sum += correct_before_inlet
-            num_before_inlet_sum += num_before_inlet
-            correct_after_inlet_sum += correct_after_inlet
-            num_after_inlet_sum += num_after_inlet
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
-        loss_tot = loss_tot / calc_tot
+            correct_tot += correct
+            calc_tot += total
+            loss_tot += loss.item() * total
+
+            if data[0].shape[0] == config_dec['batch_size']:
+                print('Epoch: %d \t Time: %3.2f sec \t Data: %d/%d \t Loss: %7.5f' % (epoch + 1, time.time() - epoch_time, config_dec['batch_size'] * (i + 1), len(dataloader_train.dataset), loss.item()), end='\r')
+            else:
+                print('Epoch: %d \t Time: %3.2f sec \t Data: %d/%d \t Loss: %7.5f' % (epoch + 1, time.time() - epoch_time, config_dec['batch_size'] * i + data[0].shape[0], len(dataloader_train.dataset), loss.item()))
+
+        loss_batch = loss_tot / calc_tot
         if config_dec["logging"]:
-            logger.info('===> Validation after Training epoch: {} \t Overall Accuracy: {:.2f}%\t Before inlet accuracy: {:.2f}% \t After inlet accuracy: {:.2f}%'.format(
-                epoch + 1, 100 * correct_tot_sum / num_tot_sum, 100 * correct_before_inlet_sum/num_before_inlet_sum, 100 * correct_after_inlet_sum/num_after_inlet_sum
+            logger.info('===> Train Epoch: {} \t Accuracy: {:.2f}% \t Loss: {:.8f}'.format(
+                epoch + 1, 100 * correct_tot / calc_tot, loss_batch
             ))
         else:
-            print('===> Validation after Training epoch: {} \t Overall Accuracy: {:.2f}%\t Before inlet accuracy: {:.2f}% \t After inlet accuracy: {:.2f}%'.format(
-                epoch + 1, 100 * correct_tot_sum / num_tot_sum, 100 * correct_before_inlet_sum / num_before_inlet_sum, 100 * correct_after_inlet_sum / num_after_inlet_sum
+            print('===> Train Epoch: {} \t Accuracy: {:.2f}% \t Loss: {:.8f}'.format(
+                epoch + 1, 100 * correct_tot / calc_tot, loss_batch
             ))
-        encoder.train()
-        decoder.train()
 
-    if (epoch + 1) % config_dec['ckpt_period'] == 0:
-        EPOCH = epoch + 1
-        PATH = ckpt_dir + "/model_" + str(EPOCH) + ".pt"
-        LOSS = loss_tot
-        torch.save({
-            'epoch': EPOCH,
-            'model_state_dict': decoder.state_dict(),
-            'optimizer_state_dict': optimizer.state_dict(),
-            'loss': LOSS,
-        }, PATH)
-        print('Check point saved: %s' % PATH)
+
+        if (epoch + 1) % config_dec['validataion_period'] == 0:
+            encoder.eval()
+            decoder.eval()
+            correct_tot_sum = 0
+            num_tot_sum = 0
+            correct_before_inlet_sum = 0
+            num_before_inlet_sum = 0
+            correct_after_inlet_sum = 0
+            num_after_inlet_sum = 0
+            val_time = time.time()
+            for i, data in enumerate(dataloader_val):
+                trajectory, traj_length, conversion, maneuver_gt = data
+                trajectory = trajectory.float().cuda(device)
+                maneuver_gt = torch.cat(maneuver_gt, dim=0).float().cuda(device)
+
+                hidden, num_per_batch, trajectory_aug = encoder(trajectory, traj_length, mode='downstream')
+                hidden = hidden.detach()
+                trajectory_aug_2hz = [trajectory_aug[i][0,[trajectory_aug[i].shape[1]-1 - 5*j for j in range(num_per_batch[i]-1, -1, -1)],:] for i in range(len(trajectory_aug))]
+                before_inlet = []
+                for i in range(len(trajectory_aug_2hz)):
+                    before_inlet.append(trajectory_aug_2hz[i][:,0] < 0)
+                before_inlet = torch.cat(before_inlet)
+                num_tot, correct_tot, num_before_inlet, correct_before_inlet, num_after_inlet, correct_after_inlet = decoder(hidden, maneuver_gt, num_per_batch, before_inlet, mode='val')
+
+                correct_tot_sum += correct_tot
+                num_tot_sum += num_tot
+                correct_before_inlet_sum += correct_before_inlet
+                num_before_inlet_sum += num_before_inlet
+                correct_after_inlet_sum += correct_after_inlet
+                num_after_inlet_sum += num_after_inlet
+
+            loss_tot = loss_tot / calc_tot
+            if config_dec["logging"]:
+                logger.info('===> Validation after Training epoch: {} \t Overall Accuracy: {:.2f}%\t Before inlet accuracy: {:.2f}% \t After inlet accuracy: {:.2f}%'.format(
+                    epoch + 1, 100 * correct_tot_sum / num_tot_sum, 100 * correct_before_inlet_sum/num_before_inlet_sum, 100 * correct_after_inlet_sum/num_after_inlet_sum
+                ))
+            else:
+                print('===> Validation after Training epoch: {} \t Overall Accuracy: {:.2f}%\t Before inlet accuracy: {:.2f}% \t After inlet accuracy: {:.2f}%'.format(
+                    epoch + 1, 100 * correct_tot_sum / num_tot_sum, 100 * correct_before_inlet_sum / num_before_inlet_sum, 100 * correct_after_inlet_sum / num_after_inlet_sum
+                ))
+            encoder.train()
+            decoder.train()
+
+        if (epoch + 1) % config_dec['ckpt_period'] == 0:
+            EPOCH = epoch + 1
+            PATH = ckpt_dir + "/model_" + str(EPOCH) + ".pt"
+            LOSS = loss_tot
+            torch.save({
+                'epoch': EPOCH,
+                'model_state_dict': decoder.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'loss': LOSS,
+            }, PATH)
+            print('Check point saved: %s' % PATH)
