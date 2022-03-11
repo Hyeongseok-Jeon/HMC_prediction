@@ -85,8 +85,8 @@ dataloader_val = DataLoader(dataset_val,
                             shuffle=True,
                             collate_fn=collate_fn)
 
-encoder = BackBone(config_enc).cuda()
-decoder = Downstream(config_dec).cuda()
+encoder = BackBone(config_enc).cuda(device)
+decoder = Downstream(config_dec).cuda(device)
 if int(s_weight) == -1:
     decoder_params = sum(p.numel() for p in decoder.parameters() if p.requires_grad)
     encoder_params = sum(p.numel() for p in encoder.parameters() if p.requires_grad)
@@ -146,8 +146,8 @@ for epoch in range(config_dec['epoch']):
     epoch_time = time.time()
     for i, data in enumerate(dataloader_train):
         trajectory, traj_length, conversion, maneuver_gt = data
-        trajectory = trajectory.float().cuda()
-        maneuver_gt = torch.cat(maneuver_gt, dim=0).float().cuda()
+        trajectory = trajectory.float().cuda(device)
+        maneuver_gt = torch.cat(maneuver_gt, dim=0).float().cuda(device)
 
         hidden, num_per_batch, _ = encoder(trajectory, traj_length, mode='downstream')
         if int(s_weight) == -1:
@@ -192,8 +192,8 @@ for epoch in range(config_dec['epoch']):
         val_time = time.time()
         for i, data in enumerate(dataloader_val):
             trajectory, traj_length, conversion, maneuver_gt = data
-            trajectory = trajectory.float().cuda()
-            maneuver_gt = torch.cat(maneuver_gt, dim=0).float().cuda()
+            trajectory = trajectory.float().cuda(device)
+            maneuver_gt = torch.cat(maneuver_gt, dim=0).float().cuda(device)
 
             hidden, num_per_batch, trajectory_aug = encoder(trajectory, traj_length, mode='downstream')
             hidden = hidden.detach()
