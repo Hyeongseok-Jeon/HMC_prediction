@@ -10,6 +10,7 @@ import torch
 from torch import nn
 from modules.encoder import Encoder
 from modules.autoregressive import AutoRegressive
+torch.pi = torch.acos(torch.zeros(1)).item() * 2
 
 
 class BackBone(nn.Module):
