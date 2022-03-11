@@ -1,0 +1,55 @@
+2022-03-12 05:28:01,820 - ### Training Machine Ip address ###
+ 127.0.1.1
+
+2022-03-12 05:28:01,821 - ### Model summary below###
+ Downstream(
+  (decoder): Decoder(
+    (linear): ModuleList(
+      (0): Linear(in_features=256, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+      (3): ReLU()
+      (4): Linear(in_features=64, out_features=32, bias=True)
+      (5): ReLU()
+      (6): Linear(in_features=32, out_features=16, bias=True)
+      (7): ReLU()
+    )
+    (out): Linear(in_features=16, out_features=4, bias=True)
+    (softmax): Softmax(dim=None)
+  )
+  (softmax): Softmax(dim=None)
+  (lsoftmax): LogSoftmax(dim=None)
+  (loss_mean): CrossEntropyLoss()
+)
+
+2022-03-12 05:28:01,821 - ===> Configuration parameter
+                                    GPU_id: 1
+                                    batch_size: 64
+                                    epoch: 300
+                                    n_warmup_steps: 30
+                                    validataion_period: 1
+                                    ckpt_period: 5
+                                    ckpt_dir: /home/user/data/HyeongseokJeon/HMC_prediction/ckpt/
+                                    learning_rate: 1e-06
+                                    logging: True
+                                    data_dir_train: /home/user/data/HyeongseokJeon/HMC_prediction/data/drone_data/processed/train/
+                                    data_dir_val: /home/user/data/HyeongseokJeon/HMC_prediction/data/drone_data/processed/val/
+                                    data_dir_orig: /home/user/data/HyeongseokJeon/HMC_prediction/data/drone_data/processed/archive/
+                                    occlusion_rate: 0.2
+                                    splicing_num: 128
+                                    LC_multiple: 5
+                                    FOV: 30
+                                    interpolate: False
+                                    max_pred_time: 5
+                                    max_hist_time: 10
+                                    hz: 2
+                                    val_rate: 0.2
+                                    n_linear_layer: 4
+                                    n_hidden_after_deconv: 256
+                                    log_dir: logs/
+
+2022-03-12 05:28:01,821 - ===> Model total parameter: 43828
+2022-03-12 05:28:01,821 - ### Selected Encoder model >>> File_id : maneuver_prediction-2022-03-10_04_02_34
+2022-03-12 05:28:01,821 - ### Selected Encoder weight >>> weight_id : model_60.pt
+2022-03-12 05:28:01,821 - ===> Model Training Start
+2022-03-12 05:41:36,027 - ===> Train Epoch: 1 	 Accuracy: 33.98% 	 Loss: 1.37193238
