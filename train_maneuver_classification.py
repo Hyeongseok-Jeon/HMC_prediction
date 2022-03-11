@@ -1,11 +1,15 @@
+import os
+from model.maneuver_classification.config_dec import config as config_dec
+GPU_NUM = config_dec["GPU_id"]
+os.environ['CUDA_VISIBLE_DEVICES'] = str(GPU_NUM)
+
 from data.drone_data import pred_loader_1, collate_fn
 from torch.utils.data import DataLoader
 from model.representation_learning.config_enc import config as config_enc
 from model.representation_learning.Net_enc import BackBone
-from model.maneuver_classification.config_dec import config as config_dec
 from model.maneuver_classification.Net_dec import Downstream
 import torch
-import os
+
 import warnings
 import time
 from logger.logger import setup_logs
@@ -13,8 +17,6 @@ import socket
 
 import numpy as np
 
-GPU_NUM = config_dec["GPU_id"]
-os.environ['CUDA_VISIBLE_DEVICES'] = str(GPU_NUM)
 device = torch.device(f'cuda:{GPU_NUM}' if torch.cuda.is_available() else 'cpu')
 torch.cuda.set_device(device)  # change allocation of current GPU
 

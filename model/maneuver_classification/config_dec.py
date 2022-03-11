@@ -9,6 +9,7 @@ config = dict()
 
 ''' environment '''
 config["GPU_id"] = 1
+os.environ['CUDA_VISIBLE_DEVICES'] = str(config["GPU_id"] )
 
 ''' training '''
 gpu_name = torch.cuda.get_device_name(0)
