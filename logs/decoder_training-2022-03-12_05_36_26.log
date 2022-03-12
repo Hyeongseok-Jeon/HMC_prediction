@@ -52,3 +52,27 @@
 2022-03-12 05:36:26,477 - ### Selected Encoder model >>> File_id : maneuver_prediction-2022-03-10_04_02_34
 2022-03-12 05:36:26,477 - ### Selected Encoder weight >>> weight_id : model_140.pt
 2022-03-12 05:36:26,478 - ===> Model Training Start
+2022-03-12 05:55:14,764 - ===> Train Epoch: 1 	 Accuracy: 0.35% 	 Loss: 1.40079097
+2022-03-12 06:00:50,314 - ===> Validation after Training epoch: 1 	 Overall Accuracy: 4.00%	 Before inlet accuracy: 4.26% 	 After inlet accuracy: 2.80%
+2022-03-12 06:19:55,491 - ===> Train Epoch: 2 	 Accuracy: 13.55% 	 Loss: 1.39878922
+2022-03-12 06:25:29,992 - ===> Validation after Training epoch: 2 	 Overall Accuracy: 26.04%	 Before inlet accuracy: 26.96% 	 After inlet accuracy: 21.77%
+2022-03-12 06:44:37,736 - ===> Train Epoch: 3 	 Accuracy: 31.92% 	 Loss: 1.39555069
+2022-03-12 06:50:12,248 - ===> Validation after Training epoch: 3 	 Overall Accuracy: 26.25%	 Before inlet accuracy: 26.79% 	 After inlet accuracy: 23.77%
+2022-03-12 07:09:13,659 - ===> Train Epoch: 4 	 Accuracy: 34.15% 	 Loss: 1.39075351
+2022-03-12 07:14:45,985 - ===> Validation after Training epoch: 4 	 Overall Accuracy: 25.61%	 Before inlet accuracy: 26.12% 	 After inlet accuracy: 23.30%
+2022-03-12 07:33:48,367 - ===> Train Epoch: 5 	 Accuracy: 34.33% 	 Loss: 1.38381084
+2022-03-12 07:39:24,308 - ===> Validation after Training epoch: 5 	 Overall Accuracy: 25.53%	 Before inlet accuracy: 25.96% 	 After inlet accuracy: 23.57%
+2022-03-12 07:58:34,816 - ===> Train Epoch: 6 	 Accuracy: 33.92% 	 Loss: 1.37484009
+2022-03-12 08:04:10,251 - ===> Validation after Training epoch: 6 	 Overall Accuracy: 25.75%	 Before inlet accuracy: 26.30% 	 After inlet accuracy: 23.23%
+2022-03-12 08:23:18,728 - ===> Train Epoch: 7 	 Accuracy: 34.33% 	 Loss: 1.36118584
+2022-03-12 08:28:54,368 - ===> Validation after Training epoch: 7 	 Overall Accuracy: 25.66%	 Before inlet accuracy: 26.17% 	 After inlet accuracy: 23.35%
+2022-03-12 08:47:58,385 - ===> Train Epoch: 8 	 Accuracy: 34.02% 	 Loss: 1.34538074
+2022-03-12 08:53:34,887 - ===> Validation after Training epoch: 8 	 Overall Accuracy: 25.53%	 Before inlet accuracy: 25.99% 	 After inlet accuracy: 23.44%
+2022-03-12 09:12:44,526 - ===> Train Epoch: 9 	 Accuracy: 34.27% 	 Loss: 1.32620530
+2022-03-12 09:18:18,420 - ===> Validation after Training epoch: 9 	 Overall Accuracy: 25.69%	 Before inlet accuracy: 26.03% 	 After inlet accuracy: 24.08%
+2022-03-12 09:37:24,172 - ===> Train Epoch: 10 	 Accuracy: 34.32% 	 Loss: 1.30660410
+2022-03-12 09:42:59,153 - ===> Validation after Training epoch: 10 	 Overall Accuracy: 25.36%	 Before inlet accuracy: 25.66% 	 After inlet accuracy: 23.96%
+2022-03-12 10:02:02,901 - ===> Train Epoch: 11 	 Accuracy: 34.45% 	 Loss: 1.28614359
+2022-03-12 10:07:36,722 - ===> Validation after Training epoch: 11 	 Overall Accuracy: 25.87%	 Before inlet accuracy: 26.28% 	 After inlet accuracy: 24.00%
+2022-03-12 10:26:46,394 - ===> Train Epoch: 12 	 Accuracy: 34.65% 	 Loss: 1.26838530
+2022-03-12 10:32:18,661 - ===> Validation after Training epoch: 12 	 Overall Accuracy: 26.89%	 Before inlet accuracy: 27.57% 	 After inlet accuracy: 23.80%
