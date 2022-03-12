@@ -224,13 +224,26 @@ for epoch in range(config_dec['epoch']):
         decoder.train()
 
     if (epoch + 1) % config_dec['ckpt_period'] == 0:
-        EPOCH = epoch + 1
-        PATH = ckpt_dir + "/model_" + str(EPOCH) + ".pt"
-        LOSS = loss_tot
-        torch.save({
-            'epoch': EPOCH,
-            'model_state_dict': decoder.state_dict(),
-            'optimizer_state_dict': optimizer.state_dict(),
-            'loss': LOSS,
-        }, PATH)
-        print('Check point saved: %s' % PATH)
+        if int(s_weight) == -1:
+            EPOCH = epoch + 1
+            PATH = ckpt_dir + "/model_" + str(EPOCH) + ".pt"
+            LOSS = loss_tot
+            torch.save({
+                'epoch': EPOCH,
+                'model_state_dict': decoder.state_dict(),
+                'enc_state_dict': encoder.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'loss': LOSS,
+            }, PATH)
+            print('Check point saved: %s' % PATH)
+        else:
+            EPOCH = epoch + 1
+            PATH = ckpt_dir + "/model_" + str(EPOCH) + ".pt"
+            LOSS = loss_tot
+            torch.save({
+                'epoch': EPOCH,
+                'model_state_dict': decoder.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'loss': LOSS,
+            }, PATH)
+            print('Check point saved: %s' % PATH)
