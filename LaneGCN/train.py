@@ -51,7 +51,7 @@ parser.add_argument(
     "--weight", default="", type=str, metavar="WEIGHT", help="checkpoint path"
 )
 
-
+# decoder_training-2022-03-12_05_26_35
 def main():
     seed = hvd.rank()
     torch.manual_seed(seed)
