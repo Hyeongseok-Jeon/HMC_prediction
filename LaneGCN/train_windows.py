@@ -53,10 +53,7 @@ parser.add_argument(
 )
 
 parser.add_argument("--port")
-
-def main():
-    # Import all settings for experiment.
-    args = parser.parse_args()
+args = parser.parse_args()
     if args.transfer:
         file_list = os.listdir(os.path.dirname(root_path) + '/logs')
         print('------------------------------------------------------------')
@@ -105,6 +102,9 @@ def main():
             except:
                 pass
         weights = torch.load(ckpt_dir + '/' + weight, map_location=lambda storage, loc: storage)
+
+def main():
+    # Import all settings for experiment.
 
     config, Dataset, collate_fn, net, loss, post_process, optim = model.get_model()
     if args.transfer:
