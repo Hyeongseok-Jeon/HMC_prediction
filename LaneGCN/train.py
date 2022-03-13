@@ -195,7 +195,7 @@ def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=
         epoch += epoch_per_batch
         data = dict(data)
 
-        output = net(data, mode='custom')
+        output = net(data)
         loss_out = loss(output, data)
         post_out = post_process(output, data)
         post_process.append(metrics, loss_out, post_out)
