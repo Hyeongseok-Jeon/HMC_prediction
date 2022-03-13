@@ -141,7 +141,7 @@ class Net(nn.Module):
 
         self.pred_net = PredNet(config)
 
-    def forward(self, data: Dict, mode='official') -> Dict[str, List[Tensor]]:
+    def forward(self, data: Dict, mode='official', transfer=False) -> Dict[str, List[Tensor]]:
         # construct actor feature
         actors, actor_idcs = actor_gather(gpu(data["feats"]))
         actor_ctrs = gpu(data["ctrs"])
@@ -187,8 +187,13 @@ class Net(nn.Module):
                         trajectory = trajectory_tmp
                     else:
                         trajectory = torch.cat((trajectory, trajectory_tmp), dim=0)
-            actors = self.actor_net_jhs(trajectory, traj_length, mode='lanegcn')
-            actors = self.mapping(actors)
+            if transfer:
+                with torch.no_grad():
+                    actors = self.actor_net_jhs(trajectory, traj_length, mode='lanegcn')
+                    actors = self.mapping(actors)
+            else:
+                actors = self.actor_net_jhs(trajectory, traj_length, mode='lanegcn')
+                actors = self.mapping(actors)
 
         # construct map features
         graph = graph_gather(to_long(gpu(data["graph"])))

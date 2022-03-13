@@ -22,13 +22,11 @@ import torch
 from torch.utils.data import Sampler, DataLoader
 import horovod.torch as hvd
 
-
 from torch.utils.data.distributed import DistributedSampler
 
 from utils import Logger, load_pretrain
 
 from mpi4py import MPI
-
 
 comm = MPI.COMM_WORLD
 hvd.init()
@@ -37,7 +35,6 @@ torch.cuda.set_device(hvd.local_rank())
 root_path = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(root_path)
 sys.path.insert(0, root_path)
-
 
 parser = argparse.ArgumentParser(description="Fuse Detection in Pytorch")
 parser.add_argument(
@@ -53,6 +50,7 @@ parser.add_argument(
 parser.add_argument(
     "--weight", default="", type=str, metavar="WEIGHT", help="checkpoint path"
 )
+
 
 def main():
     seed = hvd.rank()
@@ -72,18 +70,17 @@ def main():
         weights = torch.load(weight_dir, map_location=lambda storage, loc: storage)
         load_pretrain(net.actor_net_jhs, weights["model_state_dict"])
         params = list(net.actor_net.parameters()) \
-                  + list(net.mapping.parameters()) \
-                  + list(net.map_net.parameters()) \
-                  + list(net.a2m.parameters()) \
-                  + list(net.m2m.parameters()) \
-                  + list(net.m2a.parameters()) \
-                  + list(net.a2a.parameters()) \
-                  + list(net.pred_net.parameters())
+                 + list(net.mapping.parameters()) \
+                 + list(net.map_net.parameters()) \
+                 + list(net.a2m.parameters()) \
+                 + list(net.m2m.parameters()) \
+                 + list(net.m2a.parameters()) \
+                 + list(net.a2a.parameters()) \
+                 + list(net.pred_net.parameters())
         print('encoder weight is loaded from ' + weight_dir)
     else:
         params = list(net.parameters())
     opt = optim(params, config)
-
 
     if config["horovod"]:
         opt.opt = hvd.DistributedOptimizer(
@@ -194,7 +191,7 @@ def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=
 
     start_time = time.time()
     metrics = dict()
-    for i, data in tqdm(enumerate(train_loader),disable=hvd.rank()):
+    for i, data in tqdm(enumerate(train_loader), disable=hvd.rank()):
         epoch += epoch_per_batch
         data = dict(data)
 
@@ -209,7 +206,7 @@ def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=
 
         num_iters = int(np.round(epoch * num_batches))
         if hvd.rank() == 0 and (
-            num_iters % save_iters == 0 or epoch >= config["num_epochs"]
+                num_iters % save_iters == 0 or epoch >= config["num_epochs"]
         ):
             save_ckpt(net, opt, config["save_dir"], epoch)
 

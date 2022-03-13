@@ -31,7 +31,6 @@ except:
     import LaneGCN.lanegcn as model
     from LaneGCN.utils import Logger, load_pretrain
 
-
 # cur_path = os.path.abspath(__file__)
 cur_path = os.getcwd() + '/LaneGCN/train_window.py'
 root_path = os.path.dirname(os.path.dirname(cur_path)) + '/LaneGCN'
@@ -55,6 +54,7 @@ parser.add_argument(
 
 parser.add_argument("--port")
 
+
 def main():
     # Import all settings for experiment.
     args = parser.parse_args()
@@ -66,19 +66,18 @@ def main():
         weights = torch.load(weight_dir, map_location=lambda storage, loc: storage)
         load_pretrain(net.actor_net_jhs, weights["model_state_dict"])
         params = list(net.actor_net.parameters()) \
-                  + list(net.mapping.parameters()) \
-                  + list(net.map_net.parameters()) \
-                  + list(net.a2m.parameters()) \
-                  + list(net.m2m.parameters()) \
-                  + list(net.m2a.parameters()) \
-                  + list(net.a2a.parameters()) \
-                  + list(net.pred_net.parameters())
+                 + list(net.mapping.parameters()) \
+                 + list(net.map_net.parameters()) \
+                 + list(net.a2m.parameters()) \
+                 + list(net.m2m.parameters()) \
+                 + list(net.m2a.parameters()) \
+                 + list(net.a2a.parameters()) \
+                 + list(net.pred_net.parameters())
         print('encoder weight is loaded from ' + weight_dir)
 
     else:
         params = list(net.parameters())
     opt = optim(params, config)
-
 
     if args.resume or args.weight:
         ckpt_path = args.resume or args.weight
@@ -164,7 +163,7 @@ def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=
         epoch += epoch_per_batch
         data = dict(data)
 
-        output = net(data, mode='custom')
+        output = net(data, mode='custom', transfer=True)
         loss_out = loss(output, data)
         post_out = post_process(output, data)
         post_process.append(metrics, loss_out, post_out)
