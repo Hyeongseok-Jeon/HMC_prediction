@@ -30,6 +30,7 @@ from model.representation_learning.Net_enc import BackBone as ActorNet_jhs
 file_path = os.path.abspath(__file__)
 root_path = os.path.dirname(file_path)
 model_name = os.path.basename(file_path).split(".")[0]
+project_root = os.path.dirname(root_path)
 
 ### config ###
 config = dict()
@@ -43,6 +44,7 @@ config["opt"] = "adam"
 config["num_epochs"] = 100
 config["lr"] = [1e-3, 1e-4]
 config["lr_epochs"] = [32]
+config["maneuver_transfer"] = True
 config["lr_func"] = StepLR(config["lr"], config["lr_epochs"])
 
 cur_time = time.strftime("-%Y-%m-%d_%H_%M_%S")
@@ -60,7 +62,6 @@ config["val_batch_size"] = 32
 config["workers"] = 0
 config["val_workers"] = config["workers"]
 
-
 """Dataset"""
 # Raw Dataset
 config["train_split"] = os.path.join(
@@ -70,14 +71,14 @@ config["val_split"] = os.path.join(root_path, "dataset/val/data")
 config["test_split"] = os.path.join(root_path, "dataset/test_obs/data")
 
 # Preprocessed Dataset
-config["preprocess"] = True # whether use preprocess or not
+config["preprocess"] = True  # whether use preprocess or not
 config["preprocess_train"] = os.path.join(
-    root_path, "dataset","preprocess", "train_crs_dist6_angle90.p"
+    root_path, "dataset", "preprocess", "train_crs_dist6_angle90.p"
 )
 config["preprocess_val"] = os.path.join(
-    root_path,"dataset", "preprocess", "val_crs_dist6_angle90.p"
+    root_path, "dataset", "preprocess", "val_crs_dist6_angle90.p"
 )
-config['preprocess_test'] = os.path.join(root_path, "dataset",'preprocess', 'test_test.p')
+config['preprocess_test'] = os.path.join(root_path, "dataset", 'preprocess', 'test_test.p')
 
 """Model"""
 config["n_hidden_after_deconv"] = 256
@@ -101,6 +102,8 @@ config["reg_coef"] = 1.0
 config["mgn"] = 0.2
 config["cls_th"] = 2.0
 config["cls_ignore"] = 0.2
+
+
 ### end of config ###
 
 class Net(nn.Module):
@@ -122,11 +125,61 @@ class Net(nn.Module):
         4. PredNet: prediction header for motion forecasting using 
            feature from A2A
     """
+
     def __init__(self, config):
         super(Net, self).__init__()
         self.config = config
 
         self.actor_net_jhs = ActorNet_jhs(config)
+        if self.config["maneuver_transfer"]:
+            file_list = os.listdir(project_root + '/logs')
+            print('------------------------------------------------------------')
+            for i in range(len(file_list)):
+                print('File_id : ' + str(file_list[i]), '  File_index : ' + str(i))
+            print('------------------------------------------------------------')
+            print('\n')
+            while True:
+                s_model = input('selected target models : ')
+                try:
+                    if int(s_model) < len(file_list) and int(s_model) >= 0:
+                        file_index = int(s_model)
+                        file_id = file_list[file_index].split('.')[0]
+                        break
+                    else:
+                        pass
+                except:
+                    pass
+
+            ckpt_dir = project_root + '/ckpt/' + file_id
+            ckpt_list = os.listdir(ckpt_dir)
+            epoch_list = [int(ckpt_list[i].split('_')[1].split('.')[0]) for i in range(len(ckpt_list))]
+            idx = sorted(range(len(epoch_list)), key=lambda k: epoch_list[k])
+            ckpt_list = [ckpt_list[idx[i]] for i in range(len(idx))]
+
+            print('------------------------------------------------------------')
+            print('File_id : Without pretrained encoder', '  File_index : -1')
+
+            for i in range(len(ckpt_list)):
+                print('File_id : ' + str(ckpt_list[i]), '  File_index : ' + str(i))
+            print('------------------------------------------------------------')
+            print('\n')
+
+            while True:
+                s_weight = input('selected target models : ')
+                try:
+                    if int(s_weight) < len(ckpt_list) and int(s_weight) >= -1:
+                        if int(s_weight) == -1:
+                            break
+                        else:
+                            weight_index = int(s_weight)
+                            weight = ckpt_list[weight_index]
+                            break
+                    else:
+                        pass
+                except:
+                    pass
+            weights = torch.load(ckpt_dir + '/' + weight, map_location='cuda:0')
+            self.actor_net_jhs.load_state_dict(weights['model_state_dict'])
         self.mapping = nn.Linear(config["n_hidden_after_deconv"], config["n_actor"])
         self.actor_net = ActorNet(config)
         self.map_net = MapNet(config)
@@ -151,18 +204,18 @@ class Net(nn.Module):
                 path = actors[i]
                 path_conv = path.clone()
                 for j in range(path.shape[0]):
-                    path_conv[j,:2] = torch.sum(path[:j+1,:2], dim=0)
+                    path_conv[j, :2] = torch.sum(path[:j + 1, :2], dim=0)
 
                 init_idx = torch.where(path[:, -1] == 1)[0][0]
                 traj_cand = path_conv[init_idx:]
                 origin = traj_cand[-1, :2]
-                traj_cand[:,:2] = traj_cand[:,:2] - origin
+                traj_cand[:, :2] = traj_cand[:, :2] - origin
                 if traj_cand.shape[0] == 1:
                     cur_heading = torch.tensor(0, device=traj_cand.device)
                 else:
-                    cur_heading = torch.atan2(traj_cand[-1,1] - traj_cand[-2,1],traj_cand[-1,0] - traj_cand[-2,0])
+                    cur_heading = torch.atan2(traj_cand[-1, 1] - traj_cand[-2, 1], traj_cand[-1, 0] - traj_cand[-2, 0])
                 rot = torch.tensor([[torch.cos(cur_heading), -torch.sin(cur_heading)], [torch.sin(cur_heading), torch.cos(cur_heading)]], device=traj_cand.device)
-                traj_cand[:,:2] = torch.matmul(rot, traj_cand[:,:2].T).T
+                traj_cand[:, :2] = torch.matmul(rot, traj_cand[:, :2].T).T
 
                 while traj_cand.shape[0] < 5:
                     if traj_cand.shape[0] == 1:
@@ -172,15 +225,15 @@ class Net(nn.Module):
                     traj_cand = torch.cat((new_point, traj_cand), dim=0)
 
                 disp = traj_cand[1:, :2] - traj_cand[:-1, :2]
-                angle = torch.rad2deg(torch.atan2(disp[:,1], disp[:,0]))
-                angles = (angle[:-1] + angle[1:])/2
+                angle = torch.rad2deg(torch.atan2(disp[:, 1], disp[:, 0]))
+                angles = (angle[:-1] + angle[1:]) / 2
                 angles_tot = torch.cat((angle[0:1], angles, angle[-1:]))
-                traj_cand[:,2] = angles_tot
+                traj_cand[:, 2] = angles_tot
 
-                traj_length.append(int(traj_cand.shape[0]/5))
-                for j in range(traj_length[i]-1, -1, -1):
-                    trajectory_tmp = torch.unsqueeze(traj_cand[traj_cand.shape[0] - 5*(j+1): traj_cand.shape[0] - 5*j,:], dim= 0)
-                    if i == 0 and j == traj_length[i]-1:
+                traj_length.append(int(traj_cand.shape[0] / 5))
+                for j in range(traj_length[i] - 1, -1, -1):
+                    trajectory_tmp = torch.unsqueeze(traj_cand[traj_cand.shape[0] - 5 * (j + 1): traj_cand.shape[0] - 5 * j, :], dim=0)
+                    if i == 0 and j == traj_length[i] - 1:
                         trajectory = trajectory_tmp
                     else:
                         trajectory = torch.cat((trajectory, trajectory_tmp), dim=0)
@@ -206,7 +259,6 @@ class Net(nn.Module):
                 1, 1, 1, -1
             )
         return out
-
 
 
 def actor_gather(actors: List[Tensor]) -> Tuple[Tensor, List[Tensor]]:
@@ -270,6 +322,7 @@ class ActorNet(nn.Module):
     """
     Actor feature extractor with Conv1D
     """
+
     def __init__(self, config):
         super(ActorNet, self).__init__()
         self.config = config
@@ -324,6 +377,7 @@ class MapNet(nn.Module):
     """
     Map Graph feature extractor with LaneGraphCNN
     """
+
     def __init__(self, config):
         super(MapNet, self).__init__()
         self.config = config
@@ -367,9 +421,9 @@ class MapNet(nn.Module):
 
     def forward(self, graph):
         if (
-            len(graph["feats"]) == 0
-            or len(graph["pre"][-1]["u"]) == 0
-            or len(graph["suc"][-1]["u"]) == 0
+                len(graph["feats"]) == 0
+                or len(graph["pre"][-1]["u"]) == 0
+                or len(graph["suc"][-1]["u"]) == 0
         ):
             temp = graph["feats"]
             return (
@@ -425,6 +479,7 @@ class A2M(nn.Module):
     Actor to Map Fusion:  fuses real-time traffic information from
     actor nodes to lane nodes
     """
+
     def __init__(self, config):
         super(A2M, self).__init__()
         self.config = config
@@ -469,6 +524,7 @@ class M2M(nn.Module):
     The lane to lane block: propagates information over lane
             graphs and updates the features of lane nodes
     """
+
     def __init__(self, config):
         super(M2M, self).__init__()
         self.config = config
@@ -542,6 +598,7 @@ class M2A(nn.Module):
     The lane to actor block fuses updated
         map information from lane nodes to actor nodes
     """
+
     def __init__(self, config):
         super(M2A, self).__init__()
         self.config = config
@@ -574,6 +631,7 @@ class A2A(nn.Module):
     """
     The actor to actor block performs interactions among actors.
     """
+
     def __init__(self, config):
         super(A2A, self).__init__()
         self.config = config
@@ -633,6 +691,7 @@ class PredNet(nn.Module):
     """
     Final motion forecasting with Linear Residual block
     """
+
     def __init__(self, config):
         super(PredNet, self).__init__()
         self.config = config
@@ -693,6 +752,7 @@ class Att(nn.Module):
     Attention block to pass context nodes information to target nodes
     This is used in Actor2Map, Actor2Actor, Map2Actor and Map2Map
     """
+
     def __init__(self, n_agt: int, n_ctx: int) -> None:
         super(Att, self).__init__()
         norm = "GN"
@@ -835,8 +895,8 @@ class PredLoss(nn.Module):
             dist.append(
                 torch.sqrt(
                     (
-                        (reg[row_idcs, j, last_idcs] - gt_preds[row_idcs, last_idcs])
-                        ** 2
+                            (reg[row_idcs, j, last_idcs] - gt_preds[row_idcs, last_idcs])
+                            ** 2
                     ).sum(1)
                 )
             )
@@ -851,7 +911,7 @@ class PredLoss(nn.Module):
         mask = mgn < self.config["mgn"]
         coef = self.config["cls_coef"]
         loss_out["cls_loss"] += coef * (
-            self.config["mgn"] * mask.sum() - mgn[mask].sum()
+                self.config["mgn"] * mask.sum() - mgn[mask].sum()
         )
         loss_out["num_cls"] += mask.sum().item()
 
@@ -873,7 +933,7 @@ class Loss(nn.Module):
     def forward(self, out: Dict, data: Dict) -> Dict:
         loss_out = self.pred_loss(out, gpu(data["gt_preds"]), gpu(data["has_preds"]))
         loss_out["loss"] = loss_out["cls_loss"] / (
-            loss_out["num_cls"] + 1e-10
+                loss_out["num_cls"] + 1e-10
         ) + loss_out["reg_loss"] / (loss_out["num_reg"] + 1e-10)
         return loss_out
 
@@ -883,14 +943,14 @@ class PostProcess(nn.Module):
         super(PostProcess, self).__init__()
         self.config = config
 
-    def forward(self, out,data):
+    def forward(self, out, data):
         post_out = dict()
         post_out["preds"] = [x[0:1].detach().cpu().numpy() for x in out["reg"]]
         post_out["gt_preds"] = [x[0:1].numpy() for x in data["gt_preds"]]
         post_out["has_preds"] = [x[0:1].numpy() for x in data["has_preds"]]
         return post_out
 
-    def append(self, metrics: Dict, loss_out: Dict, post_out: Optional[Dict[str, List[ndarray]]]=None) -> Dict:
+    def append(self, metrics: Dict, loss_out: Dict, post_out: Optional[Dict[str, List[ndarray]]] = None) -> Dict:
         if len(metrics.keys()) == 0:
             for key in loss_out:
                 if key != "loss":
@@ -963,8 +1023,18 @@ def get_model():
     loss = Loss(config).cuda()
     post_process = PostProcess(config).cuda()
 
-    params = net.parameters()
-    opt = Optimizer(params, config)
+    if config["maneuver_transfer"]:
+        params = list(net.actor_net.parameters()) \
+                  + list(net.mapping.parameters()) \
+                  + list(net.map_net.parameters()) \
+                  + list(net.a2m.parameters()) \
+                  + list(net.m2m.parameters()) \
+                  + list(net.m2a.parameters()) \
+                  + list(net.a2a.parameters()) \
+                  + list(net.pred_net.parameters())
+    else:
+        params = list(net.parameters())
 
+    opt = Optimizer(params, config)
 
     return config, ArgoDataset, collate_fn, net, loss, post_process, opt
