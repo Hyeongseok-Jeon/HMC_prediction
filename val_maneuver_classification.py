@@ -48,8 +48,11 @@ print('\n')
 #     except:
 #         pass
 
-for i in range(len(file_list)):
-    file_id = file_list[i].split('.')[0]
+val_dir = 'val/maneuver_prediction_tot/'
+os.makedirs(val_dir, exist_ok=True)
+
+for ii in range(len(file_list)):
+    file_id = file_list[ii].split('.')[0]
     print('Evaluation process is on-going: ' + file_id)
 
     log_name = os.getcwd() + '\logs/' + file_id +'.log'
@@ -87,9 +90,6 @@ for i in range(len(file_list)):
         elif 'Selected Encoder weight' in line:
             idx = line.index('weight_id')
             enc_weight_id = line[idx + 12:]
-
-    val_dir = 'val/' + file_id
-    os.makedirs(val_dir, exist_ok=True)
 
     fig, ax1 = plt.subplots()
     ax2 = ax1.twinx()
@@ -179,8 +179,8 @@ for i in range(len(file_list)):
         hidden = hidden.detach()
         trajectory_aug_2hz = [trajectory_aug[i][0, [trajectory_aug[i].shape[1] - 1 - 5 * j for j in range(num_per_batch[i] - 1, -1, -1)], :] for i in range(len(trajectory_aug))]
         before_inlet = []
-        for i in range(len(trajectory_aug_2hz)):
-            before_inlet.append(trajectory_aug_2hz[i][:, 0] < 0)
+        for iii in range(len(trajectory_aug_2hz)):
+            before_inlet.append(trajectory_aug_2hz[iii][:, 0] < 0)
         before_inlet = torch.cat(before_inlet)
         num_tot, correct_tot, num_before_inlet, correct_before_inlet, num_after_inlet, correct_after_inlet = decoder(hidden, maneuver_gt, num_per_batch, before_inlet, mode='val')
 
@@ -200,8 +200,8 @@ for i in range(len(file_list)):
         hidden = hidden.detach()
         trajectory_aug_2hz = [trajectory_aug[i][0, [trajectory_aug[i].shape[1] - 1 - 5 * j for j in range(num_per_batch[i] - 1, -1, -1)], :] for i in range(len(trajectory_aug))]
         before_inlet = []
-        for i in range(len(trajectory_aug_2hz)):
-            before_inlet.append(trajectory_aug_2hz[i][:, 0] < 0)
+        for iii in range(len(trajectory_aug_2hz)):
+            before_inlet.append(trajectory_aug_2hz[iii][:, 0] < 0)
         before_inlet = torch.cat(before_inlet)
         num_tot, correct_tot, num_before_inlet, correct_before_inlet, num_after_inlet, correct_after_inlet = decoder(hidden, maneuver_gt, num_per_batch, before_inlet, mode='val')
 
@@ -222,7 +222,7 @@ for i in range(len(file_list)):
     val_acc_after_inlet = val_correct_after_inlet / val_num_after_inlet
 
     ax1.text(1, 2, 'val acc: ' + str(int(10000*val_acc)/100) + '  val_acc_before_in: ' + str(int(10000*val_acc_before_inlet)/100) + '  val_acc_after_in:  '+str(int(10000*val_acc_after_inlet)/100))
-    plt.savefig(val_dir+'/process.png')
+    plt.savefig(val_dir+enc_file_id + '_' + enc_weight_id +'.png')
     plt.close()
 #
 # val_target = 91.89
