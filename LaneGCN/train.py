@@ -41,7 +41,7 @@ parser.add_argument(
     "-m", "--model", default="lanegcn", type=str, metavar="MODEL", help="model name"
 )
 parser.add_argument(
-    "-t", "--transfer", default=True, type=bool, metavar="TRANSFER", help="transferring the pretrained encoder"
+    "-t", "--transfer", default='True', type=str, metavar="TRANSFER", help="transferring the pretrained encoder"
 )
 parser.add_argument("--eval", action="store_true")
 parser.add_argument(
@@ -66,7 +66,7 @@ def main():
 
     weight_dir = project_root + '/ckpt/maneuver_prediction-2022-03-10_04_02_34/model_15.pt'
     print(args.transfer)
-    if args.transfer:
+    if args.transfer == 'True':
         weights = torch.load(weight_dir, map_location=lambda storage, loc: storage)
         load_pretrain(net.actor_net_jhs, weights["model_state_dict"])
         params = list(net.actor_net.parameters()) \
