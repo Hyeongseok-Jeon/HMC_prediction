@@ -35,6 +35,7 @@ except:
 # cur_path = os.path.abspath(__file__)
 cur_path = os.getcwd() + '/LaneGCN/train_window.py'
 root_path = os.path.dirname(os.path.dirname(cur_path)) + '/LaneGCN'
+project_root = os.path.dirname(root_path)
 sys.path.append(root_path)
 
 parser = argparse.ArgumentParser(description="Fuse Detection in Pytorch")
@@ -53,60 +54,29 @@ parser.add_argument(
 )
 
 parser.add_argument("--port")
-args = parser.parse_args()
-if args.transfer:
-    file_list = os.listdir(os.path.dirname(root_path) + '/logs')
-    print('------------------------------------------------------------')
-    for i in range(len(file_list)):
-        print('File_id : ' + str(file_list[i]), '  File_index : ' + str(i))
-    print('------------------------------------------------------------')
-    print('\n')
-    while True:
-        s_model = input('selected target models : ')
-        try:
-            if int(s_model) < len(file_list) and int(s_model) >= 0:
-                file_index = int(s_model)
-                file_id = file_list[file_index].split('.')[0]
-                break
-            else:
-                pass
-        except:
-            pass
-
-    ckpt_dir = os.path.dirname(root_path) + '/ckpt/' + file_id
-    ckpt_list = os.listdir(ckpt_dir)
-    epoch_list = [int(ckpt_list[i].split('_')[1].split('.')[0]) for i in range(len(ckpt_list))]
-    idx = sorted(range(len(epoch_list)), key=lambda k: epoch_list[k])
-    ckpt_list = [ckpt_list[idx[i]] for i in range(len(idx))]
-
-    print('------------------------------------------------------------')
-    print('File_id : Without pretrained encoder', '  File_index : -1')
-
-    for i in range(len(ckpt_list)):
-        print('File_id : ' + str(ckpt_list[i]), '  File_index : ' + str(i))
-    print('------------------------------------------------------------')
-    print('\n')
-
-    while True:
-        s_weight = input('selected target models : ')
-        try:
-            if int(s_weight) < len(ckpt_list) and int(s_weight) >= -1:
-                if int(s_weight) == -1:
-                    break
-                else:
-                    weight_index = int(s_weight)
-                    weight = ckpt_list[weight_index]
-                    break
-            else:
-                pass
-        except:
-            pass
-    weights = torch.load(ckpt_dir + '/' + weight, map_location=lambda storage, loc: storage)
 
 def main():
     # Import all settings for experiment.
-
+    args = parser.parse_args()
     config, Dataset, collate_fn, net, loss, post_process, optim = model.get_model()
+
+    weight_dir = project_root + '/ckpt/maneuver_prediction-2022-03-10_04_02_34/model_15.pt'
+
+    if args.transfer:
+        weights = torch.load(weight_dir, map_location=lambda storage, loc: storage)
+        load_pretrain(net.actor_net_jhs, weights["model_state_dict"])
+        params = list(net.actor_net.parameters()) \
+                  + list(net.mapping.parameters()) \
+                  + list(net.map_net.parameters()) \
+                  + list(net.a2m.parameters()) \
+                  + list(net.m2m.parameters()) \
+                  + list(net.m2a.parameters()) \
+                  + list(net.a2a.parameters()) \
+                  + list(net.pred_net.parameters())
+    else:
+        params = list(net.parameters())
+    opt = optim(params, config)
+
     if args.transfer:
         load_pretrain(net.actor_net_jhs, weights["model_state_dict"])
         params = list(net.actor_net.parameters()) \
