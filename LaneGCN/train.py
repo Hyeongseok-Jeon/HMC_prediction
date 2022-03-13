@@ -64,7 +64,7 @@ def main():
     config, Dataset, collate_fn, net, loss, post_process, optim = model.get_model()
 
     if config["maneuver_transfer"]:
-        file_list = os.listdir(root_path + '/logs')
+        file_list = os.listdir(os.path.dirname(root_path) + '/logs')
         print('------------------------------------------------------------')
         for i in range(len(file_list)):
             print('File_id : ' + str(file_list[i]), '  File_index : ' + str(i))
@@ -82,7 +82,7 @@ def main():
             except:
                 pass
 
-        ckpt_dir = root_path + '/ckpt/' + file_id
+        ckpt_dir = os.path.dirname(root_path) + '/ckpt/' + file_id
         ckpt_list = os.listdir(ckpt_dir)
         epoch_list = [int(ckpt_list[i].split('_')[1].split('.')[0]) for i in range(len(ckpt_list))]
         idx = sorted(range(len(epoch_list)), key=lambda k: epoch_list[k])
