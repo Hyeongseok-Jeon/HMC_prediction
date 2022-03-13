@@ -54,54 +54,54 @@ parser.add_argument(
 
 parser.add_argument("--port")
 args = parser.parse_args()
-    if args.transfer:
-        file_list = os.listdir(os.path.dirname(root_path) + '/logs')
-        print('------------------------------------------------------------')
-        for i in range(len(file_list)):
-            print('File_id : ' + str(file_list[i]), '  File_index : ' + str(i))
-        print('------------------------------------------------------------')
-        print('\n')
-        while True:
-            s_model = input('selected target models : ')
-            try:
-                if int(s_model) < len(file_list) and int(s_model) >= 0:
-                    file_index = int(s_model)
-                    file_id = file_list[file_index].split('.')[0]
+if args.transfer:
+    file_list = os.listdir(os.path.dirname(root_path) + '/logs')
+    print('------------------------------------------------------------')
+    for i in range(len(file_list)):
+        print('File_id : ' + str(file_list[i]), '  File_index : ' + str(i))
+    print('------------------------------------------------------------')
+    print('\n')
+    while True:
+        s_model = input('selected target models : ')
+        try:
+            if int(s_model) < len(file_list) and int(s_model) >= 0:
+                file_index = int(s_model)
+                file_id = file_list[file_index].split('.')[0]
+                break
+            else:
+                pass
+        except:
+            pass
+
+    ckpt_dir = os.path.dirname(root_path) + '/ckpt/' + file_id
+    ckpt_list = os.listdir(ckpt_dir)
+    epoch_list = [int(ckpt_list[i].split('_')[1].split('.')[0]) for i in range(len(ckpt_list))]
+    idx = sorted(range(len(epoch_list)), key=lambda k: epoch_list[k])
+    ckpt_list = [ckpt_list[idx[i]] for i in range(len(idx))]
+
+    print('------------------------------------------------------------')
+    print('File_id : Without pretrained encoder', '  File_index : -1')
+
+    for i in range(len(ckpt_list)):
+        print('File_id : ' + str(ckpt_list[i]), '  File_index : ' + str(i))
+    print('------------------------------------------------------------')
+    print('\n')
+
+    while True:
+        s_weight = input('selected target models : ')
+        try:
+            if int(s_weight) < len(ckpt_list) and int(s_weight) >= -1:
+                if int(s_weight) == -1:
                     break
                 else:
-                    pass
-            except:
+                    weight_index = int(s_weight)
+                    weight = ckpt_list[weight_index]
+                    break
+            else:
                 pass
-
-        ckpt_dir = os.path.dirname(root_path) + '/ckpt/' + file_id
-        ckpt_list = os.listdir(ckpt_dir)
-        epoch_list = [int(ckpt_list[i].split('_')[1].split('.')[0]) for i in range(len(ckpt_list))]
-        idx = sorted(range(len(epoch_list)), key=lambda k: epoch_list[k])
-        ckpt_list = [ckpt_list[idx[i]] for i in range(len(idx))]
-
-        print('------------------------------------------------------------')
-        print('File_id : Without pretrained encoder', '  File_index : -1')
-
-        for i in range(len(ckpt_list)):
-            print('File_id : ' + str(ckpt_list[i]), '  File_index : ' + str(i))
-        print('------------------------------------------------------------')
-        print('\n')
-
-        while True:
-            s_weight = input('selected target models : ')
-            try:
-                if int(s_weight) < len(ckpt_list) and int(s_weight) >= -1:
-                    if int(s_weight) == -1:
-                        break
-                    else:
-                        weight_index = int(s_weight)
-                        weight = ckpt_list[weight_index]
-                        break
-                else:
-                    pass
-            except:
-                pass
-        weights = torch.load(ckpt_dir + '/' + weight, map_location=lambda storage, loc: storage)
+        except:
+            pass
+    weights = torch.load(ckpt_dir + '/' + weight, map_location=lambda storage, loc: storage)
 
 def main():
     # Import all settings for experiment.
