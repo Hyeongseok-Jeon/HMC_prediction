@@ -14,6 +14,7 @@ matplotlib.use('tkagg')
 import matplotlib.pyplot as plt
 import numpy as np
 
+warnings.filterwarnings("ignore", category=UserWarning)
 
 GPU_NUM = 0
 device = torch.device(f'cuda:{GPU_NUM}' if torch.cuda.is_available() else 'cpu')
