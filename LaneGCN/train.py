@@ -65,7 +65,7 @@ def main():
     config, Dataset, collate_fn, net, loss, post_process, optim = model.get_model()
 
     weight_dir = project_root + '/ckpt/maneuver_prediction-2022-03-10_04_02_34/model_15.pt'
-    print(args.transfer)
+
     if args.transfer == 'True':
         weights = torch.load(weight_dir, map_location=lambda storage, loc: storage)
         load_pretrain(net.actor_net_jhs, weights["model_state_dict"])
@@ -195,7 +195,7 @@ def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=
         epoch += epoch_per_batch
         data = dict(data)
 
-        output = net(data)
+        output = net(data, mode='custom')
         loss_out = loss(output, data)
         post_out = post_process(output, data)
         post_process.append(metrics, loss_out, post_out)
