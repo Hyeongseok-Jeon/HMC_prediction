@@ -41,6 +41,9 @@ parser = argparse.ArgumentParser(description="Fuse Detection in Pytorch")
 parser.add_argument(
     "-m", "--model", default="lanegcn", type=str, metavar="MODEL", help="model name"
 )
+parser.add_argument(
+    "-t", "--transfer", default=True, type=bool, metavar="TRANSFER", help="transferring the pretrained encoder"
+)
 parser.add_argument("--eval", action="store_true")
 parser.add_argument(
     "--resume", default="", type=str, metavar="RESUME", help="checkpoint path"
@@ -54,8 +57,7 @@ parser.add_argument("--port")
 def main():
     # Import all settings for experiment.
     args = parser.parse_args()
-    config, Dataset, collate_fn, net, loss, post_process, optim = model.get_model()
-    if config["maneuver_transfer"]:
+    if args.transfer:
         file_list = os.listdir(os.path.dirname(root_path) + '/logs')
         print('------------------------------------------------------------')
         for i in range(len(file_list)):
@@ -103,8 +105,10 @@ def main():
             except:
                 pass
         weights = torch.load(ckpt_dir + '/' + weight, map_location=lambda storage, loc: storage)
-        load_pretrain(net.actor_net_jhs, weights["model_state_dict"])
 
+    config, Dataset, collate_fn, net, loss, post_process, optim = model.get_model()
+    if args.transfer:
+        load_pretrain(net.actor_net_jhs, weights["model_state_dict"])
         params = list(net.actor_net.parameters()) \
                  + list(net.mapping.parameters()) \
                  + list(net.map_net.parameters()) \

@@ -52,18 +52,8 @@ parser.add_argument(
 
 
 def main():
-    seed = hvd.rank()
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    np.random.seed(seed)
-    random.seed(seed)
-
-    # Import all settings for experiment.
     args = parser.parse_args()
-    model = import_module(args.model)
-    config, Dataset, collate_fn, net, loss, post_process, optim = model.get_model()
-
-    if config["maneuver_transfer"]:
+    if args.transfer:
         file_list = os.listdir(os.path.dirname(root_path) + '/logs')
         print('------------------------------------------------------------')
         for i in range(len(file_list)):
@@ -111,6 +101,18 @@ def main():
             except:
                 pass
         weights = torch.load(ckpt_dir + '/' + weight, map_location=lambda storage, loc: storage)
+
+    seed = hvd.rank()
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+
+    # Import all settings for experiment.
+    model = import_module(args.model)
+    config, Dataset, collate_fn, net, loss, post_process, optim = model.get_model()
+
+    if args.transfer:
         load_pretrain(net.actor_net_jhs, weights["model_state_dict"])
 
         params = list(net.actor_net.parameters()) \

@@ -44,7 +44,6 @@ config["opt"] = "adam"
 config["num_epochs"] = 100
 config["lr"] = [1e-3, 1e-4]
 config["lr_epochs"] = [32]
-config["maneuver_transfer"] = True
 config["lr_func"] = StepLR(config["lr"], config["lr_epochs"])
 
 cur_time = time.strftime("-%Y-%m-%d_%H_%M_%S")
