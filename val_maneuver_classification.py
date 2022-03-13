@@ -49,6 +49,7 @@ print('\n')
 
 for i in range(len(file_list)):
     file_id = file_list[i].split('.')[0]
+    print('Evaluation process is on-going: ' + file_id)
 
     log_name = os.getcwd() + '\logs/' + file_id +'.log'
     file = open(log_name, 'r')
@@ -109,12 +110,12 @@ for i in range(len(file_list)):
     epoch_list = [int(ckpt_list[i].split('_')[1].split('.')[0]) for i in range(len(ckpt_list))]
     idx = sorted(range(len(epoch_list)), key=lambda k: epoch_list[k])
     ckpt_list = [ckpt_list[idx[i]] for i in range(len(idx))]
-
-    print('------------------------------------------------------------')
-    for i in range(len(ckpt_list)):
-        print('File_id : ' + str(ckpt_list[i]), '  File_index : ' + str(i))
-    print('------------------------------------------------------------')
-    print('\n')
+    #
+    # print('------------------------------------------------------------')
+    # for i in range(len(ckpt_list)):
+    #     print('File_id : ' + str(ckpt_list[i]), '  File_index : ' + str(i))
+    # print('------------------------------------------------------------')
+    # print('\n')
 
     # while True:
     #     s = input('selected target models : ')
