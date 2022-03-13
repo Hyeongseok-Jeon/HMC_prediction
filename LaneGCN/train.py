@@ -79,6 +79,7 @@ def main():
                   + list(net.m2a.parameters()) \
                   + list(net.a2a.parameters()) \
                   + list(net.pred_net.parameters())
+        print('encoder weight is loaded from ' + weight_dir)
     else:
         params = list(net.parameters())
     opt = optim(params, config)

@@ -73,23 +73,12 @@ def main():
                   + list(net.m2a.parameters()) \
                   + list(net.a2a.parameters()) \
                   + list(net.pred_net.parameters())
+        print('encoder weight is loaded from ' + weight_dir)
+
     else:
         params = list(net.parameters())
     opt = optim(params, config)
 
-    if args.transfer:
-        load_pretrain(net.actor_net_jhs, weights["model_state_dict"])
-        params = list(net.actor_net.parameters()) \
-                 + list(net.mapping.parameters()) \
-                 + list(net.map_net.parameters()) \
-                 + list(net.a2m.parameters()) \
-                 + list(net.m2m.parameters()) \
-                 + list(net.m2a.parameters()) \
-                 + list(net.a2a.parameters()) \
-                 + list(net.pred_net.parameters())
-    else:
-        params = list(net.parameters())
-    opt = optim(params, config)
 
     if args.resume or args.weight:
         ckpt_path = args.resume or args.weight
