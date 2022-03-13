@@ -42,6 +42,9 @@ parser = argparse.ArgumentParser(description="Fuse Detection in Pytorch")
 parser.add_argument(
     "-m", "--model", default="lanegcn", type=str, metavar="MODEL", help="model name"
 )
+parser.add_argument(
+    "-t", "--transfer", default=True, type=bool, metavar="TRANSFER", help="transferring the pretrained encoder"
+)
 parser.add_argument("--eval", action="store_true")
 parser.add_argument(
     "--resume", default="", type=str, metavar="RESUME", help="checkpoint path"
