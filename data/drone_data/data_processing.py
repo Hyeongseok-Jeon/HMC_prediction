@@ -30,6 +30,7 @@ for i in range(len(file_list_int)):
     print('File_id : ' + str(file_list_int[i]), '  File_index : ' + str(i))
 print('------------------------------------------------------------')
 print('\n')
+# plt.figure()
 
 for file_name_index in range(len(file_list_int)):
     # if file_list_int[file_name_index] == 1003:
@@ -87,19 +88,25 @@ for file_name_index in range(len(file_list_int)):
             nodes = json.load(json_file)
         maneuver_table = np.load(cur_path + 'map/' + representative_id + '/maneuver_table.npy')
 
-        # plt.figure(str(selected_scenario_id) + '_1')
         # for i in range(len(links)):
         #     points_np = np.array(links[i]['points'])[:, :2]
-        #     plt.plot(np.array(points_np)[:, 0], np.array(points_np)[:, 1], c='k')
+        #     plt.plot(np.array(points_np)[:, 1], -np.array(points_np)[:, 0], c='k', zorder=100, linewidth=3)
         # # plt.scatter(new_tracks[:,4], new_tracks[:,5])
         # plt.axis('equal')
         # plt.show()
         # for i in range(int(max(new_tracks[:, 1])) + 1):
         #     try:
+        #         idxe = int(new_tracks[new_tracks[:, 1] == i, 1][0])
+        #         obj_class = tracksClass[np.where(tracksMeta[:,1] == idxe)[0][0]]
         #         x = new_tracks[new_tracks[:, 1] == i, 4]
         #         y = new_tracks[new_tracks[:, 1] == i, 5]
-        #         plt.plot(x, y, linewidth=3)
-        #         plt.text(x[0], y[0], str(int(new_tracks[new_tracks[:, 1] == i, 1][0])))
+        #         if obj_class == 'pedestrian':
+        #             plt.plot(y, -x, color='c',linewidth=1)
+        #         elif obj_class == 'bicycle':
+        #             plt.plot(y, -x, color='b',linewidth=1)
+        #         else:
+        #             plt.plot(y, -x, color='lightcoral',linewidth=1)
+        #         # plt.text(y[0], -x[0], str(int(new_tracks[new_tracks[:, 1] == i, 1][0])))
         #     except:
         #         pass
         #     # plt.pause(0.05)
