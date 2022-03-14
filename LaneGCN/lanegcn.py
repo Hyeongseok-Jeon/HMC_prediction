@@ -188,9 +188,9 @@ class Net(nn.Module):
                     else:
                         trajectory = torch.cat((trajectory, trajectory_tmp), dim=0)
             if transfer:
-                with torch.no_grad():
-                    actors = self.actor_net_jhs(trajectory, traj_length, mode='lanegcn')
-                    actors = self.mapping(actors)
+                # with torch.no_grad():
+                actors = self.actor_net_jhs(trajectory, traj_length, mode='lanegcn')
+                actors = self.mapping(actors)
             else:
                 actors = self.actor_net_jhs(trajectory, traj_length, mode='lanegcn')
                 actors = self.mapping(actors)
