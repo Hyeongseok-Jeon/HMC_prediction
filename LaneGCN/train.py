@@ -69,14 +69,15 @@ def main():
     if args.transfer == 'True':
         weights = torch.load(weight_dir, map_location=lambda storage, loc: storage)
         load_pretrain(net.actor_net_jhs, weights["model_state_dict"])
-        params = list(net.actor_net.parameters()) \
-                 + list(net.mapping.parameters()) \
-                 + list(net.map_net.parameters()) \
-                 + list(net.a2m.parameters()) \
-                 + list(net.m2m.parameters()) \
-                 + list(net.m2a.parameters()) \
-                 + list(net.a2a.parameters()) \
-                 + list(net.pred_net.parameters())
+        # params = list(net.actor_net.parameters()) \
+        #          + list(net.mapping.parameters()) \
+        #          + list(net.map_net.parameters()) \
+        #          + list(net.a2m.parameters()) \
+        #          + list(net.m2m.parameters()) \
+        #          + list(net.m2a.parameters()) \
+        #          + list(net.a2a.parameters()) \
+        #          + list(net.pred_net.parameters())
+        params = list(net.parameters())
         print('encoder weight is loaded from ' + weight_dir)
     else:
         params = list(net.parameters())
