@@ -91,7 +91,7 @@ def main():
     if args.resume or args.weight:
         ckpt_path = args.resume or args.weight
         if not os.path.isabs(ckpt_path):
-            ckpt_path = os.path.join(config["save_dir"], ckpt_path)
+            ckpt_path = os.path.join(ckpt_path)
         ckpt = torch.load(ckpt_path, map_location=lambda storage, loc: storage)
         load_pretrain(net, ckpt["state_dict"])
         if args.resume:
