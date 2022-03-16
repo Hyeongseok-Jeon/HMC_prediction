@@ -1,3 +1,7 @@
 
 /LaneGCN/dataset/preprocess_arxiv/*.p
 /LaneGCN/dataset/preprocess/*.p
+/LaneGCN/dataset/*.gz
+/LaneGCN/dataset/test_obs/*
+/LaneGCN/dataset/train/*
+/LaneGCN/dataset/val/*
