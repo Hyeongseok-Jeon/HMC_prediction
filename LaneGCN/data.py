@@ -31,11 +31,8 @@ class ArgoDataset(Dataset):
         if 'preprocess' in config and config['preprocess']:
             if train:
                 self.split = np.load(self.config['preprocess_train'], allow_pickle=True)
-                self.origin_list = np.load(os.path.dirname(config['preprocess_train'])+'\\origin_list_train.npy', allow_pickle=True)
-
             else:
                 self.split = np.load(self.config['preprocess_val'], allow_pickle=True)
-                self.origin_list = np.load(os.path.dirname(config['preprocess_val'])+'\\origin_list_val.npy', allow_pickle=True)
         else:
             self.avl = ArgoverseForecastingLoader(split)
             self.avl.seq_list = sorted(self.avl.seq_list)
@@ -122,7 +119,7 @@ class ArgoDataset(Dataset):
 
         """TIMESTAMP,TRACK_ID,OBJECT_TYPE,X,Y,CITY_NAME"""
         df = copy.deepcopy(self.avl[idx].seq_df)
-
+        file_name = int(os.path.split(self.avl.seq_list[idx])[-1].split('.')[0])
         agt_ts = np.sort(np.unique(df['TIMESTAMP'].values))
         mapping = dict()
         for i, ts in enumerate(agt_ts):
@@ -156,6 +153,7 @@ class ArgoDataset(Dataset):
         data['city'] = city
         data['trajs'] = [agt_traj] + ctx_trajs
         data['steps'] = [agt_step] + ctx_steps
+        data['file_name'] = file_name
         return data
 
     def get_obj_feats(self, data):

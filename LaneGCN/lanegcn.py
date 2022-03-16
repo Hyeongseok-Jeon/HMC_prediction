@@ -69,6 +69,9 @@ config["train_split"] = os.path.join(
 config["val_split"] = os.path.join(root_path, "dataset/val/data")
 config["test_split"] = os.path.join(root_path, "dataset/test_obs/data")
 
+config["train_split"] = "D:\\argoverse_dataset\\train\\data"
+config["val_split"] = "D:\\argoverse_dataset\\val\\data"
+config["test_split"] = "D:\\argoverse_dataset\\test_obs\\data"
 # Preprocessed Dataset
 config["preprocess"] = True  # whether use preprocess or not
 config["preprocess_train"] = os.path.join(

@@ -8,9 +8,9 @@ Preprocess the data(csv), build graph from the HDMAP and saved as pkl
 
 import argparse
 import os
+
 import pickle
 import random
-import sys
 import time
 from importlib import import_module
 
@@ -18,6 +18,7 @@ from tqdm import tqdm
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
+
 from data import ArgoDataset as Dataset, from_numpy, ref_copy, collate_fn
 from utils import Logger, load_pretrain, gpu
 
@@ -88,6 +89,7 @@ def train(config):
                 "gt_preds",
                 "has_preds",
                 "graph",
+                "file_name",
             ]:
                 store[key] = to_numpy(data[key][j])
                 if key in ["graph"]:
@@ -142,6 +144,7 @@ def val(config):
                 "gt_preds",
                 "has_preds",
                 "graph",
+                "file_name",
             ]:
                 store[key] = to_numpy(data[key][j])
                 if key in ["graph"]:
@@ -191,6 +194,7 @@ def test(config):
                 "theta",
                 "rot",
                 "graph",
+                "file_name",
             ]:
                 store[key] = to_numpy(data[key][j])
                 if key in ["graph"]:
