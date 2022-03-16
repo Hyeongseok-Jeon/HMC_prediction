@@ -27,7 +27,8 @@ class pred_loader_1(Dataset):
                         self.data_list_dup.append(file_name)
             else:
                 for _ in range(config["splicing_num"]):
-                    self.data_list_dup.append(file_name)
+                    for _ in range(config["LK_multiple"]):
+                        self.data_list_dup.append(file_name)
 
         self.total_traj_max = 0
         for i in range(len(self.data_list_dup)):
