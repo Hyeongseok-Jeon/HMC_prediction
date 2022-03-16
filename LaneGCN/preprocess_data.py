@@ -11,6 +11,7 @@ import os
 
 import pickle
 import random
+import sys
 import time
 from importlib import import_module
 
@@ -35,23 +36,23 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "-m", "--model", default="lanegcn", type=str, metavar="MODEL", help="model name"
 )
+config = dict()
 
 
 def main():
     # Import all settings for experiment.
     args = parser.parse_args()
-    model = import_module(args.model)
-    print(args.model)
-    config, *_ = model.get_model()
-
+    config["preprocess_train"] = os.path.join(root_path, "dataset", "preprocess", "train_crs_dist6_angle90.p")
     config["preprocess"] = False  # we use raw data to generate preprocess data
     config["val_workers"] = 32
     config["workers"] = 32
     config['cross_dist'] = 6
     config['cross_angle'] = 0.5 * np.pi
+    config["train_split"] = "D:\\argoverse_dataset\\train\\data"
+    config["val_split"] = "D:\\argoverse_dataset\\val\\data"
+    config["test_split"] = "D:\\argoverse_dataset\\test_obs\\data"
 
     os.makedirs(os.path.dirname(config['preprocess_train']),exist_ok=True)    
-
 
 
     val(config)
