@@ -25,23 +25,15 @@ from utils import Logger, load_pretrain, gpu
 
 os.umask(0)
 
-
 root_path = os.path.dirname(os.path.abspath(__file__))
+root_path = os.getcwd()
 sys.path.insert(0, root_path)
 
-
-parser = argparse.ArgumentParser(
-    description="Data preprocess for argo forcasting dataset"
-)
-parser.add_argument(
-    "-m", "--model", default="lanegcn", type=str, metavar="MODEL", help="model name"
-)
 config = dict()
 
 
 def main():
     # Import all settings for experiment.
-    args = parser.parse_args()
     config["preprocess_train"] = os.path.join(root_path, "dataset", "preprocess", "train_crs_dist6_angle90.p")
     config["preprocess"] = False  # we use raw data to generate preprocess data
     config["val_workers"] = 32
@@ -51,6 +43,35 @@ def main():
     config["train_split"] = "D:\\argoverse_dataset\\train\\data"
     config["val_split"] = "D:\\argoverse_dataset\\val\\data"
     config["test_split"] = "D:\\argoverse_dataset\\test_obs\\data"
+    config["batch_size"] = 32
+    config["val_batch_size"] = 32
+    config["workers"] = 0
+    config["val_workers"] = config["workers"]
+    config["pred_range"] = [-100.0, 100.0, -100.0, 100.0]
+    config["num_scales"] = 6
+    config["n_actor"] = 128
+    config["n_map"] = 128
+    config["actor2map_dist"] = 7.0
+    config["map2actor_dist"] = 6.0
+    config["actor2actor_dist"] = 100.0
+    config["pred_size"] = 30
+    config["pred_step"] = 1
+    config["num_preds"] = config["pred_size"] // config["pred_step"]
+    config["num_mods"] = 6
+    config["cls_coef"] = 1.0
+    config["reg_coef"] = 1.0
+    config["mgn"] = 0.2
+    config["cls_th"] = 2.0
+    config["cls_ignore"] = 0.2
+    config["rot_aug"] = False
+    config["preprocess_train"] = os.path.join(
+        root_path, "dataset", "preprocess", "train_crs_dist6_angle90.p"
+    )
+    config["preprocess_val"] = os.path.join(
+        root_path, "dataset", "preprocess", "val_crs_dist6_angle90.p"
+    )
+    config['preprocess_test'] = os.path.join(root_path, "dataset", 'preprocess', 'test_test.p')
+
 
     os.makedirs(os.path.dirname(config['preprocess_train']),exist_ok=True)    
 
