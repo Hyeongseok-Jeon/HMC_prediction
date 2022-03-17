@@ -968,8 +968,8 @@ class Loss(nn.Module):
         super(Loss, self).__init__()
         self.config = config
         self.pred_loss = PredLoss(config)
-        self.train_maneuver = pd.read_csv(os.path.dirname(config['preprocess_train']) + '\\train_data.csv')
-        self.val_maneuver = pd.read_csv(os.path.dirname(config['preprocess_train']) + '\\val_data.csv')
+        self.train_maneuver = pd.read_csv(os.path.dirname(config['preprocess_train']) + '/train_data.csv')
+        self.val_maneuver = pd.read_csv(os.path.dirname(config['preprocess_train']) + '/val_data.csv')
 
     def forward(self, out: Dict, data: Dict, phase='train') -> Dict:
         maneuver_list = []
@@ -1003,8 +1003,8 @@ class PostProcess(nn.Module):
     def __init__(self, config):
         super(PostProcess, self).__init__()
         self.config = config
-        self.train_maneuver = pd.read_csv(os.path.dirname(config['preprocess_train']) + '\\train_data.csv')
-        self.val_maneuver = pd.read_csv(os.path.dirname(config['preprocess_train']) + '\\val_data.csv')
+        self.train_maneuver = pd.read_csv(os.path.dirname(config['preprocess_train']) + '/train_data.csv')
+        self.val_maneuver = pd.read_csv(os.path.dirname(config['preprocess_train']) + '/val_data.csv')
 
     def forward(self, out, data, phase='train'):
         maneuver_list = []
