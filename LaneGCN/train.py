@@ -67,7 +67,7 @@ def main():
     config, Dataset, collate_fn, net, loss, post_process, optim = model.get_model()
 
     weight_dir = project_root + '/ckpt/maneuver_prediction-2022-03-10_04_02_34/model_15.pt'
-    print(args.transfer)
+
     if args.transfer == 'True':
         weights = torch.load(weight_dir, map_location=lambda storage, loc: storage)
         load_pretrain(net.actor_net_jhs, weights["model_state_dict"])
@@ -137,7 +137,7 @@ def main():
                 shutil.copy(os.path.join(src_dir, f), os.path.join(dst_dir, f))
 
     # Data loader for training
-    dataset = Dataset(config["train_split"], config, train=True)
+    dataset = Dataset(config["val_split"], config, train=True)
     train_sampler = DistributedSampler(
         dataset, num_replicas=hvd.size(), rank=hvd.rank()
     )
