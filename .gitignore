@@ -5,3 +5,5 @@
 /LaneGCN/dataset/test_obs/*
 /LaneGCN/dataset/train/*
 /LaneGCN/dataset/val/*
+/data/__pycache__/
+/logger/__pycache__/
