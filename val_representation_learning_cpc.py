@@ -57,6 +57,7 @@ config["splicing_num"] = 1
 config["occlusion_rate"] = 0
 config["batch_size"] = 1
 config["LC_multiple"] = 1
+config["LK_multiple"] = 1
 dataset_train = pred_loader_1(config, 'train', mode='val')
 dataset_val = pred_loader_1(config, 'val', mode='val')
 
@@ -94,7 +95,7 @@ for test in range(len(ckpt_list_seq)):
     weight = ckpt_list[ckpt_list_seq[test]]
     print(weight)
     val_dir = 'val/' + file_id + '/' + weight.split('.')[0]
-    tsne_dir = val_dir + '/tsne_plot'
+    tsne_dir = val_dir
     os.makedirs(tsne_dir, exist_ok=True)
 
     warnings.filterwarnings("ignore", category=UserWarning)
