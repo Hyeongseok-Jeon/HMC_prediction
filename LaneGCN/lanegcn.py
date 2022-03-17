@@ -141,7 +141,7 @@ class Net(nn.Module):
 
         self.pred_net = PredNet(config)
 
-    def forward(self, data: Dict, mode='official', transfer=False) -> Dict[str, List[Tensor]]:
+    def forward(self, data: Dict, mode='official', transfer=False, phase='train') -> Dict[str, List[Tensor]]:
         # construct actor feature
         actors, actor_idcs = actor_gather(gpu(data["feats"]))
         actor_ctrs = gpu(data["ctrs"])
@@ -885,7 +885,7 @@ class Loss(nn.Module):
         self.config = config
         self.pred_loss = PredLoss(config)
 
-    def forward(self, out: Dict, data: Dict) -> Dict:
+    def forward(self, out: Dict, data: Dict, phase='train') -> Dict:
         loss_out = self.pred_loss(out, gpu(data["gt_preds"]), gpu(data["has_preds"]))
         loss_out["loss"] = loss_out["cls_loss"] / (
                 loss_out["num_cls"] + 1e-10
@@ -898,7 +898,7 @@ class PostProcess(nn.Module):
         super(PostProcess, self).__init__()
         self.config = config
 
-    def forward(self, out, data):
+    def forward(self, out, data, phase='train'):
         post_out = dict()
         post_out["preds"] = [x[0:1].detach().cpu().numpy() for x in out["reg"]]
         post_out["gt_preds"] = [x[0:1].numpy() for x in data["gt_preds"]]
