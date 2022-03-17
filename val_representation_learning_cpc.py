@@ -57,7 +57,7 @@ config["splicing_num"] = 1
 config["occlusion_rate"] = 0
 config["batch_size"] = 1
 config["LC_multiple"] = 1
-config["LK_multiple"] = 1
+config["LK_multiple"] = 0.1
 dataset_train = pred_loader_1(config, 'train', mode='val')
 dataset_val = pred_loader_1(config, 'val', mode='val')
 
@@ -118,8 +118,8 @@ for test in range(len(ckpt_list_seq)):
         trajectory, traj_length, conversion, maneuvers = data
         maneuvers = maneuvers[0].numpy()
         trajectory = trajectory.float().cuda()
-
-        representation_time_bag = model(trajectory, traj_length, mode='val')
+        with torch.no_grad():
+            representation_time_bag = model(trajectory, traj_length, mode='val')
         if i == 0:
             context_bag_train = [None if repres is None else repres.cpu().detach().numpy() for repres in representation_time_bag]
             maneuver_bag_train = [None if context_bag_train[i] is None else np.repeat(maneuvers, config["val_augmentation"], axis=0) for i in range(11)]
@@ -148,8 +148,8 @@ for test in range(len(ckpt_list_seq)):
         trajectory, traj_length, conversion, maneuvers = data
         maneuvers = maneuvers[0].numpy()
         trajectory = trajectory.float().cuda()
-
-        representation_time_bag = model(trajectory, traj_length, mode='val')
+        with torch.no_grad():
+            representation_time_bag = model(trajectory, traj_length, mode='val')
         if i == 0:
             context_bag_val = [None if repres == None else repres.cpu().detach().numpy() for repres in representation_time_bag]
             maneuver_bag_val = [None if context_bag_val[i] is None else np.repeat(maneuvers, config["val_augmentation"], axis=0) for i in range(11)]
@@ -175,7 +175,7 @@ for test in range(len(ckpt_list_seq)):
                         context_bag_tot[j] = np.concatenate((context_bag_tot[j], representation_time_bag[j].cpu().detach().numpy()), axis=0)
                         maneuver_bag_tot[j] = np.concatenate((maneuver_bag_tot[j], np.repeat(maneuvers, config["val_augmentation"], axis=0)), axis=0)
 
-
+# TODO: cov matrix 계산, 2d gaussian fitting 및 maneuver간의 KL divergence계산,
     n_components = 2
     tsne_hist = TSNE(n_components=n_components,
                 perplexity=30,
@@ -196,6 +196,11 @@ for test in range(len(ckpt_list_seq)):
         plt.scatter(context_low_dim_right_turn[:, 0], context_low_dim_right_turn[:, 1], s=5, c='c', label='Right Turn')
         plt.scatter(context_low_dim_left_turn[:, 0], context_low_dim_left_turn[:, 1], s=5, c='g', label='Left Turn')
         plt.scatter(context_low_dim_u_turn[:, 0], context_low_dim_u_turn[:, 1], s=5, c='r', label='U-Turn')
+        cov_straight = np.cov(context_low_dim_go_straight.T)
+        cov_left_turn = np.cov(context_low_dim_left_turn.T)
+        cov_right_turn = np.cov(context_low_dim_right_turn.T)
+        cov_u_turn = np.cov(context_low_dim_u_turn.T)
+
         plt.legend(loc='upper right')
         plt.xlim(-100, 120)
         plt.ylim(-100, 120)
@@ -217,6 +222,11 @@ for test in range(len(ckpt_list_seq)):
         plt.scatter(context_low_dim_right_turn[:, 0], context_low_dim_right_turn[:, 1], s=5, c='c', label='Right Turn')
         plt.scatter(context_low_dim_left_turn[:, 0], context_low_dim_left_turn[:, 1], s=5, c='g', label='Left Turn')
         plt.scatter(context_low_dim_u_turn[:, 0], context_low_dim_u_turn[:, 1], s=5, c='r', label='U-Turn')
+        cov_straight = np.cov(context_low_dim_go_straight.T)
+        cov_left_turn = np.cov(context_low_dim_left_turn.T)
+        cov_right_turn = np.cov(context_low_dim_right_turn.T)
+        cov_u_turn = np.cov(context_low_dim_u_turn.T)
+
         plt.legend(loc='upper right')
         plt.xlim(-100, 120)
         plt.ylim(-100, 120)
@@ -236,6 +246,11 @@ for test in range(len(ckpt_list_seq)):
         plt.scatter(context_low_dim_right_turn[:, 0], context_low_dim_right_turn[:, 1], s=5, c='c', label='Right Turn')
         plt.scatter(context_low_dim_left_turn[:, 0], context_low_dim_left_turn[:, 1], s=5, c='g', label='Left Turn')
         plt.scatter(context_low_dim_u_turn[:, 0], context_low_dim_u_turn[:, 1], s=5, c='r', label='U-Turn')
+        cov_straight = np.cov(context_low_dim_go_straight.T)
+        cov_left_turn = np.cov(context_low_dim_left_turn.T)
+        cov_right_turn = np.cov(context_low_dim_right_turn.T)
+        cov_u_turn = np.cov(context_low_dim_u_turn.T)
+
         plt.legend(loc='upper right')
         plt.xlim(-100, 120)
         plt.ylim(-100, 120)
