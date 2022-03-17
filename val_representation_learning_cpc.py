@@ -191,10 +191,10 @@ for test in range(len(ckpt_list_seq)):
         context_low_dim_left_turn = context_low_dim[maneuver_bag_tot[i][:, 1] == 1]
         context_low_dim_go_straight = context_low_dim[maneuver_bag_tot[i][:, 2] == 1]
         context_low_dim_right_turn = context_low_dim[maneuver_bag_tot[i][:, 3] == 1]
-        plt.scatter(context_low_dim_go_straight[:, 0], context_low_dim_go_straight[:, 1], c='b', label='Go Straight')
-        plt.scatter(context_low_dim_right_turn[:, 0], context_low_dim_right_turn[:, 1], c='c', label='Right Turn')
-        plt.scatter(context_low_dim_left_turn[:, 0], context_low_dim_left_turn[:, 1], c='g', label='Left Turn')
-        plt.scatter(context_low_dim_u_turn[:, 0], context_low_dim_u_turn[:, 1], c='r', label='U-Turn')
+        plt.scatter(context_low_dim_go_straight[:, 0], context_low_dim_go_straight[:, 1], s=5, c='b', label='Go Straight')
+        plt.scatter(context_low_dim_right_turn[:, 0], context_low_dim_right_turn[:, 1], s=5, c='c', label='Right Turn')
+        plt.scatter(context_low_dim_left_turn[:, 0], context_low_dim_left_turn[:, 1], s=5, c='g', label='Left Turn')
+        plt.scatter(context_low_dim_u_turn[:, 0], context_low_dim_u_turn[:, 1], s=5, c='r', label='U-Turn')
         plt.legend(loc='upper right')
         plt.xlim(-100, 120)
         plt.ylim(-100, 120)
@@ -212,10 +212,10 @@ for test in range(len(ckpt_list_seq)):
         context_low_dim_left_turn = context_low_dim[maneuver_bag_train[i][:, 1] == 1]
         context_low_dim_go_straight = context_low_dim[maneuver_bag_train[i][:, 2] == 1]
         context_low_dim_right_turn = context_low_dim[maneuver_bag_train[i][:, 3] == 1]
-        plt.scatter(context_low_dim_go_straight[:, 0], context_low_dim_go_straight[:, 1], c='b', label='Go Straight')
-        plt.scatter(context_low_dim_right_turn[:, 0], context_low_dim_right_turn[:, 1], c='c', label='Right Turn')
-        plt.scatter(context_low_dim_left_turn[:, 0], context_low_dim_left_turn[:, 1], c='g', label='Left Turn')
-        plt.scatter(context_low_dim_u_turn[:, 0], context_low_dim_u_turn[:, 1], c='r', label='U-Turn')
+        plt.scatter(context_low_dim_go_straight[:, 0], context_low_dim_go_straight[:, 1], s=5, c='b', label='Go Straight')
+        plt.scatter(context_low_dim_right_turn[:, 0], context_low_dim_right_turn[:, 1], s=5, c='c', label='Right Turn')
+        plt.scatter(context_low_dim_left_turn[:, 0], context_low_dim_left_turn[:, 1], s=5, c='g', label='Left Turn')
+        plt.scatter(context_low_dim_u_turn[:, 0], context_low_dim_u_turn[:, 1], s=5, c='r', label='U-Turn')
         plt.legend(loc='upper right')
         plt.xlim(-100, 120)
         plt.ylim(-100, 120)
@@ -231,10 +231,10 @@ for test in range(len(ckpt_list_seq)):
         context_low_dim_left_turn = context_low_dim[maneuver_bag_val[i][:, 1] == 1]
         context_low_dim_go_straight = context_low_dim[maneuver_bag_val[i][:, 2] == 1]
         context_low_dim_right_turn = context_low_dim[maneuver_bag_val[i][:, 3] == 1]
-        plt.scatter(context_low_dim_go_straight[:, 0], context_low_dim_go_straight[:, 1], c='b', label='Go Straight')
-        plt.scatter(context_low_dim_right_turn[:, 0], context_low_dim_right_turn[:, 1], c='c', label='Right Turn')
-        plt.scatter(context_low_dim_left_turn[:, 0], context_low_dim_left_turn[:, 1], c='g', label='Left Turn')
-        plt.scatter(context_low_dim_u_turn[:, 0], context_low_dim_u_turn[:, 1], c='r', label='U-Turn')
+        plt.scatter(context_low_dim_go_straight[:, 0], context_low_dim_go_straight[:, 1], s=5, c='b', label='Go Straight')
+        plt.scatter(context_low_dim_right_turn[:, 0], context_low_dim_right_turn[:, 1], s=5, c='c', label='Right Turn')
+        plt.scatter(context_low_dim_left_turn[:, 0], context_low_dim_left_turn[:, 1], s=5, c='g', label='Left Turn')
+        plt.scatter(context_low_dim_u_turn[:, 0], context_low_dim_u_turn[:, 1], s=5, c='r', label='U-Turn')
         plt.legend(loc='upper right')
         plt.xlim(-100, 120)
         plt.ylim(-100, 120)
