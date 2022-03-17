@@ -30,6 +30,7 @@ from mpi4py import MPI
 
 comm = MPI.COMM_WORLD
 hvd.init()
+print(hvd.local_rank())
 torch.cuda.set_device(hvd.local_rank())
 
 root_path = os.path.dirname(os.path.abspath(__file__))
