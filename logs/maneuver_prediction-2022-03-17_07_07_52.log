@@ -230,3 +230,215 @@
 2022-03-17 12:31:08,103 - ===> Validation after Training epoch: 42 	 Accuracy: 20.89%	Loss: 5.82190547
 2022-03-17 12:37:40,963 - ===> Train Epoch: 43 	 Accuracy: 98.76% 	 Loss: 0.08816309
 2022-03-17 12:38:49,724 - ===> Validation after Training epoch: 43 	 Accuracy: 20.88%	Loss: 5.89848090
+2022-03-17 12:45:29,294 - ===> Train Epoch: 44 	 Accuracy: 98.74% 	 Loss: 0.08667588
+2022-03-17 12:46:38,107 - ===> Validation after Training epoch: 44 	 Accuracy: 20.30%	Loss: 5.87850263
+2022-03-17 12:53:09,817 - ===> Train Epoch: 45 	 Accuracy: 98.73% 	 Loss: 0.08583957
+2022-03-17 12:54:18,832 - ===> Validation after Training epoch: 45 	 Accuracy: 20.93%	Loss: 5.78484036
+2022-03-17 13:00:50,918 - ===> Train Epoch: 46 	 Accuracy: 98.68% 	 Loss: 0.08568878
+2022-03-17 13:01:59,447 - ===> Validation after Training epoch: 46 	 Accuracy: 21.12%	Loss: 5.86852045
+2022-03-17 13:08:31,304 - ===> Train Epoch: 47 	 Accuracy: 98.82% 	 Loss: 0.08273680
+2022-03-17 13:09:40,189 - ===> Validation after Training epoch: 47 	 Accuracy: 21.17%	Loss: 5.82673429
+2022-03-17 13:16:12,521 - ===> Train Epoch: 48 	 Accuracy: 98.77% 	 Loss: 0.08224939
+2022-03-17 13:17:21,500 - ===> Validation after Training epoch: 48 	 Accuracy: 21.20%	Loss: 5.91568832
+2022-03-17 13:23:53,560 - ===> Train Epoch: 49 	 Accuracy: 98.79% 	 Loss: 0.08219893
+2022-03-17 13:25:02,342 - ===> Validation after Training epoch: 49 	 Accuracy: 20.87%	Loss: 5.90901492
+2022-03-17 13:31:34,925 - ===> Train Epoch: 50 	 Accuracy: 98.67% 	 Loss: 0.08210347
+2022-03-17 13:32:43,728 - ===> Validation after Training epoch: 50 	 Accuracy: 20.66%	Loss: 5.80372484
+2022-03-17 13:39:16,183 - ===> Train Epoch: 51 	 Accuracy: 98.71% 	 Loss: 0.08031163
+2022-03-17 13:40:24,885 - ===> Validation after Training epoch: 51 	 Accuracy: 21.36%	Loss: 5.89500285
+2022-03-17 13:46:57,726 - ===> Train Epoch: 52 	 Accuracy: 98.93% 	 Loss: 0.07718288
+2022-03-17 13:48:06,585 - ===> Validation after Training epoch: 52 	 Accuracy: 21.41%	Loss: 5.89055190
+2022-03-17 13:54:40,202 - ===> Train Epoch: 53 	 Accuracy: 98.93% 	 Loss: 0.07671396
+2022-03-17 13:55:48,939 - ===> Validation after Training epoch: 53 	 Accuracy: 21.15%	Loss: 5.87078696
+2022-03-17 14:02:21,396 - ===> Train Epoch: 54 	 Accuracy: 98.79% 	 Loss: 0.07794064
+2022-03-17 14:03:29,778 - ===> Validation after Training epoch: 54 	 Accuracy: 19.83%	Loss: 5.88288844
+2022-03-17 14:10:01,913 - ===> Train Epoch: 55 	 Accuracy: 98.89% 	 Loss: 0.07706539
+2022-03-17 14:11:10,670 - ===> Validation after Training epoch: 55 	 Accuracy: 20.45%	Loss: 5.84512168
+2022-03-17 14:17:43,035 - ===> Train Epoch: 56 	 Accuracy: 98.99% 	 Loss: 0.07590648
+2022-03-17 14:18:51,730 - ===> Validation after Training epoch: 56 	 Accuracy: 20.97%	Loss: 5.87692525
+2022-03-17 14:25:24,100 - ===> Train Epoch: 57 	 Accuracy: 98.86% 	 Loss: 0.07412354
+2022-03-17 14:26:32,719 - ===> Validation after Training epoch: 57 	 Accuracy: 21.12%	Loss: 5.91104972
+2022-03-17 14:33:04,050 - ===> Train Epoch: 58 	 Accuracy: 98.88% 	 Loss: 0.07526000
+2022-03-17 14:34:12,880 - ===> Validation after Training epoch: 58 	 Accuracy: 20.64%	Loss: 5.98811744
+2022-03-17 14:40:44,302 - ===> Train Epoch: 59 	 Accuracy: 98.97% 	 Loss: 0.07411956
+2022-03-17 14:41:53,284 - ===> Validation after Training epoch: 59 	 Accuracy: 20.65%	Loss: 5.98083661
+2022-03-17 14:48:29,569 - ===> Train Epoch: 60 	 Accuracy: 98.91% 	 Loss: 0.07375037
+2022-03-17 14:49:38,428 - ===> Validation after Training epoch: 60 	 Accuracy: 20.84%	Loss: 5.93954902
+2022-03-17 14:56:13,846 - ===> Train Epoch: 61 	 Accuracy: 98.95% 	 Loss: 0.07354245
+2022-03-17 14:57:22,717 - ===> Validation after Training epoch: 61 	 Accuracy: 20.93%	Loss: 5.96275990
+2022-03-17 15:03:57,972 - ===> Train Epoch: 62 	 Accuracy: 98.94% 	 Loss: 0.07342825
+2022-03-17 15:05:07,161 - ===> Validation after Training epoch: 62 	 Accuracy: 20.53%	Loss: 5.91732550
+2022-03-17 15:11:42,810 - ===> Train Epoch: 63 	 Accuracy: 98.95% 	 Loss: 0.07032626
+2022-03-17 15:12:51,547 - ===> Validation after Training epoch: 63 	 Accuracy: 20.91%	Loss: 5.90336357
+2022-03-17 15:19:28,326 - ===> Train Epoch: 64 	 Accuracy: 99.03% 	 Loss: 0.07168048
+2022-03-17 15:20:37,582 - ===> Validation after Training epoch: 64 	 Accuracy: 21.43%	Loss: 5.83226191
+2022-03-17 15:27:14,368 - ===> Train Epoch: 65 	 Accuracy: 98.95% 	 Loss: 0.07123128
+2022-03-17 15:28:28,524 - ===> Validation after Training epoch: 65 	 Accuracy: 21.11%	Loss: 5.95042440
+2022-03-17 15:35:03,522 - ===> Train Epoch: 66 	 Accuracy: 99.02% 	 Loss: 0.06926792
+2022-03-17 15:36:12,716 - ===> Validation after Training epoch: 66 	 Accuracy: 20.48%	Loss: 5.86597751
+2022-03-17 15:42:49,660 - ===> Train Epoch: 67 	 Accuracy: 98.99% 	 Loss: 0.06997775
+2022-03-17 15:43:58,828 - ===> Validation after Training epoch: 67 	 Accuracy: 20.73%	Loss: 5.89881917
+2022-03-17 15:50:34,758 - ===> Train Epoch: 68 	 Accuracy: 98.97% 	 Loss: 0.06970207
+2022-03-17 15:51:44,210 - ===> Validation after Training epoch: 68 	 Accuracy: 20.48%	Loss: 5.85419257
+2022-03-17 15:58:19,646 - ===> Train Epoch: 69 	 Accuracy: 99.05% 	 Loss: 0.06918072
+2022-03-17 15:59:28,511 - ===> Validation after Training epoch: 69 	 Accuracy: 20.55%	Loss: 5.92655037
+2022-03-17 16:06:02,201 - ===> Train Epoch: 70 	 Accuracy: 99.08% 	 Loss: 0.06984659
+2022-03-17 16:07:11,142 - ===> Validation after Training epoch: 70 	 Accuracy: 21.18%	Loss: 5.88867734
+2022-03-17 16:13:46,019 - ===> Train Epoch: 71 	 Accuracy: 99.06% 	 Loss: 0.06660328
+2022-03-17 16:14:54,746 - ===> Validation after Training epoch: 71 	 Accuracy: 20.45%	Loss: 5.93094441
+2022-03-17 16:21:35,429 - ===> Train Epoch: 72 	 Accuracy: 98.94% 	 Loss: 0.06915768
+2022-03-17 16:22:44,474 - ===> Validation after Training epoch: 72 	 Accuracy: 20.93%	Loss: 5.86683439
+2022-03-17 16:29:24,490 - ===> Train Epoch: 73 	 Accuracy: 99.02% 	 Loss: 0.06878313
+2022-03-17 16:30:33,357 - ===> Validation after Training epoch: 73 	 Accuracy: 20.55%	Loss: 5.92189532
+2022-03-17 16:37:13,117 - ===> Train Epoch: 74 	 Accuracy: 99.10% 	 Loss: 0.06734937
+2022-03-17 16:38:21,981 - ===> Validation after Training epoch: 74 	 Accuracy: 20.11%	Loss: 6.00602221
+2022-03-17 16:45:02,276 - ===> Train Epoch: 75 	 Accuracy: 99.04% 	 Loss: 0.06668082
+2022-03-17 16:46:11,463 - ===> Validation after Training epoch: 75 	 Accuracy: 20.57%	Loss: 5.83684231
+2022-03-17 16:52:51,464 - ===> Train Epoch: 76 	 Accuracy: 99.05% 	 Loss: 0.06669834
+2022-03-17 16:54:01,050 - ===> Validation after Training epoch: 76 	 Accuracy: 20.48%	Loss: 5.95974063
+2022-03-17 17:00:41,088 - ===> Train Epoch: 77 	 Accuracy: 99.13% 	 Loss: 0.06539019
+2022-03-17 17:01:50,347 - ===> Validation after Training epoch: 77 	 Accuracy: 20.99%	Loss: 5.90345196
+2022-03-17 17:08:30,761 - ===> Train Epoch: 78 	 Accuracy: 99.10% 	 Loss: 0.06534950
+2022-03-17 17:09:39,818 - ===> Validation after Training epoch: 78 	 Accuracy: 21.40%	Loss: 5.93230466
+2022-03-17 17:16:20,369 - ===> Train Epoch: 79 	 Accuracy: 99.01% 	 Loss: 0.06473147
+2022-03-17 17:17:29,470 - ===> Validation after Training epoch: 79 	 Accuracy: 20.59%	Loss: 5.99286427
+2022-03-17 17:24:10,438 - ===> Train Epoch: 80 	 Accuracy: 99.10% 	 Loss: 0.06420826
+2022-03-17 17:25:19,317 - ===> Validation after Training epoch: 80 	 Accuracy: 20.61%	Loss: 5.93404137
+2022-03-17 17:31:58,018 - ===> Train Epoch: 81 	 Accuracy: 99.12% 	 Loss: 0.06431288
+2022-03-17 17:33:06,915 - ===> Validation after Training epoch: 81 	 Accuracy: 21.08%	Loss: 6.00389234
+2022-03-17 17:39:43,504 - ===> Train Epoch: 82 	 Accuracy: 99.06% 	 Loss: 0.06373497
+2022-03-17 17:40:52,088 - ===> Validation after Training epoch: 82 	 Accuracy: 21.24%	Loss: 5.89116068
+2022-03-17 17:47:29,135 - ===> Train Epoch: 83 	 Accuracy: 99.10% 	 Loss: 0.06250798
+2022-03-17 17:48:37,550 - ===> Validation after Training epoch: 83 	 Accuracy: 20.86%	Loss: 5.94801235
+2022-03-17 17:55:14,407 - ===> Train Epoch: 84 	 Accuracy: 99.05% 	 Loss: 0.06345551
+2022-03-17 17:56:23,301 - ===> Validation after Training epoch: 84 	 Accuracy: 20.77%	Loss: 5.88272200
+2022-03-17 18:03:00,662 - ===> Train Epoch: 85 	 Accuracy: 99.17% 	 Loss: 0.06214728
+2022-03-17 18:04:09,162 - ===> Validation after Training epoch: 85 	 Accuracy: 20.93%	Loss: 6.00758583
+2022-03-17 18:10:46,289 - ===> Train Epoch: 86 	 Accuracy: 99.14% 	 Loss: 0.06239459
+2022-03-17 18:11:54,926 - ===> Validation after Training epoch: 86 	 Accuracy: 21.45%	Loss: 5.94862252
+2022-03-17 18:18:32,512 - ===> Train Epoch: 87 	 Accuracy: 99.19% 	 Loss: 0.06180376
+2022-03-17 18:19:41,212 - ===> Validation after Training epoch: 87 	 Accuracy: 20.66%	Loss: 5.94743678
+2022-03-17 18:26:18,858 - ===> Train Epoch: 88 	 Accuracy: 99.24% 	 Loss: 0.06175719
+2022-03-17 18:27:27,697 - ===> Validation after Training epoch: 88 	 Accuracy: 21.09%	Loss: 5.87624744
+2022-03-17 18:34:04,625 - ===> Train Epoch: 89 	 Accuracy: 99.17% 	 Loss: 0.06045471
+2022-03-17 18:35:13,175 - ===> Validation after Training epoch: 89 	 Accuracy: 20.31%	Loss: 6.03573242
+2022-03-17 18:41:50,758 - ===> Train Epoch: 90 	 Accuracy: 99.15% 	 Loss: 0.06086668
+2022-03-17 18:42:59,501 - ===> Validation after Training epoch: 90 	 Accuracy: 20.62%	Loss: 5.92185703
+2022-03-17 18:49:36,132 - ===> Train Epoch: 91 	 Accuracy: 99.18% 	 Loss: 0.06052318
+2022-03-17 18:50:44,728 - ===> Validation after Training epoch: 91 	 Accuracy: 20.77%	Loss: 5.95243527
+2022-03-17 18:57:18,495 - ===> Train Epoch: 92 	 Accuracy: 99.13% 	 Loss: 0.06044344
+2022-03-17 18:58:27,666 - ===> Validation after Training epoch: 92 	 Accuracy: 21.03%	Loss: 5.92636498
+2022-03-17 19:05:06,814 - ===> Train Epoch: 93 	 Accuracy: 99.16% 	 Loss: 0.06032912
+2022-03-17 19:06:16,393 - ===> Validation after Training epoch: 93 	 Accuracy: 21.38%	Loss: 5.93112720
+2022-03-17 19:12:56,735 - ===> Train Epoch: 94 	 Accuracy: 99.16% 	 Loss: 0.05948064
+2022-03-17 19:14:06,541 - ===> Validation after Training epoch: 94 	 Accuracy: 20.17%	Loss: 5.94211536
+2022-03-17 19:20:40,304 - ===> Train Epoch: 95 	 Accuracy: 99.12% 	 Loss: 0.05952473
+2022-03-17 19:21:49,687 - ===> Validation after Training epoch: 95 	 Accuracy: 20.63%	Loss: 5.96535917
+2022-03-17 19:28:29,741 - ===> Train Epoch: 96 	 Accuracy: 99.15% 	 Loss: 0.05914483
+2022-03-17 19:29:38,877 - ===> Validation after Training epoch: 96 	 Accuracy: 21.66%	Loss: 5.97107896
+2022-03-17 19:36:12,714 - ===> Train Epoch: 97 	 Accuracy: 99.18% 	 Loss: 0.05877398
+2022-03-17 19:37:21,727 - ===> Validation after Training epoch: 97 	 Accuracy: 20.83%	Loss: 5.94546854
+2022-03-17 19:43:55,465 - ===> Train Epoch: 98 	 Accuracy: 99.15% 	 Loss: 0.05867322
+2022-03-17 19:45:04,481 - ===> Validation after Training epoch: 98 	 Accuracy: 20.75%	Loss: 5.95350009
+2022-03-17 19:51:38,627 - ===> Train Epoch: 99 	 Accuracy: 99.27% 	 Loss: 0.05746914
+2022-03-17 19:52:48,012 - ===> Validation after Training epoch: 99 	 Accuracy: 20.13%	Loss: 5.90853414
+2022-03-17 19:59:21,965 - ===> Train Epoch: 100 	 Accuracy: 99.11% 	 Loss: 0.05863430
+2022-03-17 20:00:30,711 - ===> Validation after Training epoch: 100 	 Accuracy: 21.36%	Loss: 5.91489499
+2022-03-17 20:07:01,874 - ===> Train Epoch: 101 	 Accuracy: 99.19% 	 Loss: 0.05824023
+2022-03-17 20:08:10,549 - ===> Validation after Training epoch: 101 	 Accuracy: 21.50%	Loss: 5.92648452
+2022-03-17 20:14:41,912 - ===> Train Epoch: 102 	 Accuracy: 99.19% 	 Loss: 0.05712643
+2022-03-17 20:15:50,627 - ===> Validation after Training epoch: 102 	 Accuracy: 21.14%	Loss: 5.92294806
+2022-03-17 20:22:21,935 - ===> Train Epoch: 103 	 Accuracy: 99.31% 	 Loss: 0.05693786
+2022-03-17 20:23:30,723 - ===> Validation after Training epoch: 103 	 Accuracy: 20.85%	Loss: 5.91978714
+2022-03-17 20:30:01,733 - ===> Train Epoch: 104 	 Accuracy: 99.26% 	 Loss: 0.05749510
+2022-03-17 20:31:10,305 - ===> Validation after Training epoch: 104 	 Accuracy: 20.77%	Loss: 5.96419907
+2022-03-17 20:37:42,042 - ===> Train Epoch: 105 	 Accuracy: 99.22% 	 Loss: 0.05687191
+2022-03-17 20:38:50,654 - ===> Validation after Training epoch: 105 	 Accuracy: 21.06%	Loss: 5.92407146
+2022-03-17 20:45:22,152 - ===> Train Epoch: 106 	 Accuracy: 99.26% 	 Loss: 0.05713484
+2022-03-17 20:46:30,805 - ===> Validation after Training epoch: 106 	 Accuracy: 21.10%	Loss: 5.96544946
+2022-03-17 20:53:01,695 - ===> Train Epoch: 107 	 Accuracy: 99.23% 	 Loss: 0.05642974
+2022-03-17 20:54:10,301 - ===> Validation after Training epoch: 107 	 Accuracy: 21.70%	Loss: 5.95045733
+2022-03-17 21:00:41,390 - ===> Train Epoch: 108 	 Accuracy: 99.28% 	 Loss: 0.05542082
+2022-03-17 21:01:50,133 - ===> Validation after Training epoch: 108 	 Accuracy: 21.11%	Loss: 5.91976297
+2022-03-17 21:08:21,499 - ===> Train Epoch: 109 	 Accuracy: 99.22% 	 Loss: 0.05574634
+2022-03-17 21:09:30,324 - ===> Validation after Training epoch: 109 	 Accuracy: 21.15%	Loss: 5.98671955
+2022-03-17 21:16:01,191 - ===> Train Epoch: 110 	 Accuracy: 99.15% 	 Loss: 0.05610164
+2022-03-17 21:17:10,116 - ===> Validation after Training epoch: 110 	 Accuracy: 20.81%	Loss: 5.94155349
+2022-03-17 21:23:41,429 - ===> Train Epoch: 111 	 Accuracy: 99.28% 	 Loss: 0.05563282
+2022-03-17 21:24:50,274 - ===> Validation after Training epoch: 111 	 Accuracy: 20.87%	Loss: 5.92352872
+2022-03-17 21:31:21,644 - ===> Train Epoch: 112 	 Accuracy: 99.24% 	 Loss: 0.05571101
+2022-03-17 21:32:30,464 - ===> Validation after Training epoch: 112 	 Accuracy: 20.61%	Loss: 5.96263241
+2022-03-17 21:39:01,452 - ===> Train Epoch: 113 	 Accuracy: 99.22% 	 Loss: 0.05508032
+2022-03-17 21:40:10,282 - ===> Validation after Training epoch: 113 	 Accuracy: 21.23%	Loss: 5.97324553
+2022-03-17 21:46:42,179 - ===> Train Epoch: 114 	 Accuracy: 99.24% 	 Loss: 0.05441309
+2022-03-17 21:47:50,818 - ===> Validation after Training epoch: 114 	 Accuracy: 20.64%	Loss: 5.99815892
+2022-03-17 21:54:22,375 - ===> Train Epoch: 115 	 Accuracy: 99.30% 	 Loss: 0.05386713
+2022-03-17 21:55:31,153 - ===> Validation after Training epoch: 115 	 Accuracy: 21.26%	Loss: 5.94134277
+2022-03-17 22:02:08,369 - ===> Train Epoch: 116 	 Accuracy: 99.31% 	 Loss: 0.05366778
+2022-03-17 22:03:17,282 - ===> Validation after Training epoch: 116 	 Accuracy: 20.67%	Loss: 5.93350861
+2022-03-17 22:09:54,279 - ===> Train Epoch: 117 	 Accuracy: 99.30% 	 Loss: 0.05451279
+2022-03-17 22:11:03,011 - ===> Validation after Training epoch: 117 	 Accuracy: 20.94%	Loss: 5.87089278
+2022-03-17 22:17:37,849 - ===> Train Epoch: 118 	 Accuracy: 99.30% 	 Loss: 0.05458444
+2022-03-17 22:18:46,836 - ===> Validation after Training epoch: 118 	 Accuracy: 21.00%	Loss: 5.96486361
+2022-03-17 22:25:18,825 - ===> Train Epoch: 119 	 Accuracy: 99.28% 	 Loss: 0.05367131
+2022-03-17 22:26:27,786 - ===> Validation after Training epoch: 119 	 Accuracy: 21.05%	Loss: 5.94313220
+2022-03-17 22:33:00,018 - ===> Train Epoch: 120 	 Accuracy: 99.33% 	 Loss: 0.05367369
+2022-03-17 22:34:09,083 - ===> Validation after Training epoch: 120 	 Accuracy: 20.66%	Loss: 5.89059803
+2022-03-17 22:40:40,872 - ===> Train Epoch: 121 	 Accuracy: 99.27% 	 Loss: 0.05277082
+2022-03-17 22:41:49,758 - ===> Validation after Training epoch: 121 	 Accuracy: 21.55%	Loss: 5.89172903
+2022-03-17 22:48:22,137 - ===> Train Epoch: 122 	 Accuracy: 99.32% 	 Loss: 0.05261948
+2022-03-17 22:49:30,842 - ===> Validation after Training epoch: 122 	 Accuracy: 21.11%	Loss: 5.96640104
+2022-03-17 22:56:03,169 - ===> Train Epoch: 123 	 Accuracy: 99.28% 	 Loss: 0.05257730
+2022-03-17 22:57:12,099 - ===> Validation after Training epoch: 123 	 Accuracy: 20.77%	Loss: 5.94745210
+2022-03-17 23:03:44,597 - ===> Train Epoch: 124 	 Accuracy: 99.38% 	 Loss: 0.05170231
+2022-03-17 23:04:53,501 - ===> Validation after Training epoch: 124 	 Accuracy: 21.24%	Loss: 5.98110186
+2022-03-17 23:11:25,347 - ===> Train Epoch: 125 	 Accuracy: 99.30% 	 Loss: 0.05250945
+2022-03-17 23:12:34,278 - ===> Validation after Training epoch: 125 	 Accuracy: 21.02%	Loss: 5.96744276
+2022-03-17 23:19:06,308 - ===> Train Epoch: 126 	 Accuracy: 99.31% 	 Loss: 0.05206758
+2022-03-17 23:20:15,211 - ===> Validation after Training epoch: 126 	 Accuracy: 20.84%	Loss: 5.93544360
+2022-03-17 23:26:47,237 - ===> Train Epoch: 127 	 Accuracy: 99.28% 	 Loss: 0.05239358
+2022-03-17 23:27:55,830 - ===> Validation after Training epoch: 127 	 Accuracy: 20.93%	Loss: 5.92510816
+2022-03-17 23:34:27,891 - ===> Train Epoch: 128 	 Accuracy: 99.33% 	 Loss: 0.05192463
+2022-03-17 23:35:36,545 - ===> Validation after Training epoch: 128 	 Accuracy: 21.13%	Loss: 5.97343659
+2022-03-17 23:42:08,635 - ===> Train Epoch: 129 	 Accuracy: 99.29% 	 Loss: 0.05159479
+2022-03-17 23:43:17,414 - ===> Validation after Training epoch: 129 	 Accuracy: 21.88%	Loss: 5.95117903
+2022-03-17 23:49:48,892 - ===> Train Epoch: 130 	 Accuracy: 99.28% 	 Loss: 0.05263953
+2022-03-17 23:50:57,879 - ===> Validation after Training epoch: 130 	 Accuracy: 21.10%	Loss: 6.02463359
+2022-03-17 23:57:30,604 - ===> Train Epoch: 131 	 Accuracy: 99.28% 	 Loss: 0.05159467
+2022-03-17 23:58:39,495 - ===> Validation after Training epoch: 131 	 Accuracy: 20.58%	Loss: 5.97946142
+2022-03-18 00:05:11,471 - ===> Train Epoch: 132 	 Accuracy: 99.35% 	 Loss: 0.05193064
+2022-03-18 00:06:20,267 - ===> Validation after Training epoch: 132 	 Accuracy: 21.37%	Loss: 5.84784114
+2022-03-18 00:12:52,745 - ===> Train Epoch: 133 	 Accuracy: 99.33% 	 Loss: 0.05133665
+2022-03-18 00:14:01,659 - ===> Validation after Training epoch: 133 	 Accuracy: 21.15%	Loss: 5.92799647
+2022-03-18 00:20:34,292 - ===> Train Epoch: 134 	 Accuracy: 99.29% 	 Loss: 0.05223095
+2022-03-18 00:21:43,081 - ===> Validation after Training epoch: 134 	 Accuracy: 20.26%	Loss: 5.95097948
+2022-03-18 00:28:14,889 - ===> Train Epoch: 135 	 Accuracy: 99.35% 	 Loss: 0.05026625
+2022-03-18 00:29:23,671 - ===> Validation after Training epoch: 135 	 Accuracy: 20.60%	Loss: 5.93648650
+2022-03-18 00:35:56,132 - ===> Train Epoch: 136 	 Accuracy: 99.29% 	 Loss: 0.05238615
+2022-03-18 00:37:05,090 - ===> Validation after Training epoch: 136 	 Accuracy: 21.83%	Loss: 5.93199691
+2022-03-18 00:43:37,811 - ===> Train Epoch: 137 	 Accuracy: 99.39% 	 Loss: 0.05134004
+2022-03-18 00:44:46,558 - ===> Validation after Training epoch: 137 	 Accuracy: 21.62%	Loss: 6.01147732
+2022-03-18 00:51:18,129 - ===> Train Epoch: 138 	 Accuracy: 99.26% 	 Loss: 0.05154073
+2022-03-18 00:52:26,821 - ===> Validation after Training epoch: 138 	 Accuracy: 21.10%	Loss: 5.95118423
+2022-03-18 00:59:01,355 - ===> Train Epoch: 139 	 Accuracy: 99.30% 	 Loss: 0.05028148
+2022-03-18 01:00:11,018 - ===> Validation after Training epoch: 139 	 Accuracy: 21.06%	Loss: 5.92014779
+2022-03-18 01:06:43,801 - ===> Train Epoch: 140 	 Accuracy: 99.36% 	 Loss: 0.05013054
+2022-03-18 01:07:53,284 - ===> Validation after Training epoch: 140 	 Accuracy: 21.39%	Loss: 5.93989468
+2022-03-18 01:14:28,671 - ===> Train Epoch: 141 	 Accuracy: 99.31% 	 Loss: 0.05122179
+2022-03-18 01:15:38,476 - ===> Validation after Training epoch: 141 	 Accuracy: 20.68%	Loss: 6.01551225
+2022-03-18 01:22:13,912 - ===> Train Epoch: 142 	 Accuracy: 99.35% 	 Loss: 0.05017637
+2022-03-18 01:23:23,341 - ===> Validation after Training epoch: 142 	 Accuracy: 21.40%	Loss: 5.89580338
+2022-03-18 01:29:59,169 - ===> Train Epoch: 143 	 Accuracy: 99.32% 	 Loss: 0.05048953
+2022-03-18 01:31:08,402 - ===> Validation after Training epoch: 143 	 Accuracy: 20.72%	Loss: 5.97747856
+2022-03-18 01:37:47,233 - ===> Train Epoch: 144 	 Accuracy: 99.34% 	 Loss: 0.04976927
+2022-03-18 01:38:56,204 - ===> Validation after Training epoch: 144 	 Accuracy: 21.58%	Loss: 5.92379661
+2022-03-18 01:45:42,942 - ===> Train Epoch: 145 	 Accuracy: 99.34% 	 Loss: 0.04954820
+2022-03-18 01:46:54,688 - ===> Validation after Training epoch: 145 	 Accuracy: 21.39%	Loss: 5.91418244
+2022-03-18 01:53:41,195 - ===> Train Epoch: 146 	 Accuracy: 99.29% 	 Loss: 0.04980331
+2022-03-18 01:54:48,864 - ===> Validation after Training epoch: 146 	 Accuracy: 21.33%	Loss: 5.94116222
+2022-03-18 02:01:28,241 - ===> Train Epoch: 147 	 Accuracy: 99.35% 	 Loss: 0.04850245
+2022-03-18 02:02:36,362 - ===> Validation after Training epoch: 147 	 Accuracy: 21.30%	Loss: 5.95518394
+2022-03-18 02:09:18,220 - ===> Train Epoch: 148 	 Accuracy: 99.33% 	 Loss: 0.04942397
+2022-03-18 02:10:27,501 - ===> Validation after Training epoch: 148 	 Accuracy: 21.14%	Loss: 5.94494365
+2022-03-19 00:30:16,322 - ===> Train Epoch: 149 	 Accuracy: 99.39% 	 Loss: 0.04938568
+2022-03-19 00:31:26,763 - ===> Validation after Training epoch: 149 	 Accuracy: 20.37%	Loss: 5.94829871
