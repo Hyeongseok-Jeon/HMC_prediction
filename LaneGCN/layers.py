@@ -351,3 +351,30 @@ def get_roi_feat(fm, bboxes, roi_size, pts_range):
     feat = feat.view(num_bboxes, roi_size[0] * roi_size[1], fm_c)
     feat = feat.transpose(1, 2).contiguous().view(num_bboxes, -1, roi_size[0], roi_size[1])
     return feat
+
+
+class Man_scorer(nn.Module):
+    """
+    Final motion forecasting with Linear Residual block
+    """
+
+    def __init__(self, config):
+        super(Man_scorer, self).__init__()
+        self.config = config
+        linear = []
+        for i in range(config["n_linear_layer"]):
+            layer = nn.Linear(int(config["n_hidden_after_deconv"]/(2**i)), int(config["n_hidden_after_deconv"]/(2**(i+1))))
+            linear.append(layer)
+            linear.append(nn.ReLU())
+        self.linear = nn.ModuleList(linear)
+        self.out = nn.Linear(int(config["n_hidden_after_deconv"]/(2**config["n_linear_layer"])), 3)
+        self.softmax = nn.Softmax()
+
+    def forward(self, hidden):
+        for i in range(len(self.linear)):
+            if i == 0:
+                out = self.linear[i](hidden)
+            else:
+                out = self.linear[i](out)
+        out = self.softmax(self.out(out))
+        return out

@@ -32,6 +32,7 @@ config["data_dir_orig"] = data_dir + 'archive/'
 config["occlusion_rate"] = 0.2
 config["splicing_num"] = 128
 config["LC_multiple"] = 5
+config["LK_multiple"] = 3
 config["FOV"] = 30
 config["interpolate"] = False
 config["max_pred_time"] = 5

@@ -25,12 +25,14 @@ from torch.utils.data.distributed import DistributedSampler
 
 try:
     # import lanegcn as model
-    import lanegcn_multihead as model
+    # import lanegcn_multihead as model
+    import lanegcn_multihead_scoring as model
     from utils import Logger, load_pretrain
 
 except:
     # import LaneGCN.lanegcn as model
-    import LaneGCN.lanegcn_multihead as model
+    # import LaneGCN.lanegcn_multihead as model
+    import LaneGCN.lanegcn_multihead_scoring as model
     from LaneGCN.utils import Logger, load_pretrain
 
 # cur_path = os.path.abspath(__file__)
@@ -133,7 +135,7 @@ def main():
 
     # Data loader for evaluation
     dataset = Dataset(config["val_split"], config, train=False)
-    val_loader = DataLoader(
+    train_loader = DataLoader(
         dataset,
         batch_size=config["val_batch_size"],
         num_workers=config["val_workers"],
