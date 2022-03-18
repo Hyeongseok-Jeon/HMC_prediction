@@ -9,11 +9,59 @@ import time
 import numpy as np
 from openTSNE import TSNE
 import matplotlib
+
 matplotlib.use('tkagg')
 
 import matplotlib.pyplot as plt
 import imageio
 import glob
+import scipy.stats as st
+
+
+def KLdivergence(x, y):
+    """Compute the Kullback-Leibler divergence between two multivariate samples.
+  Parameters
+  ----------
+  x : 2D array (n,d)
+    Samples from distribution P, which typically represents the true
+    distribution.
+  y : 2D array (m,d)
+    Samples from distribution Q, which typically represents the approximate
+    distribution.
+  Returns
+  -------
+  out : float
+    The estimated Kullback-Leibler divergence D(P||Q).
+  References
+  ----------
+  Pérez-Cruz, F. Kullback-Leibler divergence estimation of
+continuous distributions IEEE International Symposium on Information
+Theory, 2008.
+  """
+    from scipy.spatial import cKDTree as KDTree
+
+    # Check the dimensions are consistent
+    x = np.atleast_2d(x)
+    y = np.atleast_2d(y)
+
+    n, d = x.shape
+    m, dy = y.shape
+
+    assert (d == dy)
+
+    # Build a KD tree representation of the samples and find the nearest neighbour
+    # of each point in x.
+    xtree = KDTree(x)
+    ytree = KDTree(y)
+
+    # Get the first two nearest neighbours for x, since the closest one is the
+    # sample itself.
+    r = xtree.query(x, k=2, eps=.01, p=2)[0][:, 1]
+    s = ytree.query(x, k=1, eps=.01, p=2)[0]
+
+    # There is a mistake in the paper. In Eq. 14, the right side misses a negative sign
+    # on the first term of the right hand side.
+    return -np.log(r / s).sum() * d / n + np.log(m / (n - 1.))
 
 
 GPU_NUM = config["GPU_id"]
@@ -70,7 +118,6 @@ dataloader_val = DataLoader(dataset_val,
                             shuffle=True,
                             collate_fn=collate_fn)
 
-
 print('------------------------------------------------------------')
 for i in range(len(ckpt_list)):
     print('File_id : ' + str(ckpt_list[i]), '  File_index : ' + str(i))
@@ -90,7 +137,7 @@ while True:
     except:
         pass
 '''
-ckpt_list_seq = [3*i for i in range(len(ckpt_list)) if 3*i < len(ckpt_list)]
+ckpt_list_seq = [3 * i for i in range(len(ckpt_list)) if 3 * i < len(ckpt_list)]
 for test in range(len(ckpt_list_seq)):
     weight = ckpt_list[ckpt_list_seq[test]]
     print(weight)
@@ -101,7 +148,6 @@ for test in range(len(ckpt_list_seq)):
     warnings.filterwarnings("ignore", category=UserWarning)
 
     # dataset_original = pred_loader_1(config, 'orig')
-
 
     model = BackBone(config).cuda()
     weights = torch.load(ckpt_dir + '/' + weight)
@@ -114,7 +160,7 @@ for test in range(len(ckpt_list_seq)):
     epoch_time = time.time()
 
     for i, data in enumerate(dataloader_train):
-        print(weight, 100*i/len(dataloader_train.dataset))
+        print(weight, 100 * i / len(dataloader_train.dataset))
         trajectory, traj_length, conversion, maneuvers = data
         maneuvers = maneuvers[0].numpy()
         trajectory = trajectory.float().cuda()
@@ -141,9 +187,8 @@ for test in range(len(ckpt_list_seq)):
                         context_bag_tot[j] = np.concatenate((context_bag_tot[j], representation_time_bag[j].cpu().detach().numpy()), axis=0)
                         maneuver_bag_tot[j] = np.concatenate((maneuver_bag_tot[j], np.repeat(maneuvers, config["val_augmentation"], axis=0)), axis=0)
 
-
     for i, data in enumerate(dataloader_val):
-        print(weight, 100*i/len(dataloader_val.dataset))
+        print(weight, 100 * i / len(dataloader_val.dataset))
 
         trajectory, traj_length, conversion, maneuvers = data
         maneuvers = maneuvers[0].numpy()
@@ -175,39 +220,191 @@ for test in range(len(ckpt_list_seq)):
                         context_bag_tot[j] = np.concatenate((context_bag_tot[j], representation_time_bag[j].cpu().detach().numpy()), axis=0)
                         maneuver_bag_tot[j] = np.concatenate((maneuver_bag_tot[j], np.repeat(maneuvers, config["val_augmentation"], axis=0)), axis=0)
 
-# TODO: cov matrix 계산, 2d gaussian fitting 및 maneuver간의 KL divergence계산,
+    # TODO: cov matrix 계산, 2d gaussian fitting 및 maneuver간의 KL divergence계산,
     n_components = 2
     tsne_hist = TSNE(n_components=n_components,
-                perplexity=30,
-                verbose=True)
+                     perplexity=30,
+                     verbose=True)
 
     contexts_outlet = context_bag_tot[-2]
     context_tsne = tsne_hist.fit(contexts_outlet)
+
+    std_x_LT = []
+    std_y_LT = []
+    std_x_RT = []
+    std_y_RT = []
+    std_x_GO = []
+    std_y_GO = []
+    JS_divergence_LT_RT = []
+    JS_divergence_LT_GO = []
+    JS_divergence_GO_RT = []
 
     for i in range(10):
         contexts = context_bag_tot[i]
         plt.figure()
         context_low_dim = context_tsne.transform(contexts)
-        context_low_dim_u_turn = context_low_dim[maneuver_bag_tot[i][:, 0] == 1]
+        # context_low_dim_u_turn = context_low_dim[maneuver_bag_tot[i][:, 0] == 1]
         context_low_dim_left_turn = context_low_dim[maneuver_bag_tot[i][:, 1] == 1]
         context_low_dim_go_straight = context_low_dim[maneuver_bag_tot[i][:, 2] == 1]
         context_low_dim_right_turn = context_low_dim[maneuver_bag_tot[i][:, 3] == 1]
         plt.scatter(context_low_dim_go_straight[:, 0], context_low_dim_go_straight[:, 1], s=5, c='b', label='Go Straight')
         plt.scatter(context_low_dim_right_turn[:, 0], context_low_dim_right_turn[:, 1], s=5, c='c', label='Right Turn')
         plt.scatter(context_low_dim_left_turn[:, 0], context_low_dim_left_turn[:, 1], s=5, c='g', label='Left Turn')
-        plt.scatter(context_low_dim_u_turn[:, 0], context_low_dim_u_turn[:, 1], s=5, c='r', label='U-Turn')
-        cov_straight = np.cov(context_low_dim_go_straight.T)
-        cov_left_turn = np.cov(context_low_dim_left_turn.T)
-        cov_right_turn = np.cov(context_low_dim_right_turn.T)
-        cov_u_turn = np.cov(context_low_dim_u_turn.T)
-
+        # plt.scatter(context_low_dim_u_turn[:, 0], context_low_dim_u_turn[:, 1], s=5, c='r', label='U-Turn')
         plt.legend(loc='upper right')
-        plt.xlim(-100, 120)
-        plt.ylim(-100, 120)
-        plt.title('embeddings of hist observations: ' + str(0.5*(10-i)) +'sec before outlet')
-        plt.savefig(tsne_dir+'/0_hist_embedding_on_hist_space_'+str(0.5*(10-i)) + 'sec_before_total.png')
+        plt.xlim(-60, 60)
+        plt.ylim(-60, 70)
+        plt.xticks([])
+        plt.yticks([])
+        columns = ('KL divergence', 'Left Turn', 'Go Straight', 'Right Turn')
+        rows = ('Left Turn', 'Go Straight', 'Right Turn')
+        JS_divergence_LT_GO.append(0.5*(KLdivergence(context_low_dim_left_turn, context_low_dim_go_straight)+KLdivergence(context_low_dim_go_straight,context_low_dim_left_turn)))
+        JS_divergence_LT_RT.append(0.5*(KLdivergence(context_low_dim_left_turn, context_low_dim_right_turn)+KLdivergence(context_low_dim_right_turn,context_low_dim_left_turn)))
+        JS_divergence_GO_RT.append(0.5*(KLdivergence(context_low_dim_right_turn, context_low_dim_go_straight)+KLdivergence(context_low_dim_go_straight,context_low_dim_right_turn)))
+        cell_text = [['Left Turn', '-', str(int(1000*KLdivergence(context_low_dim_left_turn, context_low_dim_go_straight))/1000), str(int(1000*KLdivergence(context_low_dim_left_turn, context_low_dim_right_turn))/1000)],
+                     ['Go Straight',str(int(1000*KLdivergence(context_low_dim_go_straight, context_low_dim_left_turn))/1000), '-', str(int(1000*KLdivergence(context_low_dim_go_straight, context_low_dim_right_turn))/1000)],
+                     ['Right Turn', str(int(1000*KLdivergence(context_low_dim_right_turn, context_low_dim_left_turn))/1000), str(int(1000*KLdivergence(context_low_dim_right_turn, context_low_dim_go_straight))/1000), '-']]
+        the_table = plt.table(cellText=cell_text,
+                              cellLoc = 'center',
+                              colLabels=columns,
+                              loc='bottom')
+        plt.subplots_adjust(bottom=0.15)
+        plt.title('embeddings of hist observations: ' + str(0.5 * (10 - i)) + 'sec before outlet')
+        plt.savefig(tsne_dir + '/0_hist_embedding_on_hist_space_' + str(0.5 * (10 - i)) + 'sec_before_total.png')
         plt.close()
 
+        plt.figure()
+        x = context_low_dim_left_turn[:, 0]
+        y = context_low_dim_left_turn[:, 1]
+        xx, yy = np.mgrid[-60:60:100j, -60:80:100j]
+        positions = np.vstack([xx.ravel(), yy.ravel()])
+        values = np.vstack([x, y])
+        kernel = st.gaussian_kde(values)
+        f = np.reshape(kernel(positions).T, xx.shape)
+        cfset = plt.contourf(xx, yy, f, cmap='coolwarm', label='Left Turn')
+        plt.scatter(context_low_dim_left_turn[:, 0], context_low_dim_left_turn[:, 1], s=2, c='k', label='Left Turn')
+        cov_left_turn = np.cov(context_low_dim_left_turn.T)
+        columns = ('sdv_x', 'std_y')
+        std_x_LT.append(np.sqrt(cov_left_turn[0,0]))
+        std_y_LT.append(np.sqrt(cov_left_turn[1,1]))
+        cov_text = [[str(int(100*np.sqrt(cov_left_turn[0,0]))/100), str(int(100*np.sqrt(cov_left_turn[1,1]))/100)]]
+        the_table = plt.table(cellText=cov_text,
+                              cellLoc='center',
+                              colLabels=columns,
+                              loc='upper right',
+                              colWidths=[0.2,0.2],
+                              zorder=100)
+        plt.xlim(-60, 60)
+        plt.ylim(-60, 70)
+        plt.title('Gaussian KDE of Left Turn: ' + str(0.5 * (10 - i)) + 'sec before outlet')
+        plt.savefig(tsne_dir + '/1_hist_embedding_on_hist_space_' + str(0.5 * (10 - i)) + 'sec_before_total_KDE_LT.png')
+        plt.close()
+
+
+        plt.figure()
+        x = context_low_dim_right_turn[:, 0]
+        y = context_low_dim_right_turn[:, 1]
+        xx, yy = np.mgrid[-60:60:100j, -60:80:100j]
+        positions = np.vstack([xx.ravel(), yy.ravel()])
+        values = np.vstack([x, y])
+        kernel = st.gaussian_kde(values)
+        f = np.reshape(kernel(positions).T, xx.shape)
+        cfset = plt.contourf(xx, yy, f, cmap='coolwarm', label='Right Turn')
+        plt.scatter(context_low_dim_right_turn[:, 0], context_low_dim_right_turn[:, 1], s=2, c='k', label='Left Turn')
+        cov_right_turn = np.cov(context_low_dim_right_turn.T)
+        columns = ('sdv_x', 'std_y')
+        std_x_RT.append(np.sqrt(cov_right_turn[0, 0]))
+        std_y_RT.append(np.sqrt(cov_right_turn[1, 1]))
+        cov_text = [[str(int(100 * np.sqrt(cov_right_turn[0, 0])) / 100), str(int(100 * np.sqrt(cov_right_turn[1, 1])) / 100)]]
+        the_table = plt.table(cellText=cov_text,
+                              cellLoc='center',
+                              colLabels=columns,
+                              loc='upper right',
+                              colWidths=[0.2, 0.2],
+                              zorder=100)
+        plt.xlim(-60, 60)
+        plt.ylim(-60, 70)
+        plt.title('Gaussian KDE of Right Turn: ' + str(0.5 * (10 - i)) + 'sec before outlet')
+        plt.savefig(tsne_dir + '/2_hist_embedding_on_hist_space_' + str(0.5 * (10 - i)) + 'sec_before_total_KDE_RT.png')
+        plt.close()
+
+        plt.figure()
+        x = context_low_dim_go_straight[:, 0]
+        y = context_low_dim_go_straight[:, 1]
+        xx, yy = np.mgrid[-60:60:100j, -60:80:100j]
+        positions = np.vstack([xx.ravel(), yy.ravel()])
+        values = np.vstack([x, y])
+        kernel = st.gaussian_kde(values)
+        f = np.reshape(kernel(positions).T, xx.shape)
+        cfset = plt.contourf(xx, yy, f, cmap='coolwarm', label='Go Straight')
+        plt.scatter(context_low_dim_go_straight[:, 0], context_low_dim_go_straight[:, 1], s=2, c='k', alpha=0.2,label='Left Turn')
+        cov_straight = np.cov(context_low_dim_go_straight.T)
+        columns = ('sdv_x', 'std_y')
+        std_x_GO.append(np.sqrt(cov_straight[0, 0]))
+        std_y_GO.append(np.sqrt(cov_straight[1, 1]))
+        cov_text = [[str(int(100 * np.sqrt(cov_straight[0, 0])) / 100), str(int(100 * np.sqrt(cov_straight[1, 1])) / 100)]]
+        the_table = plt.table(cellText=cov_text,
+                              cellLoc='center',
+                              colLabels=columns,
+                              loc='upper right',
+                              colWidths=[0.2, 0.2],
+                              zorder=100)
+        plt.xlim(-60, 60)
+        plt.ylim(-60, 70)
+        plt.title('Gaussian KDE of Go Straight: ' + str(0.5 * (10 - i)) + 'sec before outlet')
+        plt.savefig(tsne_dir + '/3_hist_embedding_on_hist_space_' + str(0.5 * (10 - i)) + 'sec_before_total_KDE_GO.png')
+        plt.close()
+
+    x = np.arange(-5,0, 0.5)
+    plt.figure(figsize=[6.4, 8])
+    plt.plot(x,std_x_LT, c='g', linestyle='-', label='LT_std_x')
+    plt.plot(x,std_y_LT, c='g', linestyle='--', label='LT_std_y')
+    plt.plot(x,std_x_RT, c='c', linestyle='-', label='RT_std_x')
+    plt.plot(x,std_y_RT, c='c', linestyle='--', label='RT_std_y')
+    plt.plot(x,std_x_GO, c='b', linestyle='-', label='GO_std_x')
+    plt.plot(x,std_y_GO, c='b', linestyle='--', label='GO_std_y')
+    plt.plot(x,JS_divergence_LT_RT, c='k', linestyle='-', label='JS_divergence_LT_RT')
+    plt.plot(x,JS_divergence_LT_GO, c='k', linestyle='--', label='JS_divergence_LT_GO')
+    plt.plot(x,JS_divergence_GO_RT, c='k', linestyle='-.', label='JS_divergence_GO_RT')
+    plt.legend(loc='upper right')
+    plt.ylim(0, 40)
+    plt.savefig(tsne_dir + '/summary.png')
+    plt.close()
+
+    file_list_tot = glob.glob(tsne_dir + '/0_*.png')
+    with imageio.get_writer(tsne_dir + '/0_tsne.gif', mode='I', duration=0.5) as writer:
+        file_list_tot.reverse()
+        for filename in file_list_tot:
+            image = imageio.imread(filename)
+            writer.append_data(image)
+
+    file_list_tot = glob.glob(tsne_dir + '/1_*.png')
+    with imageio.get_writer(tsne_dir + '/1_LT_embedding.gif', mode='I', duration=0.5) as writer:
+        file_list_tot.reverse()
+        for filename in file_list_tot:
+            image = imageio.imread(filename)
+            writer.append_data(image)
+
+    file_list_tot = glob.glob(tsne_dir + '/2_*.png')
+    with imageio.get_writer(tsne_dir + '/2_RT_embedding.gif', mode='I', duration=0.5) as writer:
+        file_list_tot.reverse()
+        for filename in file_list_tot:
+            image = imageio.imread(filename)
+            writer.append_data(image)
+
+    file_list_tot = glob.glob(tsne_dir + '/3_*.png')
+    with imageio.get_writer(tsne_dir + '/3_GO_embedding.gif', mode='I', duration=0.5) as writer:
+        file_list_tot.reverse()
+        for filename in file_list_tot:
+            image = imageio.imread(filename)
+            writer.append_data(image)
+
+
+
+
+
+
+'''
 
 
     for i in range(10):
@@ -228,10 +425,10 @@ for test in range(len(ckpt_list_seq)):
         cov_u_turn = np.cov(context_low_dim_u_turn.T)
 
         plt.legend(loc='upper right')
-        plt.xlim(-100, 120)
-        plt.ylim(-100, 120)
-        plt.title('embeddings of hist observations: ' + str(0.5*(10-i)) +'sec before outlet')
-        plt.savefig(tsne_dir+'/1_hist_embedding_on_hist_space_'+str(0.5*(10-i)) + 'sec_before_train.png')
+        plt.xlim(-60, 60)
+        plt.ylim(-60, 80)
+        plt.title('embeddings of hist observations: ' + str(0.5 * (10 - i)) + 'sec before outlet')
+        plt.savefig(tsne_dir + '/1_hist_embedding_on_hist_space_' + str(0.5 * (10 - i)) + 'sec_before_train.png')
         plt.close()
 
     for i in range(10):
@@ -252,19 +449,20 @@ for test in range(len(ckpt_list_seq)):
         cov_u_turn = np.cov(context_low_dim_u_turn.T)
 
         plt.legend(loc='upper right')
-        plt.xlim(-100, 120)
-        plt.ylim(-100, 120)
-        plt.title('embeddings of hist observations: ' + str(0.5*(10-i)) +'sec before outlet')
-        plt.savefig(tsne_dir+'/2_hist_embedding_on_hist_space_'+str(0.5*(10-i)) + 'sec_before_val.png')
+        plt.xlim(-60, 60)
+        plt.ylim(-60, 80)
+        plt.title('embeddings of hist observations: ' + str(0.5 * (10 - i)) + 'sec before outlet')
+        plt.savefig(tsne_dir + '/2_hist_embedding_on_hist_space_' + str(0.5 * (10 - i)) + 'sec_before_val.png')
         plt.close()
 
     images = []
-    file_list_tot = glob.glob(tsne_dir+'/0_*.png')
-    file_list_train = glob.glob(tsne_dir+'/1_*.png')
-    file_list_val = glob.glob(tsne_dir+'/2_*.png')
+    file_list_tot = glob.glob(tsne_dir + '/0_*.png')
+    file_list_train = glob.glob(tsne_dir + '/1_*.png')
+    file_list_val = glob.glob(tsne_dir + '/2_*.png')
     file_list_tot.reverse()
     file_list_train.reverse()
     file_list_val.reverse()
+    file_list_tot = glob.glob(tsne_dir + '/0_*.png')
 
     with imageio.get_writer(tsne_dir + '/0_total.gif', mode='I', duration=0.5) as writer:
         for filename in file_list_tot:
@@ -280,3 +478,4 @@ for test in range(len(ckpt_list_seq)):
         for filename in file_list_val:
             image = imageio.imread(filename)
             writer.append_data(image)
+'''

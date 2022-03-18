@@ -8,6 +8,7 @@ os.umask(0)
 os.environ["MKL_NUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
 os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"]= "0, 1, 2, 3"
 import argparse
 import numpy as np
 import random
@@ -30,6 +31,7 @@ from mpi4py import MPI
 
 comm = MPI.COMM_WORLD
 hvd.init()
+print(hvd.local_rank())
 torch.cuda.set_device(hvd.local_rank())
 
 root_path = os.path.dirname(os.path.abspath(__file__))
@@ -226,7 +228,7 @@ def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=
             val(config, val_loader, net, loss, post_process, epoch)
             return
 
-
+#TODO: maneuver prediction 부분 추가해야됨
 def val(config, data_loader, net, loss, post_process, epoch):
     net.eval()
 
