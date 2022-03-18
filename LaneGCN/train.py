@@ -228,7 +228,7 @@ def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=
             val(config, val_loader, net, loss, post_process, epoch)
             return
 
-
+#TODO: maneuver prediction 부분 추가해야됨
 def val(config, data_loader, net, loss, post_process, epoch):
     net.eval()
 
