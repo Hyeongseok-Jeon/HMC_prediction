@@ -177,11 +177,11 @@ class Net(nn.Module):
         actor_ctrs = gpu([data["ctrs"][i] for i in range(len(maneuver_list)) if maneuver_list[i] != 'None'])
         for i in range(len(maneuver_list_copy)):
             if maneuver_list_copy[i] == 'LEFT':
-                maneuver_array = torch.tensor([[1., 0., 0.]], device=actor_idcs[0].device)
+                maneuver_array = torch.tensor([[1, 0, 0]], device=actor_idcs[0].device)
             elif maneuver_list_copy[i] == 'STRAIGHT':
-                maneuver_array = torch.tensor([[0., 1., 0.]], device=actor_idcs[0].device)
+                maneuver_array = torch.tensor([[0, 1, 0]], device=actor_idcs[0].device)
             elif maneuver_list_copy[i] == 'RIGHT':
-                maneuver_array = torch.tensor([[0., 0., 1.]], device=actor_idcs[0].device)
+                maneuver_array = torch.tensor([[0, 0, 1]], device=actor_idcs[0].device)
 
             if i == 0:
                 maneuver_list_tensor =maneuver_array
