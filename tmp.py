@@ -133,7 +133,7 @@ plt.ylabel('Percentage', fontsize=12, fontname='Times New Roman')
 plt.ylim(0, 100)
 plt.xticks(index + 0.5 * bar_width, years, fontsize=10, fontname='Times New Roman')
 plt.legend((p1[0], p2[0]), ('Original dataset - balanced', 'Modified dataset - imbalanced'), fontsize=10)
-plt.savefig('data_modification.png', dpi=5000)
+plt.savefig('plots/data_modification.png', dpi=5000)
 plt.show()
 
 ####
@@ -168,7 +168,7 @@ plt.ylabel('Percentage', fontsize=12, fontname='Times New Roman')
 plt.ylim(0, 100)
 plt.xticks(index + 0.5 * bar_width, years, fontsize=10, fontname='Times New Roman')
 plt.legend((p1[0], p2[0]), ('In-house BEV dataset', 'Argoverse dataset'), fontsize=10)
-plt.savefig('train.png')
+plt.savefig('plots/train.png')
 plt.show()
 
 ####
@@ -203,7 +203,7 @@ plt.ylabel('Percentage', fontsize=12, fontname='Times New Roman')
 plt.ylim(0, 100)
 plt.xticks(index + 0.5 * bar_width, years, fontsize=10, fontname='Times New Roman')
 plt.legend((p1[0], p2[0]), ('In-house BEV dataset', 'Argoverse dataset'), fontsize=10)
-plt.savefig('val.png')
+plt.savefig('plots/val.png')
 plt.show()
 
 ####
@@ -238,7 +238,7 @@ plt.ylabel('Percentage', fontsize=12, fontname='Times New Roman')
 plt.ylim(0, 100)
 plt.xticks(index + 0.5 * bar_width, years, fontsize=10, fontname='Times New Roman')
 plt.legend((p1[0], p2[0]), ('In-house BEV dataset', 'Argoverse dataset'), fontsize=10)
-plt.savefig('total.png', dpi=5000)
+plt.savefig('plots/total.png', dpi=5000)
 plt.show()
 
 
@@ -386,5 +386,5 @@ plt.title('Standard deviation of each maneuver class for training dataset', font
 plt.xticks([index[0]+bar_width*2.5,index[1]+bar_width*2.5], years, fontsize=13, fontname='Times New Roman')
 plt.legend((p1[0], p2[0]), (years[0], years[1]), fontsize=10)
 plt.ylim(0, 25)
-plt.savefig('sdv.png')
+plt.savefig('plots/sdv.png')
 plt.show()
