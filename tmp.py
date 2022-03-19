@@ -388,3 +388,22 @@ plt.legend((p1[0], p2[0]), (years[0], years[1]), fontsize=10)
 plt.ylim(0, 25)
 plt.savefig('plots/sdv.png')
 plt.show()
+
+
+###################
+import csv
+import os
+import matplotlib
+
+matplotlib.use('tkagg')
+import matplotlib.pyplot as plt
+import numpy as np
+
+LT_ST_bal = 7.8905
+ST_RT_bal = 7.6795
+RT_LT_bal = 8.503
+
+LT_ST_imbal = 7.886
+ST_RT_imbal = 7.3525
+RT_LT_imbal = 9.465
+
