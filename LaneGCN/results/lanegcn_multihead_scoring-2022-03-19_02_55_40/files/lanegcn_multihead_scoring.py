@@ -177,11 +177,11 @@ class Net(nn.Module):
         actor_ctrs = gpu([data["ctrs"][i] for i in range(len(maneuver_list)) if maneuver_list[i] != 'None'])
         for i in range(len(maneuver_list_copy)):
             if maneuver_list_copy[i] == 'LEFT':
-                maneuver_array = torch.tensor([[1, 0, 0]], device=actor_idcs[0].device)
+                maneuver_array = torch.tensor([[1., 0., 0.]], device=actor_idcs[0].device)
             elif maneuver_list_copy[i] == 'STRAIGHT':
-                maneuver_array = torch.tensor([[0, 1, 0]], device=actor_idcs[0].device)
+                maneuver_array = torch.tensor([[0., 1., 0.]], device=actor_idcs[0].device)
             elif maneuver_list_copy[i] == 'RIGHT':
-                maneuver_array = torch.tensor([[0, 0, 1]], device=actor_idcs[0].device)
+                maneuver_array = torch.tensor([[0., 0., 1.]], device=actor_idcs[0].device)
 
             if i == 0:
                 maneuver_list_tensor =maneuver_array
@@ -1014,7 +1014,7 @@ class Loss(nn.Module):
                 else:
                     maneuver_list.append('None')
 
-        class_loss = self.loss_mean(out['score'], torch.argmax(out['score_GT'], dim=1))
+        class_loss = self.loss_mean(out['score'], out['score_GT'])
         loss_out = self.pred_loss(out, gpu([data["gt_preds"][i] for i in range(len(maneuver_list)) if maneuver_list[i] != 'None']), gpu([data["has_preds"][i] for i in range(len(maneuver_list)) if maneuver_list[i] != 'None']))
         loss_out['loss_maneuver'] = class_loss
         loss_out['num_maneuver'] = out['score'].shape[0]
@@ -1055,7 +1055,6 @@ class PostProcess(nn.Module):
         post_out = dict()
         post_out["preds"] = [x[0:1].detach().cpu().numpy() for x in out["reg"]]
         post_out["gt_preds"] = [data["gt_preds"][i][0:1].numpy() for i in range(len(data["gt_preds"])) if maneuver_list[i] != 'None']
-        post_out["pred_maneuver"] = [np.argmax(out['score'][i].detach().cpu().numpy()) for i in range(out['score'].shape[0])]
         post_out["gt_maneuver"] = [out['score_GT'][i].cpu().numpy() for i in range(out['score_GT'].shape[0])]
         post_out["has_preds"] = [data["has_preds"][i][0:1].numpy() for i in range(len(data["has_preds"])) if maneuver_list[i] != 'None']
         return post_out
@@ -1093,22 +1092,16 @@ class PostProcess(nn.Module):
 
         cls = metrics["cls_loss"] / (metrics["num_cls"] + 1e-10)
         reg = metrics["reg_loss"] / (metrics["num_reg"] + 1e-10)
-        maneuver_loss = 10 * metrics["loss_maneuver"] / (metrics["num_maneuver"] + 1e-10)
-        loss = cls + reg + maneuver_loss
+        loss = cls + reg
 
         preds = np.concatenate(metrics["preds"], 0)
         gt_preds = np.concatenate(metrics["gt_preds"], 0)
         has_preds = np.concatenate(metrics["has_preds"], 0)
         ade1, fde1, ade, fde, min_idcs = pred_metrics(preds, gt_preds, has_preds)
 
-        positive_num = 0
-        for i in range(len(metrics['pred_maneuver'])):
-            if np.argmax(metrics['gt_maneuver'][i]) == metrics['pred_maneuver'][i]:
-                positive_num = positive_num + 1
-        acc = positive_num/len(metrics['gt_preds'])
         print(
-            "loss %2.4f %2.4f %2.4f %2.4f, ade1 %2.4f, fde1 %2.4f, ade %2.4f, fde %2.4f, acc %2.2f%%"
-            % (loss, cls, reg, maneuver_loss, ade1, fde1, ade, fde, 100*acc)
+            "loss %2.4f %2.4f %2.4f, ade1 %2.4f, fde1 %2.4f, ade %2.4f, fde %2.4f"
+            % (loss, cls, reg, ade1, fde1, ade, fde)
         )
         print()
 
