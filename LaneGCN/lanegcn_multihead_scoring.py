@@ -1020,7 +1020,7 @@ class Loss(nn.Module):
         loss_out['num_maneuver'] = out['score'].shape[0]
         loss_out["loss"] = loss_out["cls_loss"] / (loss_out["num_cls"] + 1e-10) + \
                            loss_out["reg_loss"] / (loss_out["num_reg"] + 1e-10) + \
-                           10 * loss_out["loss_maneuver"] / (loss_out["num_maneuver"] + 1e-10)
+                           2 * loss_out["loss_maneuver"] / (loss_out["num_maneuver"] + 1e-10)
         return loss_out
 
 
@@ -1093,7 +1093,7 @@ class PostProcess(nn.Module):
 
         cls = metrics["cls_loss"] / (metrics["num_cls"] + 1e-10)
         reg = metrics["reg_loss"] / (metrics["num_reg"] + 1e-10)
-        maneuver_loss = 10 * metrics["loss_maneuver"] / (metrics["num_maneuver"] + 1e-10)
+        maneuver_loss = 2 * metrics["loss_maneuver"] / (metrics["num_maneuver"] + 1e-10)
         loss = cls + reg + maneuver_loss
 
         preds = np.concatenate(metrics["preds"], 0)
