@@ -109,13 +109,13 @@ index = np.arange(4)
 p1 = plt.bar(index, values_kaist_tot,
              bar_width,
              color='b',
-             alpha=1.5*alpha,
+             alpha=1.5 * alpha,
              label='Original dataset - balanced')
 
 p2 = plt.bar(index + bar_width, values_kaist_tot_1,
              bar_width,
              color='b',
-             alpha=0.5*alpha,
+             alpha=0.5 * alpha,
              label='Modified dataset - imbalanced')
 
 for value in p1:
@@ -242,12 +242,10 @@ plt.savefig('total.png', dpi=5000)
 plt.show()
 
 
-
-
 ##############
 
 def KLdivergence(x, y):
-  """Compute the Kullback-Leibler divergence between two multivariate samples.
+    """Compute the Kullback-Leibler divergence between two multivariate samples.
   Parameters
   ----------
   x : 2D array (n,d)
@@ -266,28 +264,127 @@ def KLdivergence(x, y):
 continuous distributions IEEE International Symposium on Information
 Theory, 2008.
   """
-  from scipy.spatial import cKDTree as KDTree
+    from scipy.spatial import cKDTree as KDTree
 
-  # Check the dimensions are consistent
-  x = np.atleast_2d(x)
-  y = np.atleast_2d(y)
+    # Check the dimensions are consistent
+    x = np.atleast_2d(x)
+    y = np.atleast_2d(y)
 
-  n,d = x.shape
-  m,dy = y.shape
+    n, d = x.shape
+    m, dy = y.shape
 
-  assert(d == dy)
+    assert (d == dy)
+
+    # Build a KD tree representation of the samples and find the nearest neighbour
+    # of each point in x.
+    xtree = KDTree(x)
+    ytree = KDTree(y)
+
+    # Get the first two nearest neighbours for x, since the closest one is the
+    # sample itself.
+    r = xtree.query(x, k=2, eps=.01, p=2)[0][:, 1]
+    s = ytree.query(x, k=1, eps=.01, p=2)[0]
+
+    # There is a mistake in the paper. In Eq. 14, the right side misses a negative sign
+    # on the first term of the right hand side.
+    return -np.log(r / s).sum() * d / n + np.log(m / (n - 1.))
 
 
-  # Build a KD tree representation of the samples and find the nearest neighbour
-  # of each point in x.
-  xtree = KDTree(x)
-  ytree = KDTree(y)
+###################
+import csv
+import os
+import matplotlib
 
-  # Get the first two nearest neighbours for x, since the closest one is the
-  # sample itself.
-  r = xtree.query(x, k=2, eps=.01, p=2)[0][:,1]
-  s = ytree.query(x, k=1, eps=.01, p=2)[0]
+matplotlib.use('tkagg')
+import matplotlib.pyplot as plt
+import numpy as np
 
-  # There is a mistake in the paper. In Eq. 14, the right side misses a negative sign
-  # on the first term of the right hand side.
-  return -np.log(r/s).sum() * d / n + np.log(m / (n - 1.))
+sdv_x_LT_bal = 9.47
+sdv_y_LT_bal = 10.94
+sdv_x_RT_bal = 13.65
+sdv_y_RT_bal = 10.63
+sdv_x_GO_bal = 9.25
+sdv_y_GO_bal = 13.75
+stv_bal = [sdv_x_LT_bal, sdv_y_LT_bal, sdv_x_RT_bal, sdv_y_RT_bal, sdv_x_GO_bal, sdv_y_GO_bal]
+
+sdv_x_LT_imbal = 18.8
+sdv_y_LT_imbal = 16.23
+sdv_x_RT_imbal = 16.07
+sdv_y_RT_imbal = 22.33
+sdv_x_GO_imbal = 13.34
+sdv_y_GO_imbal = 12.17
+stv_imbal = [sdv_x_LT_imbal, sdv_y_LT_imbal, sdv_x_RT_imbal, sdv_y_RT_imbal, sdv_x_GO_imbal, sdv_y_GO_imbal]
+years = ['Balanced training set', 'Imbalanced training set']
+
+plt.figure(figsize=[10, 2.5])
+bar_width = 0.3
+alpha = [0.7, 0.65, 0.6, 0.55, 0.5, 0.45]
+index = 3*np.arange(2)
+p1 = []
+p2 = []
+for i in range(len(stv_bal)):
+    bar = plt.bar(index[0]+bar_width*i, stv_bal[i],
+                  bar_width,
+                  color='b',
+                  alpha=alpha[i],
+                  label='In-house BEV dataset',
+                  edgecolor='k')
+    p1.append(bar)
+
+for i in range(len(stv_bal)):
+    bar = plt.bar(index[1]+bar_width*i, stv_imbal[i],
+                  bar_width,
+                  color='r',
+                  alpha=alpha[i],
+                  label='In-house BEV dataset',
+                  edgecolor='k')
+    p2.append(bar)
+
+for i in range(len(p1)):
+    value = p1[i]
+    for val in value:
+        height = val.get_height()
+        plt.text(val.get_x() + val.get_width() / 2.,
+                 1.002 * height, '%.1f' % height, ha='center', va='bottom')
+    if i == 0:
+        maneuver = 'x_LT'
+    elif i == 1:
+        maneuver = 'y_LT'
+    elif i == 2:
+        maneuver = 'x_RT'
+    elif i == 3:
+        maneuver = 'y_RT'
+    elif i == 4:
+        maneuver = 'x_ST'
+    elif i == 5:
+        maneuver = 'y_ST'
+    plt.text(val.get_x() + val.get_width() / 2.,
+             6, maneuver, ha='center', va='bottom')
+
+for i in range(len(p2)):
+    value = p2[i]
+    for val in value:
+        height = val.get_height()
+        plt.text(val.get_x() + val.get_width() / 2.,
+                 1.002 * height, '%.1f' % height, ha='center', va='bottom')
+    if i == 0:
+        maneuver = 'x_LT'
+    elif i == 1:
+        maneuver = 'y_LT'
+    elif i == 2:
+        maneuver = 'x_RT'
+    elif i == 3:
+        maneuver = 'y_RT'
+    elif i == 4:
+        maneuver = 'x_ST'
+    elif i == 5:
+        maneuver = 'y_ST'
+    plt.text(val.get_x() + val.get_width() / 2.,
+             8, maneuver, ha='center', va='bottom')
+
+plt.title('Standard deviation of each maneuver class for training dataset', fontsize=15, fontname='Times New Roman')
+plt.xticks([index[0]+bar_width*2.5,index[1]+bar_width*2.5], years, fontsize=13, fontname='Times New Roman')
+plt.legend((p1[0], p2[0]), (years[0], years[1]), fontsize=10)
+plt.ylim(0, 25)
+plt.savefig('sdv.png')
+plt.show()
