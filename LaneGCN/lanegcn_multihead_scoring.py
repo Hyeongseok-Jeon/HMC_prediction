@@ -1014,7 +1014,7 @@ class Loss(nn.Module):
                 else:
                     maneuver_list.append('None')
 
-        class_loss = self.loss_mean(out['score'], out['score_GT'])
+        class_loss = self.loss_mean(out['score'], torch.argmax(out['score_GT'], dim=1))
         loss_out = self.pred_loss(out, gpu([data["gt_preds"][i] for i in range(len(maneuver_list)) if maneuver_list[i] != 'None']), gpu([data["has_preds"][i] for i in range(len(maneuver_list)) if maneuver_list[i] != 'None']))
         loss_out['loss_maneuver'] = class_loss
         loss_out['num_maneuver'] = out['score'].shape[0]
