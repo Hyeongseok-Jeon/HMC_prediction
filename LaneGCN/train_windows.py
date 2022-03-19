@@ -135,7 +135,7 @@ def main():
 
     # Data loader for evaluation
     dataset = Dataset(config["val_split"], config, train=False)
-    train_loader = DataLoader(
+    val_loader = DataLoader(
         dataset,
         batch_size=config["val_batch_size"],
         num_workers=config["val_workers"],
