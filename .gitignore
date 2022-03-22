@@ -8,3 +8,4 @@
 /data/__pycache__/
 /logger/__pycache__/
 */__pycache__/*
+/LaneGCN/results/lanegcn-CPC_backbone-without_pretraining/log
