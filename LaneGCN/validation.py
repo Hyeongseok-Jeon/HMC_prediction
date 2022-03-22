@@ -20,7 +20,6 @@ try:
     from utils import Logger, load_pretrain
 except:
     from LaneGCN.utils import Logger, load_pretrain
-from logger.logger import setup_logs
 import pandas as pd
 
 # cur_path = os.path.abspath(__file__)
