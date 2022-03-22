@@ -129,7 +129,7 @@ print('The loaded weight is : ' + loaded_weight)
 load_pretrain(net, weights["state_dict"])
 
 config["preprocess_val"] = os.getcwd() + '/LaneGCN/dataset/preprocess/val_crs_dist6_angle90.p'
-config["val_batch_size"] = 8
+config["val_batch_size"] = 32
 # Data loader for evaluation
 dataset = Dataset(config["val_split"], config, train=False)
 val_loader = DataLoader(
