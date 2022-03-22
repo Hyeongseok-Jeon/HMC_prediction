@@ -9,25 +9,18 @@ os.environ["MKL_NUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
 os.environ["OMP_NUM_THREADS"] = "1"
 
-from importlib import import_module
-import argparse
 import numpy as np
-import random
 import sys
 import time
-import shutil
-from importlib import import_module
-import importlib.util as module_loader
-from numbers import Number
 import os
 from tqdm import tqdm
 import torch
-from torch.utils.data import Sampler, DataLoader
+from torch.utils.data import DataLoader
 try:
     from utils import Logger, load_pretrain
 except:
     from LaneGCN.utils import Logger, load_pretrain
-
+from logger.logger import setup_logs
 import pandas as pd
 
 # cur_path = os.path.abspath(__file__)
@@ -135,114 +128,88 @@ except:
 print('The loaded weight is : ' + loaded_weight)
 
 load_pretrain(net, weights["state_dict"])
-#
-# config["preprocess_val"] = os.getcwd() + '/LaneGCN/dataset/preprocess/val_crs_dist6_angle90.p'
-# config["val_batch_size"] = 4
-# # Data loader for evaluation
-# dataset = Dataset(config["val_split"], config, train=False)
-# val_loader = DataLoader(
-#     dataset,
-#     batch_size=config["val_batch_size"],
-#     num_workers=config["val_workers"],
-#     collate_fn=collate_fn,
-#     pin_memory=True,
-# )
-#
-#
-# def main():
-#     # Import all settings for experiment.
-#
-#     config, Dataset, collate_fn, net, loss, post_process, optim = model.get_model()
-#     weights = torch.load(weight_dir, map_location=lambda storage, loc: storage)
-#     load_pretrain(net, weights["state_dict"])
-#
-#     config["preprocess_val"] = os.getcwd() + '/LaneGCN/dataset/preprocess/val_crs_dist6_angle90.p'
-#     config["val_batch_size"] = 4
-#     # Data loader for evaluation
-#     dataset = Dataset(config["val_split"], config, train=False)
-#     val_loader = DataLoader(
-#         dataset,
-#         batch_size=config["val_batch_size"],
-#         num_workers=config["val_workers"],
-#         collate_fn=collate_fn,
-#         pin_memory=True,
-#     )
-#
-#     val(config, val_loader, net, loss, post_process, 999)
-#     return
-#
-#
-# def val(config, val_loader, net, loss, post_process, epoch):
-#     val_maneuver = pd.read_csv(os.getcwd() + '/LaneGCN/dataset/preprocess/val_data.csv')
-#     file_list = list(val_maneuver['file name'])
-#
-#     net.eval()
-#     start_time = time.time()
-#     metrics_tot = dict()
-#     metrics_LT = dict()
-#     metrics_ST = dict()
-#     metrics_RT = dict()
-#     model_name = weight_dir.split('/')[-2]
-#     for i, data in enumerate(val_loader):
-#         data = dict(data)
-#         maneuver = []
-#         for iii in range(len(data['file_name'])):
-#             try:
-#                 maneuver.append(val_maneuver['target maneuver'][file_list.index(str(data['file_name'][iii]) + '.csv')])
-#             except:
-#                 maneuver.append(0)
-#
-#         with torch.no_grad():
-#             if 'lanegcn-original' == model_name:
-#                 output = net(data)
-#                 loss_out = loss(output, data)
-#                 post_out = post_process(output, data)
-#                 post_out_LT = dict()
-#                 post_out_LT['preds'] = [post_out['preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'LEFT']
-#                 post_out_LT['gt_preds'] = [post_out['gt_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'LEFT']
-#                 post_out_LT['has_preds'] = [post_out['has_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'LEFT']
-#                 post_out_ST = dict()
-#                 post_out_ST['preds'] = [post_out['preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'go_straight']
-#                 post_out_ST['gt_preds'] = [post_out['gt_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'go_straight']
-#                 post_out_ST['has_preds'] = [post_out['has_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'go_straight']
-#                 post_out_RT = dict()
-#                 post_out_RT['preds'] = [post_out['preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'RIGHT']
-#                 post_out_RT['gt_preds'] = [post_out['gt_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'RIGHT']
-#                 post_out_RT['has_preds'] = [post_out['has_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'RIGHT']
-#                 post_process.append(metrics_tot, loss_out, post_out)
-#                 post_process.append(metrics_LT, loss_out, post_out_LT)
-#                 post_process.append(metrics_ST, loss_out, post_out_ST)
-#                 post_process.append(metrics_RT, loss_out, post_out_RT)
-#
-#                 #
-#                 # output = net(data, mode='custom',  transfer=True, phase='val')
-#                 # loss_out = loss(output, data, phase='val')
-#                 # post_out = post_process(output, data, phase='val')
-#                 # post_process.append(metrics, loss_out, post_out)
-#
-#     dt = time.time() - start_time
-#     post_process.display(metrics_tot, dt, epoch)
-#     post_process.display(metrics_LT, dt, epoch)
-#     post_process.display(metrics_ST, dt, epoch)
-#     post_process.display(metrics_RT, dt, epoch)
-#
-#     net.train()
-#
-#
-# def save_ckpt(net, opt, save_dir, epoch):
-#     if not os.path.exists(save_dir):
-#         os.makedirs(save_dir)
-#
-#     state_dict = net.state_dict()
-#     for key in state_dict.keys():
-#         state_dict[key] = state_dict[key].cpu()
-#
-#     save_name = "%3.3f.ckpt" % epoch
-#     torch.save(
-#         {"epoch": epoch, "state_dict": state_dict, "opt_state": opt.opt.state_dict()},
-#         os.path.join(save_dir, save_name),
-#     )
-#
-#
-# if __name__ == "__main__":
-#     main()
+
+config["preprocess_val"] = os.getcwd() + '/LaneGCN/dataset/preprocess/val_crs_dist6_angle90.p'
+config["val_batch_size"] = 8
+# Data loader for evaluation
+dataset = Dataset(config["val_split"], config, train=False)
+val_loader = DataLoader(
+    dataset,
+    batch_size=config["val_batch_size"],
+    num_workers=config["val_workers"],
+    collate_fn=collate_fn,
+    pin_memory=True,
+)
+
+val_maneuver = pd.read_csv(os.getcwd() + '/LaneGCN/dataset/preprocess/val_data.csv')
+file_list = list(val_maneuver['file name'])
+
+net.eval()
+start_time = time.time()
+metrics_tot = dict()
+metrics_LT = dict()
+metrics_ST = dict()
+metrics_RT = dict()
+model_name = weight_dir.split('/')[-2]
+
+for i, data in tqdm(enumerate(val_loader)):
+    data = dict(data)
+    maneuver = []
+    for iii in range(len(data['file_name'])):
+        try:
+            maneuver.append(val_maneuver['target maneuver'][file_list.index(str(data['file_name'][iii]) + '.csv')])
+        except:
+            maneuver.append(0)
+
+    with torch.no_grad():
+        if 'lanegcn-CPC_backbone' in model_name:
+            output = net(data, mode='custom')
+
+        elif 'lanegcn-original' == model_name:
+            output = net(data)
+
+        elif 'lanegcn-original_k3' == model_name or 'lanegcn_multihead_pretrained_weight' == model_name or 'lanegcn_multihead_scoring' in model_name:
+            output = net(data, mode='custom', transfer=True, phase='train')
+
+        loss_out = loss(output, data)
+        post_out = post_process(output, data)
+        post_out_LT = dict()
+        post_out_LT['preds'] = [post_out['preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'LEFT']
+        post_out_LT['gt_preds'] = [post_out['gt_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'LEFT']
+        post_out_LT['has_preds'] = [post_out['has_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'LEFT']
+        post_out_ST = dict()
+        post_out_ST['preds'] = [post_out['preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'go_straight']
+        post_out_ST['gt_preds'] = [post_out['gt_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'go_straight']
+        post_out_ST['has_preds'] = [post_out['has_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'go_straight']
+        post_out_RT = dict()
+        post_out_RT['preds'] = [post_out['preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'RIGHT']
+        post_out_RT['gt_preds'] = [post_out['gt_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'RIGHT']
+        post_out_RT['has_preds'] = [post_out['has_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'RIGHT']
+        if 'lanegcn_multihead_scoring' in model_name:
+            post_out_LT['pred_maneuver'] = [post_out['pred_maneuver'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'LEFT']
+            post_out_ST['pred_maneuver'] = [post_out['pred_maneuver'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'go_straight']
+            post_out_RT['pred_maneuver'] = [post_out['pred_maneuver'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'RIGHT']
+            post_out_LT['gt_maneuver'] = [post_out['gt_maneuver'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'LEFT']
+            post_out_ST['gt_maneuver'] = [post_out['gt_maneuver'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'go_straight']
+            post_out_RT['gt_maneuver'] = [post_out['gt_maneuver'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'RIGHT']
+
+        post_process.append(metrics_tot, loss_out, post_out)
+        post_process.append(metrics_LT, loss_out, post_out_LT)
+        post_process.append(metrics_ST, loss_out, post_out_ST)
+        post_process.append(metrics_RT, loss_out, post_out_RT)
+
+log = os.path.join(os.path.dirname(os.path.dirname(model_path)), "validation_result")
+sys.stdout = Logger(log)
+
+dt = time.time() - start_time
+print('validation result for total validation set')
+post_process.display(metrics_tot, dt, 0)
+
+print('validation result for left turn validation set')
+post_process.display(metrics_LT, dt, 0)
+
+print('validation result for Go straight validation set')
+post_process.display(metrics_ST, dt, 0)
+
+print('validation result for Right turn validation set')
+post_process.display(metrics_RT, dt, 0)
