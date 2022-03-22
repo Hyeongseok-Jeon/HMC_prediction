@@ -24,7 +24,7 @@ from tqdm import tqdm
 import torch
 from torch.utils.data import Sampler, DataLoader
 from LaneGCN.utils import Logger, load_pretrain
-
+import pandas as pd
 # cur_path = os.path.abspath(__file__)
 result_path = os.getcwd() + '/LaneGCN/results/'
 model_list = os.listdir(result_path)
@@ -79,6 +79,12 @@ for i in range(len(ckpt_list)):
 print('------------------------------------------------------------')
 print('\n')
 
+f = open(os.getcwd() + '/LaneGCN/results/' + file_id + '/log', 'w')
+for i in range(1, 11):
+    data = "%d번째 줄입니다.\n" % i
+    f.write(data)
+f.close()
+
 while True:
     s = input('selected target models : ')
     try:
@@ -93,7 +99,6 @@ while True:
 
 global weight_dir
 weight_dir = os.getcwd() + '/LaneGCN/results/' + file_id + '/' + weight
-# decoder_training-2022-03-12_05_26_35
 
 def main():
     # Import all settings for experiment.
@@ -102,58 +107,8 @@ def main():
     weights = torch.load(weight_dir, map_location=lambda storage, loc: storage)
     load_pretrain(net, weights["state_dict"])
 
-
-    if args.resume or args.weight:
-        ckpt_path = args.resume or args.weight
-        if not os.path.isabs(ckpt_path):
-            ckpt_path = os.path.join(config["save_dir"], ckpt_path)
-        ckpt = torch.load(ckpt_path, map_location=lambda storage, loc: storage)
-        load_pretrain(net, ckpt["state_dict"])
-        if args.resume:
-            config["epoch"] = ckpt["epoch"]
-            opt.load_state_dict(ckpt["opt_state"])
-
-    if args.eval:
-        # Data loader for evaluation
-        dataset = Dataset(config["val_split"], config, train=False)
-        val_loader = DataLoader(
-            dataset,
-            batch_size=config["val_batch_size"],
-            num_workers=config["val_workers"],
-            collate_fn=collate_fn,
-            pin_memory=True,
-        )
-
-        val(config, val_loader, net, loss, post_process, 999)
-        return
-
-    # Create log and copy all code
-    save_dir = config["save_dir"]
-    log = os.path.join(save_dir, "log")
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-    sys.stdout = Logger(log)
-
-    src_dirs = [root_path]
-    dst_dirs = [os.path.join(save_dir, "files")]
-    for src_dir, dst_dir in zip(src_dirs, dst_dirs):
-        files = [f for f in os.listdir(src_dir) if f.endswith(".py")]
-        if not os.path.exists(dst_dir):
-            os.makedirs(dst_dir)
-        for f in files:
-            shutil.copy(os.path.join(src_dir, f), os.path.join(dst_dir, f))
-
-    # Data loader for training
-    dataset = Dataset(config["train_split"], config, train=True)
-    train_loader = DataLoader(
-        dataset,
-        batch_size=config["batch_size"],
-        num_workers=config["workers"],
-        collate_fn=collate_fn,
-        pin_memory=True,
-        drop_last=True,
-    )
-
+    config["preprocess_val"] = os.getcwd()+'/LaneGCN/dataset/preprocess/val_crs_dist6_angle90.p'
+    config["val_batch_size"] = 4
     # Data loader for evaluation
     dataset = Dataset(config["val_split"], config, train=False)
     val_loader = DataLoader(
@@ -164,71 +119,64 @@ def main():
         pin_memory=True,
     )
 
-    epoch = config["epoch"]
-    remaining_epochs = int(np.ceil(config["num_epochs"] - epoch))
-    for i in range(remaining_epochs):
-        train(epoch + i, config, train_loader, net, loss, post_process, opt, val_loader)
+    val(config, val_loader, net, loss, post_process, 999)
+    return
 
 
-def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=None):
-    net.train()
+def val(config, val_loader, net, loss, post_process, epoch):
+    val_maneuver = pd.read_csv(os.getcwd() + '/LaneGCN/dataset/preprocess/val_data.csv')
+    file_list = list(val_maneuver['file name'])
 
-    num_batches = len(train_loader)
-    epoch_per_batch = 1.0 / num_batches
-    save_iters = int(np.ceil(config["save_freq"] * num_batches))
-    display_iters = int(
-        config["display_iters"] / (config["batch_size"])
-    )
-    val_iters = int(config["val_iters"] / (config["batch_size"]))
-
-    start_time = time.time()
-    metrics = dict()
-    for i, data in tqdm(enumerate(train_loader)):
-        epoch += epoch_per_batch
-        data = dict(data)
-
-        output = net(data, mode='custom', transfer=True, phase='train')
-        loss_out = loss(output, data, phase='train')
-        post_out = post_process(output, data, phase='train')
-        post_process.append(metrics, loss_out, post_out)
-
-        opt.zero_grad()
-        loss_out["loss"].backward()
-        lr = opt.step(epoch)
-
-        num_iters = int(np.round(epoch * num_batches))
-        if num_iters % save_iters == 0 or epoch >= config["num_epochs"]:
-            save_ckpt(net, opt, config["save_dir"], epoch)
-
-        if num_iters % display_iters == 0:
-            dt = time.time() - start_time
-            post_process.display(metrics, dt, epoch, lr)
-            start_time = time.time()
-            metrics = dict()
-
-        if num_iters % val_iters == 0:
-            val(config, val_loader, net, loss, post_process, epoch)
-
-        if epoch >= config["num_epochs"]:
-            val(config, val_loader, net, loss, post_process, epoch)
-            return
-
-
-def val(config, data_loader, net, loss, post_process, epoch):
     net.eval()
-
     start_time = time.time()
-    metrics = dict()
-    for i, data in enumerate(data_loader):
+    metrics_tot = dict()
+    metrics_LT = dict()
+    metrics_ST = dict()
+    metrics_RT = dict()
+    model_name = weight_dir.split('/')[-2]
+    for i, data in enumerate(val_loader):
         data = dict(data)
+        maneuver = []
+        for iii in range(len(data['file_name'])):
+            try:
+                maneuver.append(val_maneuver['target maneuver'][file_list.index(str(data['file_name'][iii]) + '.csv')])
+            except:
+                maneuver.append(0)
+
         with torch.no_grad():
-            output = net(data, mode='custom',  transfer=True, phase='val')
-            loss_out = loss(output, data, phase='val')
-            post_out = post_process(output, data, phase='val')
-            post_process.append(metrics, loss_out, post_out)
+            if 'lanegcn-original' == model_name:
+                output = net(data)
+                loss_out = loss(output, data)
+                post_out = post_process(output, data)
+                post_out_LT = dict()
+                post_out_LT['preds'] = [post_out['preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] =='LEFT']
+                post_out_LT['gt_preds'] = [post_out['gt_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'LEFT']
+                post_out_LT['has_preds'] = [post_out['has_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'LEFT']
+                post_out_ST = dict()
+                post_out_ST['preds'] = [post_out['preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] =='go_straight']
+                post_out_ST['gt_preds'] = [post_out['gt_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] =='go_straight']
+                post_out_ST['has_preds'] = [post_out['has_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] =='go_straight']
+                post_out_RT = dict()
+                post_out_RT['preds'] = [post_out['preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'RIGHT']
+                post_out_RT['gt_preds'] = [post_out['gt_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'RIGHT']
+                post_out_RT['has_preds'] = [post_out['has_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'RIGHT']
+                post_process.append(metrics_tot, loss_out, post_out)
+                post_process.append(metrics_LT, loss_out, post_out_LT)
+                post_process.append(metrics_ST, loss_out, post_out_ST)
+                post_process.append(metrics_RT, loss_out, post_out_RT)
+
+                #
+                # output = net(data, mode='custom',  transfer=True, phase='val')
+                # loss_out = loss(output, data, phase='val')
+                # post_out = post_process(output, data, phase='val')
+                # post_process.append(metrics, loss_out, post_out)
 
     dt = time.time() - start_time
-    post_process.display(metrics, dt, epoch)
+    post_process.display(metrics_tot, dt, epoch)
+    post_process.display(metrics_LT, dt, epoch)
+    post_process.display(metrics_ST, dt, epoch)
+    post_process.display(metrics_RT, dt, epoch)
+
     net.train()
 
 
