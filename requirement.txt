@@ -5,3 +5,7 @@ ipdb
 mpi4py
 torch
 torchvision
+
+ssh user@143.248.224.24 -p 22
+python train_maneuver_classification.py
+conda activate lanegcn

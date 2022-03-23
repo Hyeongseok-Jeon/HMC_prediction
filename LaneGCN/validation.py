@@ -21,6 +21,9 @@ try:
 except:
     from LaneGCN.utils import Logger, load_pretrain
 import pandas as pd
+import warnings
+
+warnings.filterwarnings("ignore", category=UserWarning)
 
 # cur_path = os.path.abspath(__file__)
 result_path = os.getcwd() + '/LaneGCN/results/'
@@ -129,7 +132,7 @@ print('The loaded weight is : ' + loaded_weight)
 load_pretrain(net, weights["state_dict"])
 
 config["preprocess_val"] = os.getcwd() + '/LaneGCN/dataset/preprocess/val_crs_dist6_angle90.p'
-config["val_batch_size"] = 128
+config["val_batch_size"] = 64
 # Data loader for evaluation
 dataset = Dataset(config["val_split"], config, train=False)
 val_loader = DataLoader(
@@ -167,11 +170,17 @@ for i, data in tqdm(enumerate(val_loader)):
         elif 'lanegcn-original' == model_name:
             output = net(data)
 
-        elif 'lanegcn-original_k3' == model_name or 'lanegcn_multihead_pretrained_weight' == model_name or 'lanegcn_multihead_scoring' in model_name:
+        elif 'lanegcn-original_k3' == model_name or 'lanegcn_multihead_pretrained_weight' == model_name:
             output = net(data, mode='custom', transfer=True, phase='train')
+        elif 'lanegcn_multihead_scoring' in model_name:
+            output = net(data, mode='custom', transfer=True, phase='val')
 
-        loss_out = loss(output, data)
-        post_out = post_process(output, data)
+        if 'lanegcn_multihead_scoring' in model_name:
+            loss_out = loss(output, data, phase='val')
+            post_out = post_process(output, data, phase='val')
+        else:
+            loss_out = loss(output, data)
+            post_out = post_process(output, data)
         post_out_LT = dict()
         post_out_LT['preds'] = [post_out['preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'LEFT']
         post_out_LT['gt_preds'] = [post_out['gt_preds'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'LEFT']

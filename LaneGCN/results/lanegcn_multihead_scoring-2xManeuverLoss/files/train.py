@@ -237,7 +237,7 @@ def val(config, data_loader, net, loss, post_process, epoch):
         data = dict(data)
         with torch.no_grad():
             output = net(data, mode='custom', transfer=True, phase='val')
-            loss_out = loss(output, data, phase='val')
+        loss_out = loss(output, data, phase='val')
             post_out = post_process(output, data, phase='val')
             post_process.append(metrics, loss_out, post_out)
 

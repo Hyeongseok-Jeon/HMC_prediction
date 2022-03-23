@@ -14,3 +14,19 @@ validation result for Right turn validation set
 ************************* Validation, time 1912.47 *************************
 loss 3.6606 0.0000 1.8775 1.7830, ade1 2.0114, fde1 4.3390, ade 2.0114, fde 4.3390, acc 65.07%
 
+validation result for total validation set
+************************* Validation, time 1088.36 *************************
+loss 2.8521 0.0000 1.5815 1.2706, ade1 1.7885, fde1 3.7115, ade 1.7885, fde 3.7115, acc 91.51%
+
+validation result for left turn validation set
+************************* Validation, time 1088.36 *************************
+loss 2.8521 0.0000 1.5815 1.2706, ade1 1.8128, fde1 3.7706, ade 1.8128, fde 3.7706, acc 87.56%
+
+validation result for Go straight validation set
+************************* Validation, time 1088.36 *************************
+loss 2.8521 0.0000 1.5815 1.2706, ade1 1.7743, fde1 3.6731, ade 1.7743, fde 3.6731, acc 92.53%
+
+validation result for Right turn validation set
+************************* Validation, time 1088.36 *************************
+loss 2.8521 0.0000 1.5815 1.2706, ade1 1.7982, fde1 3.8017, ade 1.7982, fde 3.8017, acc 85.69%
+
