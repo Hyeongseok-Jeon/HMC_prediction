@@ -132,7 +132,7 @@ print('The loaded weight is : ' + loaded_weight)
 load_pretrain(net, weights["state_dict"])
 
 config["preprocess_val"] = os.getcwd() + '/LaneGCN/dataset/preprocess/val_crs_dist6_angle90.p'
-config["val_batch_size"] = 64
+config["val_batch_size"] = 16
 # Data loader for evaluation
 dataset = Dataset(config["val_split"], config, train=False)
 val_loader = DataLoader(
@@ -172,8 +172,12 @@ for i, data in tqdm(enumerate(val_loader)):
 
         elif 'lanegcn-original_k3' == model_name or 'lanegcn_multihead_pretrained_weight' == model_name:
             output = net(data, mode='custom', transfer=True, phase='train')
+        elif 'lanegcn_multihead_scoring-2022' in model_name:
+            output = net(data, mode='official', transfer=True, phase='val')
         elif 'lanegcn_multihead_scoring' in model_name:
             output = net(data, mode='custom', transfer=True, phase='val')
+
+
 
         if 'lanegcn_multihead_scoring' in model_name:
             loss_out = loss(output, data, phase='val')
