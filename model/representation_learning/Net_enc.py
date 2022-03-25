@@ -23,7 +23,7 @@ class BackBone(nn.Module):
         self.softmax = nn.Softmax()
         self.lsoftmax = nn.LogSoftmax()
 
-    def forward(self, trajectory, traj_length, mode='train'):
+    def forward(self, trajectory, traj_length, mode='train', vis=False):
         if mode == 'downstream':
             traj_length_aug = []
             trajectory_aug = []
@@ -115,18 +115,29 @@ class BackBone(nn.Module):
                         trajectory_tmp[0, trajectory_tmp[0, :, 2] > torch.pi, 2] = trajectory_tmp[0, trajectory_tmp[0, :, 2] > torch.pi, 2] - 2 * torch.pi
 
                         indx_cand = [cur_index - 5 * i for i in range(cur_index + 1) if cur_index - 5 * i > 3]
-
-                        for j in range(self.config["val_augmentation"]):
-                            start_index = indx_cand[torch.randint(len(indx_cand), size=(1,))]
+                        if vis:
+                            start_index = indx_cand[-1]
                             for k in range(int((cur_index - start_index) / 5) + 1):
                                 tmp = trajectory_tmp[0:1, start_index - 4 + 5 * k:start_index - 4 + 5 * (k + 1), :]
                                 noise = torch.normal(0, 0.1, size=(tmp.shape), device=tmp.device)
                                 if k == 0:
-                                    enc_in = tmp+noise
+                                    enc_in = tmp + noise
                                 else:
-                                    enc_in = torch.cat((enc_in, tmp+noise), dim=0)
+                                    enc_in = torch.cat((enc_in, tmp + noise), dim=0)
                             enc_tot.append(enc_in)
                             seg_length.append(enc_in.shape[0])
+                        else:
+                            for j in range(self.config["val_augmentation"]):
+                                start_index = indx_cand[torch.randint(len(indx_cand), size=(1,))]
+                                for k in range(int((cur_index - start_index) / 5) + 1):
+                                    tmp = trajectory_tmp[0:1, start_index - 4 + 5 * k:start_index - 4 + 5 * (k + 1), :]
+                                    noise = torch.normal(0, 0.1, size=(tmp.shape), device=tmp.device)
+                                    if k == 0:
+                                        enc_in = tmp+noise
+                                    else:
+                                        enc_in = torch.cat((enc_in, tmp+noise), dim=0)
+                                enc_tot.append(enc_in)
+                                seg_length.append(enc_in.shape[0])
                 enc_tot_t = torch.cat(enc_tot)
                 enc_in = torch.transpose(enc_tot_t, 1, 2)
                 ar_in = self.encoder(enc_in)
@@ -136,12 +147,16 @@ class BackBone(nn.Module):
                     if cur_index < 4:
                         pass
                     else:
-                        for j in range(self.config["val_augmentation"]):
-                            tmp = representation[self.config["val_augmentation"]*i+j:self.config["val_augmentation"]*i+j+1, seg_length[self.config["val_augmentation"]*i+j]-1]
-                            if j == 0:
-                                representation_time_bag[i] = tmp
-                            else:
-                                representation_time_bag[i] = torch.cat((representation_time_bag[i], tmp), dim=0)
+                        if vis:
+                            tmp = representation[i:i + 1, seg_length[i] - 1]
+                            representation_time_bag[i] = tmp
+                        else:
+                            for j in range(self.config["val_augmentation"]):
+                                tmp = representation[self.config["val_augmentation"]*i+j:self.config["val_augmentation"]*i+j+1, seg_length[self.config["val_augmentation"]*i+j]-1]
+                                if j == 0:
+                                    representation_time_bag[i] = tmp
+                                else:
+                                    representation_time_bag[i] = torch.cat((representation_time_bag[i], tmp), dim=0)
 
                 return representation_time_bag
 
