@@ -8,3 +8,9 @@
 /data/__pycache__/
 /logger/__pycache__/
 */__pycache__/*
+/BEV_visualization/1001/*
+/BEV_visualization/1002/*
+/BEV_visualization/1005/*
+/BEV_visualization/1014/*
+/BEV_visualization/1016/*
+/BEV_visualization/video_results/*
