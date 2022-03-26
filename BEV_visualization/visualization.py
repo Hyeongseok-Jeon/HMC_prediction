@@ -192,15 +192,15 @@ def get_veh_polygon(vehs):
 
 
 def get_bags(dataloader, model):
-    for i, data in enumerate(dataloader_train):
+    for i, data in enumerate(dataloader):
         trajectory, traj_length, conversion, maneuvers = data
         maneuvers = maneuvers[0].numpy()
         trajectory = trajectory.float().cuda()
         with torch.no_grad():
-            representation_time_bag_1 = model_2(trajectory, traj_length, mode='val')
+            representation_time_bag_1 = model(trajectory, traj_length, mode='val', vis=True)
         if i == 0:
             context_bag_train_1 = [None if repres is None else repres.cpu().detach().numpy() for repres in representation_time_bag_1]
-            maneuver_bag_train_1 = [None if context_bag_train_1[i] is None else np.repeat(maneuvers, config["val_augmentation"], axis=0) for i in range(11)]
+            maneuver_bag_train_1 = [None if context_bag_train_1[i] is None else np.repeat(maneuvers, 1, axis=0) for i in range(11)]
         else:
             for j in range(len(representation_time_bag_1)):
                 if representation_time_bag_1[j] is None:
@@ -208,10 +208,10 @@ def get_bags(dataloader, model):
                 else:
                     if context_bag_train_1[j] is None:
                         context_bag_train_1[j] = representation_time_bag_1[j].cpu().detach().numpy()
-                        maneuver_bag_train_1[j] = np.repeat(maneuvers, config["val_augmentation"], axis=0)
+                        maneuver_bag_train_1[j] = np.repeat(maneuvers, 1, axis=0)
                     else:
                         context_bag_train_1[j] = np.concatenate((context_bag_train_1[j], representation_time_bag_1[j].cpu().detach().numpy()), axis=0)
-                        maneuver_bag_train_1[j] = np.concatenate((maneuver_bag_train_1[j], np.repeat(maneuvers, config["val_augmentation"], axis=0)), axis=0)
+                        maneuver_bag_train_1[j] = np.concatenate((maneuver_bag_train_1[j], np.repeat(maneuvers, 1, axis=0)), axis=0)
     return [context_bag_train_1, maneuver_bag_train_1]
 
 
@@ -220,14 +220,14 @@ def get_gaussian_kde(context_bag_tot_2, maneuver_bag_tot_2):
     tsne_hist_2 = TSNE(n_components=n_components,
                        perplexity=30,
                        verbose=True)
-    contexts_outlet_2 = context_bag_tot_2[-2]
+    contexts_outlet_2 = context_bag_tot_2[-1]
     context_tsne_2 = tsne_hist_2.fit(contexts_outlet_2)
 
-    contexts = context_bag_tot_2[9]
+    contexts = context_bag_tot_2[-1]
     context_low_dim = context_tsne_2.transform(contexts)
-    context_low_dim_left_turn = context_low_dim[maneuver_bag_tot_2[9][:, 1] == 1]
-    context_low_dim_go_straight = context_low_dim[maneuver_bag_tot_2[9][:, 2] == 1]
-    context_low_dim_right_turn = context_low_dim[maneuver_bag_tot_2[9][:, 3] == 1]
+    context_low_dim_left_turn = context_low_dim[maneuver_bag_tot_2[-1][:, 1] == 1]
+    context_low_dim_go_straight = context_low_dim[maneuver_bag_tot_2[-1][:, 2] == 1]
+    context_low_dim_right_turn = context_low_dim[maneuver_bag_tot_2[-1][:, 3] == 1]
 
     x = context_low_dim_left_turn[:, 0]
     y = context_low_dim_left_turn[:, 1]
@@ -254,7 +254,7 @@ def get_arrows(x_cen, y_cen, heading, length, maneuver):
     arr_ST_y_end = y_cen + (0.5 * length + 150) * np.sin(np.deg2rad(heading))
     arr_ST = matplotlib.patches.FancyArrowPatch((arr_ST_x_init, arr_ST_y_init), (arr_ST_x_end, arr_ST_y_end),
                                                 mutation_scale=20,
-                                                facecolor='w',
+                                                facecolor='b',
                                                 edgecolor='k',
                                                 alpha=maneuver[1][0])
 
@@ -290,7 +290,7 @@ def get_arrows(x_cen, y_cen, heading, length, maneuver):
     points.append([points[0][0], points[0][1]])
 
     arr_LT = matplotlib.patches.Polygon(xy=np.asarray(points),
-                                        facecolor='w',
+                                        facecolor='b',
                                         edgecolor='k',
                                         alpha=maneuver[0][0])
 
@@ -325,212 +325,240 @@ def get_arrows(x_cen, y_cen, heading, length, maneuver):
     points.append([points[0][0], points[0][1]])
 
     arr_RT = matplotlib.patches.Polygon(xy=np.asarray(points),
-                                        facecolor='w',
+                                        facecolor='b',
                                         edgecolor='k',
                                         alpha=maneuver[2][0])
 
     return arr_LT, arr_ST, arr_RT
 
 
-scene_id = '1001'
-save_path = 'BEV_visualization\\video_results\\' + scene_id
-os.makedirs(save_path, exist_ok=True)
-landmark, recordingMeta, tracks, tracksMeta, tracksClass = data_load('data/drone_data/', scene_id)
-origin_GT = []
-with open('data/drone_data/' + 'map/' + '1001' + '/csv/LandMark.csv', newline='') as csvfile:
-    spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
-    for row in spamreader:
-        row_mod = row[0].split(',')
-        if row_mod[0] == 'id':
-            pass
-        else:
-            origin_GT.append([float(row_mod[1]), float(row_mod[2])])
-new_tracks = coordinate_conversion(1, tracks, landmark, recordingMeta, origin_GT)
-veh_idx = tracksMeta[(tracksMeta[:, 6] > 0) & (tracksMeta[:, 4] > 0), 1]
+scene_ids = ['1001','1002','1005', '1014', '1016']
+file_ids = ['maneuver_prediction-2022-03-10_04_02_34', 'maneuver_prediction-2022-03-17_07_07_52']
+ckpt = ['model_140.pt', 'model_50.pt']
+for a in range(len(scene_ids)):
+    for b in range(len(file_ids)):
+        scene_id = scene_ids[a]
+        file_id_2 = file_ids[b]
+        weight_2 = ckpt[b]
 
-img_path = 'BEV_visualization\\' + scene_id + '\\images\\' + scene_id + '_'
+        save_path = 'BEV_visualization\\video_results\\' + scene_id + '\\' + file_id_2
+        os.makedirs(save_path, exist_ok=True)
+        landmark, recordingMeta, tracks, tracksMeta, tracksClass = data_load('data/drone_data/', scene_id)
+        origin_GT = []
+        with open('data/drone_data/' + 'map/' + '1001' + '/csv/LandMark.csv', newline='') as csvfile:
+            spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+            for row in spamreader:
+                row_mod = row[0].split(',')
+                if row_mod[0] == 'id':
+                    pass
+                else:
+                    origin_GT.append([float(row_mod[1]), float(row_mod[2])])
+        new_tracks = coordinate_conversion(1, tracks, landmark, recordingMeta, origin_GT)
+        veh_idx = tracksMeta[(tracksMeta[:, 6] > 0) & (tracksMeta[:, 4] > 0), 1]
 
-px2m = recordingMeta[15]
-frame_list = list(tracks[:, 2])
-frame_list = list(dict.fromkeys(frame_list))
-frame_list = ['0' * (4 - len(str(int(frame_list[i]) + 1))) + str(int(frame_list[i]) + 1) for i in range(len(frame_list))]
-hist_time = 2
+        img_path = 'BEV_visualization\\' + scene_id + '\\images\\' + scene_id + '_'
 
-GPU_NUM = config["GPU_id"]
-device = torch.device(f'cuda:{GPU_NUM}' if torch.cuda.is_available() else 'cpu')
-torch.cuda.set_device(device)  # change allocation of current GPU
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# file_id_1 = 'maneuver_prediction-2022-03-10_04_02_34'
-# ckpt_dir_1 = config['ckpt_dir'] + file_id_1
-# weight_1 = 'model_140.pt'
+        px2m = recordingMeta[15]
+        frame_list = list(tracks[:, 2])
+        frame_list = list(dict.fromkeys(frame_list))
+        frame_list = ['0' * (4 - len(str(int(frame_list[i]) + 1))) + str(int(frame_list[i]) + 1) for i in range(len(frame_list))]
+        hist_time = 2
 
-file_id_2 = 'maneuver_prediction-2022-03-17_07_07_52'
-ckpt_dir_2 = config['ckpt_dir'] + file_id_2
-weight_2 = 'model_50.pt'
-warnings.filterwarnings("ignore", category=UserWarning)
+        GPU_NUM = config["GPU_id"]
+        device = torch.device(f'cuda:{GPU_NUM}' if torch.cuda.is_available() else 'cpu')
+        torch.cuda.set_device(device)  # change allocation of current GPU
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # file_id_1 = 'maneuver_prediction-2022-03-10_04_02_34'
+        # ckpt_dir_1 = config['ckpt_dir'] + file_id_1
+        # weight_1 = 'model_140.pt'
 
-config["splicing_num"] = 1
-config["occlusion_rate"] = 0
-config["batch_size"] = 1
-config["LC_multiple"] = 1
-config["LK_multiple"] = 0.1
+        ckpt_dir_2 = config['ckpt_dir'] + file_id_2
+        warnings.filterwarnings("ignore", category=UserWarning)
 
-dataset_train = pred_loader_1(config, 'train', mode='val')
-dataset_val = pred_loader_1(config, 'val', mode='val')
+        config["splicing_num"] = 1
+        config["occlusion_rate"] = 0
+        config["batch_size"] = 1
+        config["LC_multiple"] = 1
+        config["LK_multiple"] = 0.1
 
-dataloader_train = DataLoader(dataset_train,
-                              batch_size=config["batch_size"],
-                              shuffle=True,
-                              collate_fn=collate_fn)
-dataloader_val = DataLoader(dataset_val,
-                            batch_size=config["batch_size"],
-                            shuffle=True,
-                            collate_fn=collate_fn)
+        dataset_train = pred_loader_1(config, 'train', mode='val')
+        dataset_val = pred_loader_1(config, 'val', mode='val')
 
-# model_1 = BackBone(config).cuda()
-# weights = torch.load(ckpt_dir_1 + '/' + weight_1)
-# model_1.load_state_dict(weights['model_state_dict'])
-model_2 = BackBone(config).cuda()
-weights = torch.load(ckpt_dir_2 + '/' + weight_2)
-model_2.load_state_dict(weights['model_state_dict'])
+        dataloader_train = DataLoader(dataset_train,
+                                      batch_size=config["batch_size"],
+                                      shuffle=True,
+                                      collate_fn=collate_fn)
+        dataloader_val = DataLoader(dataset_val,
+                                    batch_size=config["batch_size"],
+                                    shuffle=True,
+                                    collate_fn=collate_fn)
 
-correct_num_tot = 0
-full_length_num_tot = 0
-loss_tot = 0
-loss_calc_num_tot = 0
-epoch_time = time.time()
+        # model_1 = BackBone(config).cuda()
+        # weights = torch.load(ckpt_dir_1 + '/' + weight_1)
+        # model_1.load_state_dict(weights['model_state_dict'])
+        model_2 = BackBone(config).cuda()
+        weights = torch.load(ckpt_dir_2 + '/' + weight_2)
+        model_2.load_state_dict(weights['model_state_dict'])
 
-# [context_bag_train_1, maneuver_bag_train_1] = get_bags(dataloader_train, model_1)
-# [context_bag_val_1, maneuver_bag_val_1] = get_bags(dataloader_val, model_1)
-[context_bag_train_2, maneuver_bag_train_2] = get_bags(dataloader_train, model_2)
-[context_bag_val_2, maneuver_bag_val_2] = get_bags(dataloader_val, model_2)
+        correct_num_tot = 0
+        full_length_num_tot = 0
+        loss_tot = 0
+        loss_calc_num_tot = 0
+        epoch_time = time.time()
 
-# context_bag_tot_1 = [np.concatenate((context_bag_train_1[i], context_bag_val_1[i]))for i in range(len(context_bag_train_1))]
-context_bag_tot_2 = [np.concatenate((context_bag_train_2[i], context_bag_val_2[i])) for i in range(len(context_bag_train_2))]
-# maneuver_bag_tot_1 = [np.concatenate((maneuver_bag_train_1[i], maneuver_bag_val_1[i]))for i in range(len(maneuver_bag_train_1))]
-maneuver_bag_tot_2 = [np.concatenate((maneuver_bag_train_2[i], maneuver_bag_val_2[i])) for i in range(len(maneuver_bag_train_2))]
+        # [context_bag_train_1, maneuver_bag_train_1] = get_bags(dataloader_train, model_1)
+        # [context_bag_val_1, maneuver_bag_val_1] = get_bags(dataloader_val, model_1)
+        [context_bag_train_2, maneuver_bag_train_2] = get_bags(dataloader_train, model_2)
+        [context_bag_val_2, maneuver_bag_val_2] = get_bags(dataloader_val, model_2)
 
-kernel_LT, kernel_ST, kernel_RT, tsne, context_low_dims = get_gaussian_kde(context_bag_tot_2, maneuver_bag_tot_2)
+        # context_bag_tot_1 = [np.concatenate((context_bag_train_1[i], context_bag_val_1[i]))for i in range(len(context_bag_train_1))]
+        context_bag_tot_2 = [np.concatenate((context_bag_train_2[i], context_bag_val_2[i])) for i in range(len(context_bag_train_2))]
+        # maneuver_bag_tot_1 = [np.concatenate((maneuver_bag_train_1[i], maneuver_bag_val_1[i]))for i in range(len(maneuver_bag_train_1))]
+        maneuver_bag_tot_2 = [np.concatenate((maneuver_bag_train_2[i], maneuver_bag_val_2[i])) for i in range(len(maneuver_bag_train_2))]
 
-config["LK_multiple"] = 1
-dataset_train = pred_loader_1(config, 'train', mode='val')
-dataset_val = pred_loader_1(config, 'val', mode='val')
+        kernel_LT, kernel_ST, kernel_RT, tsne, context_low_dims = get_gaussian_kde(context_bag_tot_2, maneuver_bag_tot_2)
 
-dataloader_train = DataLoader(dataset_train,
-                              batch_size=config["batch_size"],
-                              shuffle=True,
-                              collate_fn=collate_fn)
-dataloader_val = DataLoader(dataset_val,
-                            batch_size=config["batch_size"],
-                            shuffle=True,
-                            collate_fn=collate_fn)
+        config["LK_multiple"] = 1
+        dataset_train = pred_loader_1(config, 'train', mode='val')
+        dataset_val = pred_loader_1(config, 'val', mode='val')
 
-plt.figure()
-colors = ['g', 'b', 'c']
-for i in range(3):
-    plt.figure()
+        dataloader_train = DataLoader(dataset_train,
+                                      batch_size=config["batch_size"],
+                                      shuffle=True,
+                                      collate_fn=collate_fn)
+        dataloader_val = DataLoader(dataset_val,
+                                    batch_size=config["batch_size"],
+                                    shuffle=True,
+                                    collate_fn=collate_fn)
 
-    x = context_low_dims[i][:, 0]
-    y = context_low_dims[i][:, 1]
-    xx, yy = np.mgrid[-60:60:100j, -60:80:100j]
-    positions = np.vstack([xx.ravel(), yy.ravel()])
-    values = np.vstack([x, y])
-    kernel = st.gaussian_kde(values)
-    if i == 0:
-        val = kernel(positions).T
-    else:
-        val = val + kernel(positions).T
-
-    f = np.reshape(kernel(positions).T, xx.shape)
-    cfset = plt.contourf(xx, yy, f, cmap='coolwarm', label='Left Turn')
-
-for i in range(3):
-    plt.scatter(context_low_dims[i][:, 0], context_low_dims[i][:, 1], s=2, c=colors[i], label='Left Turn', alpha=0.2)
-
-plt.figure(figsize=(8.1 * 2, 5.4 * 2))
-for i in range(len(frame_list)):
-    print(int(10000 * i / len(frame_list)) / 100)
-    frame = int(frame_list[i]) - 1
-    img = mpimg.imread(img_path + frame_list[i] + '.jpg')
-    vehs = get_veh_in_frame(tracks, frame, px2m, hist_time)
-    x, y = get_veh_polygon(vehs)
-
-    maneuver_kde = []
-    for j in range(len(vehs['id'])):
-        print(vehs['id'][j])
-        traj_network = new_tracks[new_tracks[:, 1] == vehs['id'][j], 4:6]
-        heading_network = new_tracks[new_tracks[:, 1] == vehs['id'][j], 6:7]
-        traj = np.concatenate((traj_network, heading_network), axis=1)
-        traj = traj[:vehs['hist_x_tot'][j].shape[0]]
-        trajectory = torch.from_numpy(traj).unsqueeze(0).cuda().float()
-        traj_length = [trajectory.shape[1]]
-        if traj_length[0] > 4:
-            representation_time_bag_1 = model_2(trajectory, traj_length, mode='val', vis=True)
-            low_dim = tsne.transform(representation_time_bag_1[-1])
-            LT_pdf = kernel_LT.pdf(low_dim)
-            ST_pdf = kernel_ST.pdf(low_dim)
-            RT_pdf = kernel_RT.pdf(low_dim)
-            pdfs = [LT_pdf, ST_pdf, RT_pdf]
-            maneuver_kde.append(pdfs / sum(pdfs))
-        else:
-            maneuver_kde.append([None, None, None])
-
-    arr_LTs, arr_STs, arr_RTs = [], [], []
-    for j in range(len(vehs['id'])):
-        x_cen = vehs['x'][j]
-        y_cen = vehs['y'][j]
-        heading = vehs['heading'][j]
-        length = vehs['length'][j]
-        maneuver = maneuver_kde[j]
-        arr_LT, arr_ST, arr_RT = get_arrows(x_cen, y_cen, heading, length, maneuver)
-        arr_LTs.append(arr_LT)
-        arr_STs.append(arr_ST)
-        arr_RTs.append(arr_RT)
-    #
-    # arr_LT = matplotlib.patches.FancyArrowPatch((arr_LT_1_x_init, arr_LT_1_y_init), (arr_LT_1_x_end, arr_LT_1_y_end),
-    #                                             mutation_scale=20,
-    #                                             facecolor='w',
-    #                                             edgecolor='k',
-    #                                             alpha=1)
+        plt.figure(figsize=(28, 9))
 
 
-    plt.imshow(img)
-    for j in range(len(x)):
-        plt.plot(x[j], y[j], 'k', alpha=0.5)
-        plt.fill(x[j], y[j], 'c', alpha=0.5)
-    for j in range(len(vehs['id'])):
-        hist_traj_x = vehs['hist_x'][j]
-        hist_traj_y = vehs['hist_y'][j]
-        for k in range(len(hist_traj_x) - 1):
-            plt.plot(hist_traj_x[k:k + 2], hist_traj_y[k:k + 2], 'r', alpha=k / (len(hist_traj_x) - 1))
-    for j in range(len(vehs['id'])):
-        plt.gca().add_patch(arr_LTs[j])
-        plt.gca().add_patch(arr_STs[j])
-        plt.gca().add_patch(arr_RTs[j])
+        ax1 = plt.subplot2grid((9, 28), (0, 0), colspan=16, rowspan=9)
+        ax2 = plt.subplot2grid((9, 28), (0, 16), colspan=4, rowspan=4)
+        ax3 = plt.subplot2grid((9, 28), (0, 20), colspan=4, rowspan=4)
+        ax4 = plt.subplot2grid((9, 28), (0, 24), colspan=4, rowspan=4)
+        ax5 = plt.subplot2grid((9, 28), (4, 16), colspan=12, rowspan=5)
 
-    plt.axis('off')
-    plt.ylim([2160, 0])
-    plt.xlim([0, 3840])
+        for i in range(len(frame_list)):
+            ax1.axis('off')
+            ax2.axis('off')
+            ax3.axis('off')
+            ax4.axis('off')
 
-    fig_name = save_path + '\\' + frame_list[i] + '.png'
-    plt.savefig(fig_name, dpi=200)
-    plt.clf()
+            ax2.set_title('Left Turn')
+            ax3.set_title('Go Straight')
+            ax4.set_title('Right Trun')
+            kde_axes = [ax2, ax3, ax4]
+            for ii in range(3):
+                x = context_low_dims[ii][:, 0]
+                y = context_low_dims[ii][:, 1]
+                xx, yy = np.mgrid[-20:20:100j, -20:20:100j]
+                positions = np.vstack([xx.ravel(), yy.ravel()])
+                values = np.vstack([x, y])
+                kernel = st.gaussian_kde(values)
+                if ii == 0:
+                    val = kernel(positions).T
+                else:
+                    val = val + kernel(positions).T
 
-import cv2
-import numpy as np
+                f = np.reshape(kernel(positions).T, xx.shape)
+                cfset = kde_axes[ii].contourf(xx, yy, f, cmap='coolwarm', label='Left Turn')
 
-# choose codec according to format needed
-img_list = glob.glob('BEV_visualization\\video_results\\' + scene_id + '\\*.png')
+            print(int(10000 * i / len(frame_list)) / 100)
+            frame = int(frame_list[i]) - 1
+            img = mpimg.imread(img_path + frame_list[i] + '.jpg')
+            vehs = get_veh_in_frame(tracks, frame, px2m, hist_time)
+            x, y = get_veh_polygon(vehs)
 
-img_array = []
-for filename in img_list:
-    img = cv2.imread(filename)
-    height, width, layers = img.shape
-    size = (width, height)
-    img_array.append(img)
+            maneuver_kde = []
+            for j in range(len(vehs['id'])):
+                traj_network = new_tracks[new_tracks[:, 1] == vehs['id'][j], 4:6]
+                heading_network = new_tracks[new_tracks[:, 1] == vehs['id'][j], 6:7]
+                traj = np.concatenate((traj_network, heading_network), axis=1)
+                traj = traj[:vehs['hist_x_tot'][j].shape[0]]
+                trajectory = torch.from_numpy(traj).unsqueeze(0).cuda().float()
+                traj_length = [trajectory.shape[1]]
+                if traj_length[0] > 4:
+                    with torch.no_grad():
+                        representation_time_bag_1 = model_2(trajectory, traj_length, mode='val', vis=True)
+                    low_dim = tsne.transform(representation_time_bag_1[-1].cpu())
+                    ax2.scatter(low_dim[0][0], low_dim[0][1], c='c', alpha=0.5, s=200)
+                    ax3.scatter(low_dim[0][0], low_dim[0][1], c='c', alpha=0.5, s=200)
+                    ax4.scatter(low_dim[0][0], low_dim[0][1], c='c', alpha=0.5, s=200)
+                    ax2.text(low_dim[0][0], low_dim[0][1], str(int(vehs['id'][j])), ha='center', va='center',color='k', size='small')
+                    ax3.text(low_dim[0][0], low_dim[0][1], str(int(vehs['id'][j])), ha='center', va='center',color='k', size='small')
+                    ax4.text(low_dim[0][0], low_dim[0][1], str(int(vehs['id'][j])), ha='center', va='center',color='k', size='small')
 
-out = cv2.VideoWriter('BEV_visualization\\video_results\\' + scene_id + '\\result.avi', cv2.VideoWriter_fourcc(*'DIVX'), 10, size)
+                    LT_pdf = kernel_LT.pdf(low_dim)
+                    ST_pdf = kernel_ST.pdf(low_dim)
+                    RT_pdf = kernel_RT.pdf(low_dim)
+                    pdfs = [LT_pdf, ST_pdf, RT_pdf]
+                    maneuver_kde.append(pdfs / sum(pdfs))
+                else:
+                    maneuver_kde.append(np.asarray([[0], [0], [0]]))
 
-for i in range(len(img_array)):
-    out.write(img_array[i])
-out.release()
+            arr_LTs, arr_STs, arr_RTs = [], [], []
+            for j in range(len(vehs['id'])):
+                x_cen = vehs['x'][j]
+                y_cen = vehs['y'][j]
+                heading = vehs['heading'][j]
+                length = vehs['length'][j]
+                maneuver = maneuver_kde[j]
+                arr_LT, arr_ST, arr_RT = get_arrows(x_cen, y_cen, heading, length, maneuver)
+                arr_LTs.append(arr_LT)
+                arr_STs.append(arr_ST)
+                arr_RTs.append(arr_RT)
+            #
+            # arr_LT = matplotlib.patches.FancyArrowPatch((arr_LT_1_x_init, arr_LT_1_y_init), (arr_LT_1_x_end, arr_LT_1_y_end),
+            #                                             mutation_scale=20,
+            #                                             facecolor='w',
+            #                                             edgecolor='k',
+            #                                             alpha=1)
+
+            ax1.imshow(img)
+            for j in range(len(x)):
+                ax1.plot(x[j], y[j], 'k', alpha=0.5)
+                ax1.fill(x[j], y[j], 'c', alpha=0.5)
+            for j in range(len(vehs['id'])):
+                hist_traj_x = vehs['hist_x'][j]
+                hist_traj_y = vehs['hist_y'][j]
+                for k in range(len(hist_traj_x) - 1):
+                    ax1.plot(hist_traj_x[k:k + 2], hist_traj_y[k:k + 2], 'r', alpha=k / (len(hist_traj_x) - 1))
+            for j in range(len(vehs['id'])):
+                ax1.add_patch(arr_LTs[j])
+                ax1.add_patch(arr_STs[j])
+                ax1.add_patch(arr_RTs[j])
+                x_cen = vehs['x'][j]
+                y_cen = vehs['y'][j]
+                ax1.text(x_cen, y_cen, str(int(vehs['id'][j])), ha='center', va='center')
+
+            ax1.axis('off')
+            ax1.set_ylim([2160, 0])
+            ax1.set_xlim([0, 3840])
+
+            fig_name = save_path + '\\' + frame_list[i] + '.png'
+            plt.savefig(fig_name, dpi=200)
+            ax1.clear()
+            ax2.clear()
+            ax3.clear()
+            ax4.clear()
+
+        import cv2
+        import numpy as np
+
+        # choose codec according to format needed. ,,
+        img_list = glob.glob('BEV_visualization\\video_results\\' + scene_id + '\\' + file_id_2 + '\\*.png')
+
+        img_array = []
+        for filename in img_list:
+            img = cv2.imread(filename)
+            height, width, layers = img.shape
+            size = (width, height)
+            img_array.append(img)
+
+        out = cv2.VideoWriter('BEV_visualization\\video_results\\' + scene_id + '\\' + file_id_2 + '.mp4', cv2.VideoWriter_fourcc(*'FMP4'), 10, size)
+
+        for i in range(len(img_array)):
+            out.write(img_array[i])
+        out.release()

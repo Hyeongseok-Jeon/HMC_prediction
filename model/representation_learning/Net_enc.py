@@ -119,11 +119,10 @@ class BackBone(nn.Module):
                             start_index = indx_cand[-1]
                             for k in range(int((cur_index - start_index) / 5) + 1):
                                 tmp = trajectory_tmp[0:1, start_index - 4 + 5 * k:start_index - 4 + 5 * (k + 1), :]
-                                noise = torch.normal(0, 0.1, size=(tmp.shape), device=tmp.device)
                                 if k == 0:
-                                    enc_in = tmp + noise
+                                    enc_in = tmp
                                 else:
-                                    enc_in = torch.cat((enc_in, tmp + noise), dim=0)
+                                    enc_in = torch.cat((enc_in, tmp), dim=0)
                             enc_tot.append(enc_in)
                             seg_length.append(enc_in.shape[0])
                         else:
@@ -133,9 +132,9 @@ class BackBone(nn.Module):
                                     tmp = trajectory_tmp[0:1, start_index - 4 + 5 * k:start_index - 4 + 5 * (k + 1), :]
                                     noise = torch.normal(0, 0.1, size=(tmp.shape), device=tmp.device)
                                     if k == 0:
-                                        enc_in = tmp+noise
+                                        enc_in = tmp
                                     else:
-                                        enc_in = torch.cat((enc_in, tmp+noise), dim=0)
+                                        enc_in = torch.cat((enc_in, tmp), dim=0)
                                 enc_tot.append(enc_in)
                                 seg_length.append(enc_in.shape[0])
                 enc_tot_t = torch.cat(enc_tot)
