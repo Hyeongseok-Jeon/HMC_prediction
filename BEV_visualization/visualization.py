@@ -3,7 +3,6 @@ import matplotlib
 matplotlib.use('tkagg')
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-import pandas as pd
 import glob
 import os
 
@@ -11,16 +10,58 @@ from data.drone_data import pred_loader_1, collate_fn
 from torch.utils.data import DataLoader
 from model.representation_learning.config_enc import config
 from model.representation_learning.Net_enc import BackBone
+from model.maneuver_classification.Net_dec import Downstream
+from model.maneuver_classification.config_dec import config as config_dec
 import torch
 import warnings
 import time
 import numpy as np
 from openTSNE import TSNE
-import imageio
 import scipy.stats as st
 import csv
 from scipy.optimize import minimize
 
+
+class Gaussian():
+    '''
+    class for multivariate gaussian distribution
+    '''
+    def __init__(self, mu=0, sigma=0):
+        self.mu = np.atleast_1d(mu)              #turns a scalar into 1D array otherwise preserves the arrray
+        if np.array(sigma).ndim == 0:             #when sigma is scalar
+            self.Sigma = np.atleast_2d(sigma**2)  #turns a scalar into 2D array otherwise preserves the arrray
+        else:
+            self.Sigma = sigma
+
+    def density(self, x):
+        n,d = x.shape
+        xm = (x-self.mu[None,:])
+        normalization = ((2*np.pi)**(-d/2.)) * np.linalg.det(self.Sigma)**(-1/2.)
+        quadratic = np.sum((xm @ np.linalg.inv(self.Sigma)) * xm, axis=1)          #Note the @ sign here denotes matrix multiplication
+        return normalization * np.exp(-.5 *  quadratic)
+
+def plot_density(mu, Sigma, ax=None):                                 #only for 2D case
+    r1 = mu[0]-2*np.sqrt(Sigma[0,0]), mu[0]+2*np.sqrt(Sigma[0,0])     #get the range of x axis in the grid
+    r2 = mu[1]-2*np.sqrt(Sigma[1,1]), mu[1]+2*np.sqrt(Sigma[1,1])     #get the range of y axis in the grid
+    x1, x2 = np.mgrid[r1[0]:r1[1]:.01, r2[0]:r2[1]:.01]               #get the meshgrid
+    x = np.vstack((x1.ravel(), x2.ravel())).T         #flatten it
+    if not ax:
+        ax = plt.gca()                                #if no axes is passed get the current Axes instance on the current figure
+    p = Gaussian(mu,Sigma).density(x)                 #get the probability density values over the grid
+    #ax.set_aspect(1)
+    ax.set_xlim(*r1)
+    ax.set_ylim(*r2)
+    ax.contour(x1, x2, p.reshape(x1.shape))           #plot the contours
+    ax.set_xlabel(r"$x_1$")
+    ax.set_ylabel(r"$x_2$")
+    return ax
+
+def gaussian_estimate(self, x):
+    n, d = x.shape
+    self.mu = np.mean(x, axis=0)
+    xm = x-self.mu
+    self.Sigma = (xm.T @ xm)/n
+Gaussian.estimate = gaussian_estimate
 
 def func(x):
     trans_x = x[0]
@@ -197,10 +238,10 @@ def get_bags(dataloader, model):
         maneuvers = maneuvers[0].numpy()
         trajectory = trajectory.float().cuda()
         with torch.no_grad():
-            representation_time_bag_1 = model(trajectory, traj_length, mode='val', vis=True)
+            representation_time_bag_1 = model(trajectory, traj_length, mode='val')
         if i == 0:
             context_bag_train_1 = [None if repres is None else repres.cpu().detach().numpy() for repres in representation_time_bag_1]
-            maneuver_bag_train_1 = [None if context_bag_train_1[i] is None else np.repeat(maneuvers, 1, axis=0) for i in range(11)]
+            maneuver_bag_train_1 = [None if context_bag_train_1[i] is None else np.repeat(maneuvers, config["val_augmentation"], axis=0) for i in range(11)]
         else:
             for j in range(len(representation_time_bag_1)):
                 if representation_time_bag_1[j] is None:
@@ -208,14 +249,25 @@ def get_bags(dataloader, model):
                 else:
                     if context_bag_train_1[j] is None:
                         context_bag_train_1[j] = representation_time_bag_1[j].cpu().detach().numpy()
-                        maneuver_bag_train_1[j] = np.repeat(maneuvers, 1, axis=0)
+                        maneuver_bag_train_1[j] = np.repeat(maneuvers, config["val_augmentation"], axis=0)
+
                     else:
                         context_bag_train_1[j] = np.concatenate((context_bag_train_1[j], representation_time_bag_1[j].cpu().detach().numpy()), axis=0)
-                        maneuver_bag_train_1[j] = np.concatenate((maneuver_bag_train_1[j], np.repeat(maneuvers, 1, axis=0)), axis=0)
+                        maneuver_bag_train_1[j] = np.concatenate((maneuver_bag_train_1[j], np.repeat(maneuvers, config["val_augmentation"], axis=0)), axis=0)
     return [context_bag_train_1, maneuver_bag_train_1]
 
+def twoD_Gaussian(xdata_tuple, amplitude, xo, yo, sigma_x, sigma_y, theta, offset):
+    (x, y) = xdata_tuple
+    xo = float(xo)
+    yo = float(yo)
+    a = (np.cos(theta)**2)/(2*sigma_x**2) + (np.sin(theta)**2)/(2*sigma_y**2)
+    b = -(np.sin(2*theta))/(4*sigma_x**2) + (np.sin(2*theta))/(4*sigma_y**2)
+    c = (np.sin(theta)**2)/(2*sigma_x**2) + (np.cos(theta)**2)/(2*sigma_y**2)
+    g = offset + amplitude*np.exp( - (a*((x-xo)**2) + 2*b*(x-xo)*(y-yo)
+                        + c*((y-yo)**2)))
+    return g.ravel()
 
-def get_gaussian_kde(context_bag_tot_2, maneuver_bag_tot_2):
+def get_gaussian_kde(context_bag_tot_2, maneuver_bag_tot_2, bandwidth):
     n_components = 2
     tsne_hist_2 = TSNE(n_components=n_components,
                        perplexity=30,
@@ -232,7 +284,7 @@ def get_gaussian_kde(context_bag_tot_2, maneuver_bag_tot_2):
     x = context_low_dim_left_turn[:, 0]
     y = context_low_dim_left_turn[:, 1]
     values = np.vstack([x, y])
-    kernel_LT = st.gaussian_kde(values)
+    kernel_LT = st.gaussian_kde(values, bw_method=bandwidth)
 
     x = context_low_dim_right_turn[:, 0]
     y = context_low_dim_right_turn[:, 1]
@@ -242,9 +294,34 @@ def get_gaussian_kde(context_bag_tot_2, maneuver_bag_tot_2):
     x = context_low_dim_go_straight[:, 0]
     y = context_low_dim_go_straight[:, 1]
     values = np.vstack([x, y])
-    kernel_ST = st.gaussian_kde(values)
+    kernel_ST = st.gaussian_kde(values, bw_method=bandwidth)
 
     return kernel_LT, kernel_ST, kernel_RT, context_tsne_2, [context_low_dim_left_turn, context_low_dim_go_straight, context_low_dim_right_turn]
+
+
+def get_gaussian(context_bag_tot_2, maneuver_bag_tot_2, bandwidth):
+    n_components = 2
+    tsne_hist_2 = TSNE(n_components=n_components,
+                       perplexity=30,
+                       verbose=True)
+    contexts_outlet_2 = context_bag_tot_2[-1]
+    context_tsne_2 = tsne_hist_2.fit(contexts_outlet_2)
+
+    contexts = context_bag_tot_2[-1]
+    context_low_dim = 0.1*context_tsne_2.transform(contexts)
+    context_low_dim_left_turn = context_low_dim[maneuver_bag_tot_2[-1][:, 1] == 1]
+    context_low_dim_go_straight = context_low_dim[maneuver_bag_tot_2[-1][:, 2] == 1]
+    context_low_dim_right_turn = context_low_dim[maneuver_bag_tot_2[-1][:, 3] == 1]
+
+    gaussian_LT = Gaussian()
+    gaussian_LT.estimate(np.asarray(context_low_dim_left_turn))
+
+    gaussian_ST = Gaussian()
+    gaussian_ST.estimate(context_low_dim_go_straight)
+
+    gaussian_RT = Gaussian()
+    gaussian_RT.estimate(context_low_dim_right_turn)
+    return gaussian_LT, gaussian_ST, gaussian_RT, context_tsne_2, [context_low_dim_left_turn, context_low_dim_go_straight, context_low_dim_right_turn]
 
 
 def get_arrows(x_cen, y_cen, heading, length, maneuver):
@@ -253,8 +330,8 @@ def get_arrows(x_cen, y_cen, heading, length, maneuver):
     arr_ST_x_end = x_cen + (0.5 * length + 150) * np.cos(np.deg2rad(heading))
     arr_ST_y_end = y_cen + (0.5 * length + 150) * np.sin(np.deg2rad(heading))
     arr_ST = matplotlib.patches.FancyArrowPatch((arr_ST_x_init, arr_ST_y_init), (arr_ST_x_end, arr_ST_y_end),
-                                                mutation_scale=20,
-                                                facecolor='b',
+                                                mutation_scale=20 / 2.5,
+                                                facecolor='r',
                                                 edgecolor='k',
                                                 alpha=maneuver[1][0])
 
@@ -290,7 +367,7 @@ def get_arrows(x_cen, y_cen, heading, length, maneuver):
     points.append([points[0][0], points[0][1]])
 
     arr_LT = matplotlib.patches.Polygon(xy=np.asarray(points),
-                                        facecolor='b',
+                                        facecolor='r',
                                         edgecolor='k',
                                         alpha=maneuver[0][0])
 
@@ -325,16 +402,87 @@ def get_arrows(x_cen, y_cen, heading, length, maneuver):
     points.append([points[0][0], points[0][1]])
 
     arr_RT = matplotlib.patches.Polygon(xy=np.asarray(points),
-                                        facecolor='b',
+                                        facecolor='r',
                                         edgecolor='k',
                                         alpha=maneuver[2][0])
 
     return arr_LT, arr_ST, arr_RT
 
 
-scene_ids = ['1001','1002','1005', '1014', '1016']
+def seg_check(x, y, traj):
+    center = [1858, 1096]
+    seg1 = [[2142, 598], [2473, 1063]]
+    seg2 = [[1467, 639], [1697, 491]]
+    seg3 = [[1273, 1862], [965, 1401]]
+    seg4 = [[2384, 1491], [2133, 1676]]
+    line1_inter = ((seg1[1][1] - seg1[0][1]) / (seg1[1][0] - seg1[0][0])) * (center[0] - seg1[0][0]) + seg1[0][1] - center[1]
+    line2_inter = ((seg2[1][1] - seg2[0][1]) / (seg2[1][0] - seg2[0][0])) * (center[0] - seg2[0][0]) + seg2[0][1] - center[1]
+    line3_inter = ((seg3[1][1] - seg3[0][1]) / (seg3[1][0] - seg3[0][0])) * (center[0] - seg3[0][0]) + seg3[0][1] - center[1]
+    line4_inter = ((seg4[1][1] - seg4[0][1]) / (seg4[1][0] - seg4[0][0])) * (center[0] - seg4[0][0]) + seg4[0][1] - center[1]
+
+    line1_eval = ((seg1[1][1] - seg1[0][1]) / (seg1[1][0] - seg1[0][0])) * (x - seg1[0][0]) + seg1[0][1] - y
+    line2_eval = ((seg2[1][1] - seg2[0][1]) / (seg2[1][0] - seg2[0][0])) * (x - seg2[0][0]) + seg2[0][1] - y
+    line3_eval = ((seg3[1][1] - seg3[0][1]) / (seg3[1][0] - seg3[0][0])) * (x - seg3[0][0]) + seg3[0][1] - y
+    line4_eval = ((seg4[1][1] - seg4[0][1]) / (seg4[1][0] - seg4[0][0])) * (x - seg4[0][0]) + seg4[0][1] - y
+
+    if line1_inter*line1_eval<0:
+        if traj[-1] > traj[0]:
+            return False
+        else:
+            return True
+    if line2_inter*line2_eval<0:
+        if traj[-1] < traj[0]:
+            return False
+        else:
+            return True
+    if line3_inter*line3_eval<0:
+        if traj[-1] < traj[0]:
+            return False
+        else:
+            return True
+    if line4_inter*line4_eval<0:
+        if traj[-1] > traj[0]:
+            return False
+        else:
+            return True
+    return True
+
+scene_ids = ['1001', '1002', '1005', '1014', '1016']
 file_ids = ['maneuver_prediction-2022-03-10_04_02_34', 'maneuver_prediction-2022-03-17_07_07_52']
+decoder_id = ['decoder_training-2022-03-04_00_47_25']
 ckpt = ['model_140.pt', 'model_50.pt']
+
+file_list = os.listdir(os.getcwd() + '\logs')
+file_list = [x for x in file_list if decoder_id[0] in x]
+
+file_id = file_list[0].split('.')[0]
+
+log_name = os.getcwd() + '\logs/' + file_id +'.log'
+file = open(log_name, 'r')
+lines = file.read().splitlines()
+loss_train = []
+acc_train = []
+loss_val = []
+acc_val = []
+
+for i in range(len(lines)):
+    line = lines[i]
+    if 'Selected Encoder model' in line:
+        idx=line.index('File_id')
+        enc_file_id = line[idx+10:]
+    elif 'Selected Encoder weight' in line:
+        idx = line.index('weight_id')
+        enc_weight_id = line[idx + 12:]
+
+ckpt_dir_1 = config['ckpt_dir'] + file_id
+weight_1 = 'model_300.pt'
+model_1 = Downstream(config_dec).cuda()
+encoder = BackBone(config).cuda()
+weights = torch.load(ckpt_dir_1 + '/' + weight_1)
+weights_enc = torch.load(config['ckpt_dir']+'/'+enc_file_id+'/'+enc_weight_id)
+model_1.load_state_dict(weights['model_state_dict'])
+encoder.load_state_dict(weights_enc['model_state_dict'])
+
 for a in range(len(scene_ids)):
     for b in range(len(file_ids)):
         scene_id = scene_ids[a]
@@ -405,6 +553,7 @@ for a in range(len(scene_ids)):
         loss_tot = 0
         loss_calc_num_tot = 0
         epoch_time = time.time()
+        kde_band_width = 0.7
 
         # [context_bag_train_1, maneuver_bag_train_1] = get_bags(dataloader_train, model_1)
         # [context_bag_val_1, maneuver_bag_val_1] = get_bags(dataloader_val, model_1)
@@ -416,7 +565,9 @@ for a in range(len(scene_ids)):
         # maneuver_bag_tot_1 = [np.concatenate((maneuver_bag_train_1[i], maneuver_bag_val_1[i]))for i in range(len(maneuver_bag_train_1))]
         maneuver_bag_tot_2 = [np.concatenate((maneuver_bag_train_2[i], maneuver_bag_val_2[i])) for i in range(len(maneuver_bag_train_2))]
 
-        kernel_LT, kernel_ST, kernel_RT, tsne, context_low_dims = get_gaussian_kde(context_bag_tot_2, maneuver_bag_tot_2)
+        kernel_LT, kernel_ST, kernel_RT, tsne, kernel_context_low_dims = get_gaussian_kde(context_bag_tot_2, maneuver_bag_tot_2, bandwidth=kde_band_width)
+        gauss_LT, gauss_ST, gauss_RT, tsne, gauss_context_low_dims = get_gaussian(context_bag_tot_2, maneuver_bag_tot_2, bandwidth=kde_band_width)
+        gauss_bag = [gauss_LT, gauss_ST, gauss_RT]
 
         config["LK_multiple"] = 1
         dataset_train = pred_loader_1(config, 'train', mode='val')
@@ -431,39 +582,66 @@ for a in range(len(scene_ids)):
                                     shuffle=True,
                                     collate_fn=collate_fn)
 
-        plt.figure(figsize=(28, 9))
+        plt.figure('kernel', figsize=(48 / 6, 72 / 6))
+        ax0_kernel = plt.subplot2grid((72, 48), (0, 0), colspan=48, rowspan=27)
+        ax1_kernel = plt.subplot2grid((72, 48), (27, 0), colspan=48, rowspan=27)
+        ax2_kernel = plt.subplot2grid((72, 48), (56, 0), colspan=16, rowspan=16)
+        ax3_kernel = plt.subplot2grid((72, 48), (56, 16), colspan=16, rowspan=16)
+        ax4_kernel = plt.subplot2grid((72, 48), (56, 32), colspan=16, rowspan=16)
 
-
-        ax1 = plt.subplot2grid((9, 28), (0, 0), colspan=16, rowspan=9)
-        ax2 = plt.subplot2grid((9, 28), (0, 16), colspan=4, rowspan=4)
-        ax3 = plt.subplot2grid((9, 28), (0, 20), colspan=4, rowspan=4)
-        ax4 = plt.subplot2grid((9, 28), (0, 24), colspan=4, rowspan=4)
-        ax5 = plt.subplot2grid((9, 28), (4, 16), colspan=12, rowspan=5)
+        plt.figure('gauss', figsize=(48 / 6, 72 / 6))
+        ax0_gauss = plt.subplot2grid((72, 48), (0, 0), colspan=48, rowspan=27)
+        ax1_gauss = plt.subplot2grid((72, 48), (27, 0), colspan=48, rowspan=27)
+        ax2_gauss = plt.subplot2grid((72, 48), (56, 0), colspan=16, rowspan=16)
+        ax3_gauss = plt.subplot2grid((72, 48), (56, 16), colspan=16, rowspan=16)
+        ax4_gauss = plt.subplot2grid((72, 48), (56, 32), colspan=16, rowspan=16)
 
         for i in range(len(frame_list)):
-            ax1.axis('off')
-            ax2.axis('off')
-            ax3.axis('off')
-            ax4.axis('off')
+            ax0_kernel.axis('off')
+            ax1_kernel.axis('off')
+            ax2_kernel.axis('off')
+            ax3_kernel.axis('off')
+            ax4_kernel.axis('off')
 
-            ax2.set_title('Left Turn')
-            ax3.set_title('Go Straight')
-            ax4.set_title('Right Trun')
-            kde_axes = [ax2, ax3, ax4]
+            ax0_gauss.axis('off')
+            ax1_gauss.axis('off')
+            ax2_gauss.axis('off')
+            ax3_gauss.axis('off')
+            ax4_gauss.axis('off')
+
+            ax2_kernel.set_title('Left Turn', fontsize=10)
+            ax3_kernel.set_title('Go Straight', fontsize=10)
+            ax4_kernel.set_title('Right Trun', fontsize=10)
+
+            ax2_gauss.set_title('Left Turn', fontsize=10)
+            ax3_gauss.set_title('Go Straight', fontsize=10)
+            ax4_gauss.set_title('Right Trun', fontsize=10)
+
+            kde_axes = [ax2_kernel, ax3_kernel, ax4_kernel]
+            gauss_axes = [ax2_gauss, ax3_gauss, ax4_gauss]
             for ii in range(3):
-                x = context_low_dims[ii][:, 0]
-                y = context_low_dims[ii][:, 1]
-                xx, yy = np.mgrid[-20:20:100j, -20:20:100j]
+                x = kernel_context_low_dims[ii][:, 0]
+                y = kernel_context_low_dims[ii][:, 1]
+                xx, yy = np.mgrid[-70:70:100j, -70:70:100j]
                 positions = np.vstack([xx.ravel(), yy.ravel()])
                 values = np.vstack([x, y])
-                kernel = st.gaussian_kde(values)
+                kernel = st.gaussian_kde(values, bw_method=kde_band_width)
                 if ii == 0:
                     val = kernel(positions).T
                 else:
                     val = val + kernel(positions).T
 
                 f = np.reshape(kernel(positions).T, xx.shape)
+                print(np.sum(f))
                 cfset = kde_axes[ii].contourf(xx, yy, f, cmap='coolwarm', label='Left Turn')
+
+            for ii in range(3):
+                x = gauss_context_low_dims[ii][:, 0]
+                y = gauss_context_low_dims[ii][:, 1]
+                xx, yy = np.mgrid[-7:7:100j, -7:7:100j]
+                x = np.vstack((xx.ravel(), yy.ravel())).T
+                p = Gaussian(gauss_bag[ii].mu, gauss_bag[ii].Sigma).density(x)
+                gauss_axes[ii].contourf(xx, yy, p.reshape(xx.shape),  cmap='coolwarm')  # plot the contours
 
             print(int(10000 * i / len(frame_list)) / 100)
             frame = int(frame_list[i]) - 1
@@ -472,43 +650,98 @@ for a in range(len(scene_ids)):
             x, y = get_veh_polygon(vehs)
 
             maneuver_kde = []
+            maneuver_net = []
+            maneuver_gauss = []
             for j in range(len(vehs['id'])):
-                traj_network = new_tracks[new_tracks[:, 1] == vehs['id'][j], 4:6]
-                heading_network = new_tracks[new_tracks[:, 1] == vehs['id'][j], 6:7]
-                traj = np.concatenate((traj_network, heading_network), axis=1)
-                traj = traj[:vehs['hist_x_tot'][j].shape[0]]
-                trajectory = torch.from_numpy(traj).unsqueeze(0).cuda().float()
-                traj_length = [trajectory.shape[1]]
-                if traj_length[0] > 4:
-                    with torch.no_grad():
-                        representation_time_bag_1 = model_2(trajectory, traj_length, mode='val', vis=True)
-                    low_dim = tsne.transform(representation_time_bag_1[-1].cpu())
-                    ax2.scatter(low_dim[0][0], low_dim[0][1], c='c', alpha=0.5, s=200)
-                    ax3.scatter(low_dim[0][0], low_dim[0][1], c='c', alpha=0.5, s=200)
-                    ax4.scatter(low_dim[0][0], low_dim[0][1], c='c', alpha=0.5, s=200)
-                    ax2.text(low_dim[0][0], low_dim[0][1], str(int(vehs['id'][j])), ha='center', va='center',color='k', size='small')
-                    ax3.text(low_dim[0][0], low_dim[0][1], str(int(vehs['id'][j])), ha='center', va='center',color='k', size='small')
-                    ax4.text(low_dim[0][0], low_dim[0][1], str(int(vehs['id'][j])), ha='center', va='center',color='k', size='small')
+                seg = seg_check(vehs['x'][j], vehs['y'][j], vehs['hist_x'][j])
+                if seg:
+                    traj_network = new_tracks[new_tracks[:, 1] == vehs['id'][j], 4:6]
+                    heading_network = new_tracks[new_tracks[:, 1] == vehs['id'][j], 6:7]
+                    traj = np.concatenate((traj_network, heading_network), axis=1)
+                    traj = traj[:vehs['hist_x_tot'][j].shape[0]]
+                    trajectory = torch.from_numpy(traj).unsqueeze(0).cuda().float()
+                    traj_length = [trajectory.shape[1]]
+                    if traj_length[0] > 4:
+                        with torch.no_grad():
+                            representation_time_bag_1 = model_2(trajectory, traj_length, mode='val', vis=True)
+                            hidden, num_per_batch, trajectory_aug = encoder(trajectory, traj_length, mode='downstream', vis=True)
+                            output = model_1.decoder(hidden[0])[:3]
+                            output = torch.unsqueeze(output, 1).detach().cpu().numpy()
+                        low_dim = tsne.transform(representation_time_bag_1[-1].cpu())
+                        ax2_kernel.scatter(low_dim[0][0], low_dim[0][1], c='c', alpha=0.5, s=200)
+                        ax3_kernel.scatter(low_dim[0][0], low_dim[0][1], c='c', alpha=0.5, s=200)
+                        ax4_kernel.scatter(low_dim[0][0], low_dim[0][1], c='c', alpha=0.5, s=200)
+                        ax2_kernel.text(low_dim[0][0], low_dim[0][1], str(int(vehs['id'][j])), ha='center', va='center', color='k', size='small')
+                        ax3_kernel.text(low_dim[0][0], low_dim[0][1], str(int(vehs['id'][j])), ha='center', va='center', color='k', size='small')
+                        ax4_kernel.text(low_dim[0][0], low_dim[0][1], str(int(vehs['id'][j])), ha='center', va='center', color='k', size='small')
+                        ax2_gauss.scatter(0.1*low_dim[0][0], 0.1*low_dim[0][1], c='c', alpha=0.5, s=200)
+                        ax3_gauss.scatter(0.1*low_dim[0][0], 0.1*low_dim[0][1], c='c', alpha=0.5, s=200)
+                        ax4_gauss.scatter(0.1*low_dim[0][0], 0.1*low_dim[0][1], c='c', alpha=0.5, s=200)
+                        ax2_gauss.text(0.1*low_dim[0][0], 0.1*low_dim[0][1], str(int(vehs['id'][j])), ha='center', va='center', color='k', size='small')
+                        ax3_gauss.text(0.1*low_dim[0][0], 0.1*low_dim[0][1], str(int(vehs['id'][j])), ha='center', va='center', color='k', size='small')
+                        ax4_gauss.text(0.1*low_dim[0][0], 0.1*low_dim[0][1], str(int(vehs['id'][j])), ha='center', va='center', color='k', size='small')
 
-                    LT_pdf = kernel_LT.pdf(low_dim)
-                    ST_pdf = kernel_ST.pdf(low_dim)
-                    RT_pdf = kernel_RT.pdf(low_dim)
-                    pdfs = [LT_pdf, ST_pdf, RT_pdf]
-                    maneuver_kde.append(pdfs / sum(pdfs))
+                        LT_pdf_kernel = kernel_LT.pdf(low_dim)
+                        ST_pdf_kernel = kernel_ST.pdf(low_dim)
+                        RT_pdf_kernel = kernel_RT.pdf(low_dim)
+                        LT_pdf_gauss = gauss_LT.density(0.1*low_dim)
+                        ST_pdf_gauss = gauss_ST.density(0.1*low_dim)
+                        RT_pdf_gauss = gauss_RT.density(0.1*low_dim)
+                        pdfs_kernel = [LT_pdf_kernel, ST_pdf_kernel, RT_pdf_kernel]
+                        pdfs_gauss = [LT_pdf_gauss, ST_pdf_gauss, RT_pdf_gauss]
+                        maneuver_kde.append(pdfs_kernel / sum(pdfs_kernel))
+                        maneuver_gauss.append(np.asarray(pdfs_gauss / sum(pdfs_gauss)))
+                        maneuver_net.append(output)
+                    else:
+                        maneuver_kde.append(np.asarray([[0], [0], [0]]))
+                        maneuver_net.append(np.asarray([[0], [0], [0]]))
+                        maneuver_gauss.append(np.asarray([[0], [0], [0]]))
                 else:
-                    maneuver_kde.append(np.asarray([[0], [0], [0]]))
+                    maneuver_kde.append(None)
+                    maneuver_net.append(None)
+                    maneuver_gauss.append(None)
 
-            arr_LTs, arr_STs, arr_RTs = [], [], []
+            arr_LTs_0, arr_STs_0, arr_RTs_0 = [], [], []
+            arr_LTs_1, arr_STs_1, arr_RTs_1 = [], [], []
+            arr_LTs_0_gauss, arr_STs_0_gauss, arr_RTs_0_gauss = [], [], []
+            arr_LTs_1_gauss, arr_STs_1_gauss, arr_RTs_1_gauss = [], [], []
             for j in range(len(vehs['id'])):
-                x_cen = vehs['x'][j]
-                y_cen = vehs['y'][j]
-                heading = vehs['heading'][j]
-                length = vehs['length'][j]
-                maneuver = maneuver_kde[j]
-                arr_LT, arr_ST, arr_RT = get_arrows(x_cen, y_cen, heading, length, maneuver)
-                arr_LTs.append(arr_LT)
-                arr_STs.append(arr_ST)
-                arr_RTs.append(arr_RT)
+                seg = seg_check(vehs['x'][j], vehs['y'][j], vehs['hist_x'][j])
+                if seg:
+                    x_cen = vehs['x'][j]
+                    y_cen = vehs['y'][j]
+                    heading = vehs['heading'][j]
+                    length = vehs['length'][j]
+                    output = maneuver_net[j]
+                    arr_LT, arr_ST, arr_RT = get_arrows(x_cen, y_cen, heading, length, maneuver_kde[j])
+                    arr_LTs_0.append(arr_LT)
+                    arr_STs_0.append(arr_ST)
+                    arr_RTs_0.append(arr_RT)
+                    arr_LT, arr_ST, arr_RT = get_arrows(x_cen, y_cen, heading, length, output)
+                    arr_LTs_1.append(arr_LT)
+                    arr_STs_1.append(arr_ST)
+                    arr_RTs_1.append(arr_RT)
+                    arr_LT, arr_ST, arr_RT = get_arrows(x_cen, y_cen, heading, length, maneuver_gauss[j])
+                    arr_LTs_0_gauss.append(arr_LT)
+                    arr_STs_0_gauss.append(arr_ST)
+                    arr_RTs_0_gauss.append(arr_RT)
+                    arr_LT, arr_ST, arr_RT = get_arrows(x_cen, y_cen, heading, length, output)
+                    arr_LTs_1_gauss.append(arr_LT)
+                    arr_STs_1_gauss.append(arr_ST)
+                    arr_RTs_1_gauss.append(arr_RT)
+                else:
+                    arr_LTs_0.append(None)
+                    arr_STs_0.append(None)
+                    arr_RTs_0.append(None)
+                    arr_LTs_1.append(None)
+                    arr_STs_1.append(None)
+                    arr_RTs_1.append(None)
+                    arr_LTs_0_gauss.append(None)
+                    arr_STs_0_gauss.append(None)
+                    arr_RTs_0_gauss.append(None)
+                    arr_LTs_1_gauss.append(None)
+                    arr_STs_1_gauss.append(None)
+                    arr_RTs_1_gauss.append(None)
             #
             # arr_LT = matplotlib.patches.FancyArrowPatch((arr_LT_1_x_init, arr_LT_1_y_init), (arr_LT_1_x_end, arr_LT_1_y_end),
             #                                             mutation_scale=20,
@@ -516,39 +749,94 @@ for a in range(len(scene_ids)):
             #                                             edgecolor='k',
             #                                             alpha=1)
 
-            ax1.imshow(img)
+            ax0_kernel.imshow(img)
+            ax1_kernel.imshow(img)
+            ax0_gauss.imshow(img)
+            ax1_gauss.imshow(img)
             for j in range(len(x)):
-                ax1.plot(x[j], y[j], 'k', alpha=0.5)
-                ax1.fill(x[j], y[j], 'c', alpha=0.5)
+                ax0_kernel.plot(x[j], y[j], 'k', alpha=0.5)
+                ax0_kernel.fill(x[j], y[j], 'c', alpha=0.5)
+                ax1_kernel.plot(x[j], y[j], 'k', alpha=0.5)
+                ax1_kernel.fill(x[j], y[j], 'c', alpha=0.5)
+                ax0_gauss.plot(x[j], y[j], 'k', alpha=0.5)
+                ax0_gauss.fill(x[j], y[j], 'c', alpha=0.5)
+                ax1_gauss.plot(x[j], y[j], 'k', alpha=0.5)
+                ax1_gauss.fill(x[j], y[j], 'c', alpha=0.5)
             for j in range(len(vehs['id'])):
                 hist_traj_x = vehs['hist_x'][j]
                 hist_traj_y = vehs['hist_y'][j]
                 for k in range(len(hist_traj_x) - 1):
-                    ax1.plot(hist_traj_x[k:k + 2], hist_traj_y[k:k + 2], 'r', alpha=k / (len(hist_traj_x) - 1))
+                    ax0_kernel.plot(hist_traj_x[k:k + 2], hist_traj_y[k:k + 2], 'r', alpha=k / (len(hist_traj_x) - 1))
+                    ax1_kernel.plot(hist_traj_x[k:k + 2], hist_traj_y[k:k + 2], 'r', alpha=k / (len(hist_traj_x) - 1))
+                    ax0_gauss.plot(hist_traj_x[k:k + 2], hist_traj_y[k:k + 2], 'r', alpha=k / (len(hist_traj_x) - 1))
+                    ax1_gauss.plot(hist_traj_x[k:k + 2], hist_traj_y[k:k + 2], 'r', alpha=k / (len(hist_traj_x) - 1))
+
             for j in range(len(vehs['id'])):
-                ax1.add_patch(arr_LTs[j])
-                ax1.add_patch(arr_STs[j])
-                ax1.add_patch(arr_RTs[j])
-                x_cen = vehs['x'][j]
-                y_cen = vehs['y'][j]
-                ax1.text(x_cen, y_cen, str(int(vehs['id'][j])), ha='center', va='center')
+                seg = seg_check(vehs['x'][j], vehs['y'][j], vehs['hist_x'][j])
+                if seg:
+                    ax0_kernel.add_patch(arr_LTs_0[j])
+                    ax0_kernel.add_patch(arr_STs_0[j])
+                    ax0_kernel.add_patch(arr_RTs_0[j])
+                    ax1_kernel.add_patch(arr_LTs_1[j])
+                    ax1_kernel.add_patch(arr_STs_1[j])
+                    ax1_kernel.add_patch(arr_RTs_1[j])
+                    ax0_gauss.add_patch(arr_LTs_0_gauss[j])
+                    ax0_gauss.add_patch(arr_STs_0_gauss[j])
+                    ax0_gauss.add_patch(arr_RTs_0_gauss[j])
+                    ax1_gauss.add_patch(arr_LTs_1_gauss[j])
+                    ax1_gauss.add_patch(arr_STs_1_gauss[j])
+                    ax1_gauss.add_patch(arr_RTs_1_gauss[j])
+                    x_cen = vehs['x'][j]
+                    y_cen = vehs['y'][j]
+                    ax0_kernel.text(x_cen, y_cen, str(int(vehs['id'][j])), ha='center', va='center', size='x-small')
+                    ax1_kernel.text(x_cen, y_cen, str(int(vehs['id'][j])), ha='center', va='center', size='x-small')
+                    ax0_gauss.text(x_cen, y_cen, str(int(vehs['id'][j])), ha='center', va='center', size='x-small')
+                    ax1_gauss.text(x_cen, y_cen, str(int(vehs['id'][j])), ha='center', va='center', size='x-small')
 
-            ax1.axis('off')
-            ax1.set_ylim([2160, 0])
-            ax1.set_xlim([0, 3840])
+            ax0_kernel.set_ylim([2160, 0])
+            ax0_kernel.set_xlim([0, 3840])
+            ax1_kernel.set_ylim([2160, 0])
+            ax1_kernel.set_xlim([0, 3840])
+            ax0_gauss.set_ylim([2160, 0])
+            ax0_gauss.set_xlim([0, 3840])
+            ax1_gauss.set_ylim([2160, 0])
+            ax1_gauss.set_xlim([0, 3840])
 
-            fig_name = save_path + '\\' + frame_list[i] + '.png'
-            plt.savefig(fig_name, dpi=200)
-            ax1.clear()
-            ax2.clear()
-            ax3.clear()
-            ax4.clear()
+            ax2_kernel.set_xlim([-70, 70])
+            ax2_kernel.set_ylim([-70, 70])
+            ax3_kernel.set_xlim([-70, 70])
+            ax3_kernel.set_ylim([-70, 70])
+            ax4_kernel.set_xlim([-70, 70])
+            ax4_kernel.set_ylim([-70, 70])
+            ax2_gauss.set_xlim([-7, 7])
+            ax2_gauss.set_ylim([-7, 7])
+            ax3_gauss.set_xlim([-7, 7])
+            ax3_gauss.set_ylim([-7, 7])
+            ax4_gauss.set_xlim([-7, 7])
+            ax4_gauss.set_ylim([-7, 7])
+
+            plt.figure('kernel')
+            fig_name = save_path + '\\' + frame_list[i] + '_kernel.png'
+            plt.savefig(fig_name, dpi=100)
+            plt.figure('gauss')
+            fig_name = save_path + '\\' + frame_list[i] + '_gauss.png'
+            plt.savefig(fig_name, dpi=100)
+            ax0_kernel.clear()
+            ax1_kernel.clear()
+            ax2_kernel.clear()
+            ax3_kernel.clear()
+            ax4_kernel.clear()
+            ax0_gauss.clear()
+            ax1_gauss.clear()
+            ax2_gauss.clear()
+            ax3_gauss.clear()
+            ax4_gauss.clear()
 
         import cv2
         import numpy as np
 
         # choose codec according to format needed. ,,
-        img_list = glob.glob('BEV_visualization\\video_results\\' + scene_id + '\\' + file_id_2 + '\\*.png')
+        img_list = glob.glob('BEV_visualization\\video_results\\' + scene_id + '\\' + file_id_2 + '\\*_gauss.png')
 
         img_array = []
         for filename in img_list:
@@ -557,7 +845,22 @@ for a in range(len(scene_ids)):
             size = (width, height)
             img_array.append(img)
 
-        out = cv2.VideoWriter('BEV_visualization\\video_results\\' + scene_id + '\\' + file_id_2 + '.mp4', cv2.VideoWriter_fourcc(*'FMP4'), 10, size)
+        out = cv2.VideoWriter('BEV_visualization\\video_results\\' + scene_id + '\\' + file_id_2 + '_gauss.mp4', cv2.VideoWriter_fourcc(*'FMP4'), 10, size)
+
+        for i in range(len(img_array)):
+            out.write(img_array[i])
+        out.release()
+
+        img_list = glob.glob('BEV_visualization\\video_results\\' + scene_id + '\\' + file_id_2 + '\\*_kernel.png')
+
+        img_array = []
+        for filename in img_list:
+            img = cv2.imread(filename)
+            height, width, layers = img.shape
+            size = (width, height)
+            img_array.append(img)
+
+        out = cv2.VideoWriter('BEV_visualization\\video_results\\' + scene_id + '\\' + file_id_2 + '_kernel.mp4', cv2.VideoWriter_fourcc(*'FMP4'), 10, size)
 
         for i in range(len(img_array)):
             out.write(img_array[i])

@@ -25,58 +25,112 @@ class BackBone(nn.Module):
 
     def forward(self, trajectory, traj_length, mode='train', vis=False):
         if mode == 'downstream':
-            traj_length_aug = []
-            trajectory_aug = []
-            for i in range(len(traj_length)):
-                init_index = torch.randint(traj_length[i] - 5, size=(1,))
-                end_index = torch.randint(init_index.item() + 5, traj_length[i], size=(1,))
-                traj_tmp = trajectory.clone()
-                origin = traj_tmp[i,end_index-1,:2]
-                heading = -trajectory[i, end_index-1, 2]
-                rot = torch.tensor([[torch.cos(torch.deg2rad(heading)), -torch.sin(torch.deg2rad(heading))], [torch.sin(torch.deg2rad(heading)), torch.cos(torch.deg2rad(heading))]], device=trajectory[0].device)
-                traj_tmp[i, :, :2] = traj_tmp[i, :, :2] - origin
-                traj_tmp[i, :, :2] = torch.transpose(torch.mm(rot, torch.transpose(traj_tmp[i, :, :2], 0, 1)), 0, 1)
-                traj_tmp[i, :, 2] = torch.deg2rad(torch.fmod(traj_tmp[i, :, 2] + heading + 720, 360))
-                traj_tmp[i, traj_tmp[i, :, 2] > torch.pi, 2] = traj_tmp[i, traj_tmp[i, :, 2] > torch.pi, 2] - 2 * torch.pi
-                trajectory_aug.append(traj_tmp[i:i + 1, init_index:end_index, :])
-                traj_length_aug.append(trajectory_aug[i].shape[1])
-            # hz2_index.reverse()
-            seg_length = []
-            for i in range(len(traj_length_aug)):
-                hz2_index = []
-                j = 0
-                while True:
-                    idx_cand = int(traj_length_aug[i] - 10 / self.config["hz"] * j)
-                    if idx_cand >= 0:
-                        hz2_index.append(idx_cand)
-                        j = j + 1
-                    else:
-                        break
-                hz2_index.sort()
-                seg_length.append(len(hz2_index) - 1)
-                if i == 0:
-                    for k in range(len(hz2_index) - 1):
-                        if k == 0:
-                            enc_in = trajectory_aug[i][:, hz2_index[k]:hz2_index[k + 1], :]
+            if vis:
+                traj_length_aug = []
+                trajectory_aug = []
+                for i in range(len(traj_length)):
+                    init_index = 0
+                    end_index = traj_length[i]
+                    traj_tmp = trajectory.clone()
+                    origin = traj_tmp[i, end_index - 1, :2]
+                    heading = -trajectory[i, end_index - 1, 2]
+                    rot = torch.tensor([[torch.cos(torch.deg2rad(heading)), -torch.sin(torch.deg2rad(heading))], [torch.sin(torch.deg2rad(heading)), torch.cos(torch.deg2rad(heading))]], device=trajectory[0].device)
+                    traj_tmp[i, :, :2] = traj_tmp[i, :, :2] - origin
+                    traj_tmp[i, :, :2] = torch.transpose(torch.mm(rot, torch.transpose(traj_tmp[i, :, :2], 0, 1)), 0, 1)
+                    traj_tmp[i, :, 2] = torch.deg2rad(torch.fmod(traj_tmp[i, :, 2] + heading + 720, 360))
+                    traj_tmp[i, traj_tmp[i, :, 2] > torch.pi, 2] = traj_tmp[i, traj_tmp[i, :, 2] > torch.pi, 2] - 2 * torch.pi
+                    trajectory_aug.append(traj_tmp[i:i + 1, init_index:end_index, :])
+                    traj_length_aug.append(trajectory_aug[i].shape[1])
+                # hz2_index.reverse()
+                seg_length = []
+                for i in range(len(traj_length_aug)):
+                    hz2_index = []
+                    j = 0
+                    while True:
+                        idx_cand = int(traj_length_aug[i] - 10 / self.config["hz"] * j)
+                        if idx_cand >= 0:
+                            hz2_index.append(idx_cand)
+                            j = j + 1
                         else:
+                            break
+                    hz2_index.sort()
+                    seg_length.append(len(hz2_index) - 1)
+                    if i == 0:
+                        for k in range(len(hz2_index) - 1):
+                            if k == 0:
+                                enc_in = trajectory_aug[i][:, hz2_index[k]:hz2_index[k + 1], :]
+                            else:
+                                enc_in_tmp = trajectory_aug[i][:, hz2_index[k]:hz2_index[k + 1], :]
+                                enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
+                    else:
+                        for k in range(len(hz2_index) - 1):
                             enc_in_tmp = trajectory_aug[i][:, hz2_index[k]:hz2_index[k + 1], :]
                             enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
-                else:
-                    for k in range(len(hz2_index) - 1):
-                        enc_in_tmp = trajectory_aug[i][:, hz2_index[k]:hz2_index[k + 1], :]
-                        enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
-            enc_in = torch.transpose(enc_in, 1, 2)
-            ar_in = self.encoder(enc_in)
-            representation = self.autoregressive(ar_in, seg_length)
+                enc_in = torch.transpose(enc_in, 1, 2)
+                ar_in = self.encoder(enc_in)
+                representation = self.autoregressive(ar_in, seg_length)
 
-            for i in range(len(seg_length)):
-                if i == 0:
-                    repres_batch = representation[i, :seg_length[i], :]
-                else:
-                    repres_batch_tmp = representation[i, :seg_length[i], :]
-                    repres_batch = torch.cat((repres_batch, repres_batch_tmp), axis=0)
+                for i in range(len(seg_length)):
+                    if i == 0:
+                        repres_batch = representation[i, :seg_length[i], :]
+                    else:
+                        repres_batch_tmp = representation[i, :seg_length[i], :]
+                        repres_batch = torch.cat((repres_batch, repres_batch_tmp), axis=0)
 
-            return repres_batch, seg_length, trajectory_aug
+                return repres_batch, seg_length, trajectory_aug
+            else:
+                traj_length_aug = []
+                trajectory_aug = []
+                for i in range(len(traj_length)):
+                    init_index = torch.randint(traj_length[i] - 5, size=(1,))
+                    end_index = torch.randint(init_index.item() + 5, traj_length[i], size=(1,))
+                    traj_tmp = trajectory.clone()
+                    origin = traj_tmp[i,end_index-1,:2]
+                    heading = -trajectory[i, end_index-1, 2]
+                    rot = torch.tensor([[torch.cos(torch.deg2rad(heading)), -torch.sin(torch.deg2rad(heading))], [torch.sin(torch.deg2rad(heading)), torch.cos(torch.deg2rad(heading))]], device=trajectory[0].device)
+                    traj_tmp[i, :, :2] = traj_tmp[i, :, :2] - origin
+                    traj_tmp[i, :, :2] = torch.transpose(torch.mm(rot, torch.transpose(traj_tmp[i, :, :2], 0, 1)), 0, 1)
+                    traj_tmp[i, :, 2] = torch.deg2rad(torch.fmod(traj_tmp[i, :, 2] + heading + 720, 360))
+                    traj_tmp[i, traj_tmp[i, :, 2] > torch.pi, 2] = traj_tmp[i, traj_tmp[i, :, 2] > torch.pi, 2] - 2 * torch.pi
+                    trajectory_aug.append(traj_tmp[i:i + 1, init_index:end_index, :])
+                    traj_length_aug.append(trajectory_aug[i].shape[1])
+                # hz2_index.reverse()
+                seg_length = []
+                for i in range(len(traj_length_aug)):
+                    hz2_index = []
+                    j = 0
+                    while True:
+                        idx_cand = int(traj_length_aug[i] - 10 / self.config["hz"] * j)
+                        if idx_cand >= 0:
+                            hz2_index.append(idx_cand)
+                            j = j + 1
+                        else:
+                            break
+                    hz2_index.sort()
+                    seg_length.append(len(hz2_index) - 1)
+                    if i == 0:
+                        for k in range(len(hz2_index) - 1):
+                            if k == 0:
+                                enc_in = trajectory_aug[i][:, hz2_index[k]:hz2_index[k + 1], :]
+                            else:
+                                enc_in_tmp = trajectory_aug[i][:, hz2_index[k]:hz2_index[k + 1], :]
+                                enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
+                    else:
+                        for k in range(len(hz2_index) - 1):
+                            enc_in_tmp = trajectory_aug[i][:, hz2_index[k]:hz2_index[k + 1], :]
+                            enc_in = torch.cat((enc_in, enc_in_tmp), dim=0)
+                enc_in = torch.transpose(enc_in, 1, 2)
+                ar_in = self.encoder(enc_in)
+                representation = self.autoregressive(ar_in, seg_length)
+
+                for i in range(len(seg_length)):
+                    if i == 0:
+                        repres_batch = representation[i, :seg_length[i], :]
+                    else:
+                        repres_batch_tmp = representation[i, :seg_length[i], :]
+                        repres_batch = torch.cat((repres_batch, repres_batch_tmp), axis=0)
+
+                return repres_batch, seg_length, trajectory_aug
 
         elif mode == 'lanegcn':
             seg_length = traj_length
@@ -132,9 +186,9 @@ class BackBone(nn.Module):
                                     tmp = trajectory_tmp[0:1, start_index - 4 + 5 * k:start_index - 4 + 5 * (k + 1), :]
                                     noise = torch.normal(0, 0.1, size=(tmp.shape), device=tmp.device)
                                     if k == 0:
-                                        enc_in = tmp
+                                        enc_in = tmp + noise
                                     else:
-                                        enc_in = torch.cat((enc_in, tmp), dim=0)
+                                        enc_in = torch.cat((enc_in, tmp + noise), dim=0)
                                 enc_tot.append(enc_in)
                                 seg_length.append(enc_in.shape[0])
                 enc_tot_t = torch.cat(enc_tot)
