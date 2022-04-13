@@ -1,0 +1,2 @@
+maneuver_prediction-2022-03-17_07_07_52_kernel
+- 45초부근에 우회전하는애 굳

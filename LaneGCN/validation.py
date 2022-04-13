@@ -22,6 +22,7 @@ except:
     from LaneGCN.utils import Logger, load_pretrain
 import pandas as pd
 import warnings
+import pickle
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -46,6 +47,7 @@ while True:
             pass
     except:
         pass
+
 
 model_path = result_path + file_id + '/files/'
 '''
@@ -177,8 +179,6 @@ for i, data in tqdm(enumerate(val_loader)):
         elif 'lanegcn_multihead_scoring' in model_name:
             output = net(data, mode='custom', transfer=True, phase='val')
 
-
-
         if 'lanegcn_multihead_scoring' in model_name:
             loss_out = loss(output, data, phase='val')
             post_out = post_process(output, data, phase='val')
@@ -201,6 +201,9 @@ for i, data in tqdm(enumerate(val_loader)):
             post_out_LT['pred_maneuver'] = [post_out['pred_maneuver'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'LEFT']
             post_out_ST['pred_maneuver'] = [post_out['pred_maneuver'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'go_straight']
             post_out_RT['pred_maneuver'] = [post_out['pred_maneuver'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'RIGHT']
+            post_out_LT['representation'] = [post_out['representation'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'LEFT']
+            post_out_ST['representation'] = [post_out['representation'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'go_straight']
+            post_out_RT['representation'] = [post_out['representation'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'RIGHT']
             post_out_LT['gt_maneuver'] = [post_out['gt_maneuver'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'LEFT']
             post_out_ST['gt_maneuver'] = [post_out['gt_maneuver'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'go_straight']
             post_out_RT['gt_maneuver'] = [post_out['gt_maneuver'][j] for j in range(len(post_out['preds'])) if maneuver[j] == 'RIGHT']
@@ -211,6 +214,14 @@ for i, data in tqdm(enumerate(val_loader)):
         post_process.append(metrics_RT, loss_out, post_out_RT)
 
 log = os.path.join(os.path.dirname(os.path.dirname(model_path)), "validation_result")
+with open(os.path.join(os.path.dirname(os.path.dirname(model_path)), "validation_result")+'_LT_log.pickle','wb') as fw:
+    pickle.dump(metrics_LT, fw)
+with open(os.path.join(os.path.dirname(os.path.dirname(model_path)), "validation_result")+'_ST_log.pickle','wb') as fw:
+    pickle.dump(metrics_ST, fw)
+with open(os.path.join(os.path.dirname(os.path.dirname(model_path)), "validation_result")+'_RT_log.pickle','wb') as fw:
+    pickle.dump(metrics_RT, fw)
+with open(os.path.join(os.path.dirname(os.path.dirname(model_path)), "validation_result")+'_TOT_log.pickle','wb') as fw:
+    pickle.dump(metrics_tot, fw)
 sys.stdout = Logger(log)
 
 dt = time.time() - start_time

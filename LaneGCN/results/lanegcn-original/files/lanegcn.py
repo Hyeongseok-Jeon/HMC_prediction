@@ -11,11 +11,17 @@ import time
 import torch
 from torch import Tensor, nn
 from torch.nn import functional as F
+try:
+    from data import ArgoDataset, collate_fn
+    from utils import gpu, to_long, Optimizer, StepLR
+    from layers import Conv1d, Res1d, Linear, LinearRes, Null
 
-from data import ArgoDataset, collate_fn
-from utils import gpu, to_long,  Optimizer, StepLR
+except:
+    from LaneGCN.data import ArgoDataset, collate_fn
+    from LaneGCN.utils import gpu, to_long, Optimizer, StepLR
+    from LaneGCN.layers import Conv1d, Res1d, Linear, LinearRes, Null
 
-from layers import Conv1d, Res1d, Linear, LinearRes, Null
+
 from numpy import float64, ndarray
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 

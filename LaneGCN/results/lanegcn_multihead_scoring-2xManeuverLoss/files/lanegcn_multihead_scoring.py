@@ -248,6 +248,7 @@ class Net(nn.Module):
         actors = self.m2a(actors, actor_idcs, actor_ctrs, nodes, node_idcs, node_ctrs)
         hidden_for_score = actors.clone()
         maneuver_score = self.score(hidden_for_score[torch.cat(target_index)])
+        context = actors[torch.cat(target_index)].clone()
         actors = self.a2a(actors, actor_idcs, actor_ctrs)
 
         left_actors = [actors[actor_idcs[i][0]:actor_idcs[i][-1] + 1] for i in range(len(actor_idcs)) if maneuver_list_copy[i] == 'LEFT']
@@ -296,6 +297,7 @@ class Net(nn.Module):
         out = dict()
         out['score'] = maneuver_score
         out['score_GT'] = maneuver_list_tensor
+        out['representation'] = context
         out['cls'] = [None for _ in range(len(maneuver_list_copy))]
         out['reg'] = [None for _ in range(len(maneuver_list_copy))]
 
@@ -1056,6 +1058,7 @@ class PostProcess(nn.Module):
         post_out["preds"] = [x[0:1].detach().cpu().numpy() for x in out["reg"]]
         post_out["gt_preds"] = [data["gt_preds"][i][0:1].numpy() for i in range(len(data["gt_preds"])) if maneuver_list[i] != 'None']
         post_out["pred_maneuver"] = [np.argmax(out['score'][i].detach().cpu().numpy()) for i in range(out['score'].shape[0])]
+        post_out["representation"] = [out["representation"][i].cpu().numpy() for i in range(len(out["representation"]))]
         post_out["gt_maneuver"] = [out['score_GT'][i].cpu().numpy() for i in range(out['score_GT'].shape[0])]
         post_out["has_preds"] = [data["has_preds"][i][0:1].numpy() for i in range(len(data["has_preds"])) if maneuver_list[i] != 'None']
         return post_out

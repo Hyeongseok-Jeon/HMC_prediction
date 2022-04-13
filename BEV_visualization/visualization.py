@@ -20,7 +20,7 @@ from openTSNE import TSNE
 import scipy.stats as st
 import csv
 from scipy.optimize import minimize
-
+import shutil
 
 class Gaussian():
     '''
@@ -527,7 +527,9 @@ for a in range(len(scene_ids)):
         config["occlusion_rate"] = 0
         config["batch_size"] = 1
         config["LC_multiple"] = 1
-        config["LK_multiple"] = 0.1
+        config["RLC_multiple"] = 0.5
+        config["LLC_multiple"] = 2
+        config["LK_multiple"] = 0.75
 
         dataset_train = pred_loader_1(config, 'train', mode='val')
         dataset_val = pred_loader_1(config, 'val', mode='val')
@@ -817,10 +819,10 @@ for a in range(len(scene_ids)):
 
             plt.figure('kernel')
             fig_name = save_path + '\\' + frame_list[i] + '_kernel.png'
-            plt.savefig(fig_name, dpi=100)
+            plt.savefig(fig_name, dpi=250)
             plt.figure('gauss')
             fig_name = save_path + '\\' + frame_list[i] + '_gauss.png'
-            plt.savefig(fig_name, dpi=100)
+            plt.savefig(fig_name, dpi=250)
             ax0_kernel.clear()
             ax1_kernel.clear()
             ax2_kernel.clear()
@@ -865,3 +867,5 @@ for a in range(len(scene_ids)):
         for i in range(len(img_array)):
             out.write(img_array[i])
         out.release()
+
+        shutil.rmtree('BEV_visualization\\video_results\\' + scene_id + '\\' + file_id_2)

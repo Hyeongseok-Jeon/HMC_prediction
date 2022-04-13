@@ -21,10 +21,25 @@ class pred_loader_1(Dataset):
         for x in glob.glob(self.data_dir + 'maneuver_index/*.npy'):
             file_name = os.path.basename(x)
             maneuver = np.load(self.data_dir + 'maneuver_index/' + file_name)
-            if (maneuver[1] == 1) or (maneuver[3] == 1):
+            if maneuver[1] == 1:
                 for _ in range(config["splicing_num"]):
-                    for _ in range(config["LC_multiple"]):
-                        self.data_list_dup.append(file_name)
+                    if config["LLC_multiple"] > 1:
+                        for _ in range(config["LLC_multiple"]):
+                            self.data_list_dup.append(file_name)
+                    else:
+                        rand = np.random.rand()
+                        if rand < config["LLC_multiple"]:
+                            self.data_list_dup.append(file_name)
+
+            elif maneuver[3] == 1:
+                for _ in range(config["splicing_num"]):
+                    if config["RLC_multiple"] > 1:
+                        for _ in range(config["RLC_multiple"]):
+                            self.data_list_dup.append(file_name)
+                    else:
+                        rand = np.random.rand()
+                        if rand < config["RLC_multiple"]:
+                            self.data_list_dup.append(file_name)
             else:
                 for _ in range(config["splicing_num"]):
                     if config["LK_multiple"] > 1:

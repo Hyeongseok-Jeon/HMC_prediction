@@ -14,3 +14,134 @@ validation result for Right turn validation set
 ************************* Validation, time 2377.70 *************************
 loss 0.5421 0.2012 0.3409, ade1 1.8525, fde1 4.1503, ade 0.9296, fde 1.5833
 
+validation result for total validation set
+************************* Validation, time 1418.87 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.6466, fde1 3.5391, ade 0.8014, fde 1.2285
+
+validation result for left turn validation set
+************************* Validation, time 1418.87 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.8791, fde1 4.2080, ade 0.9857, fde 1.7461
+
+validation result for Go straight validation set
+************************* Validation, time 1418.87 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.5133, fde1 3.1727, ade 0.7153, fde 1.0016
+
+validation result for Right turn validation set
+************************* Validation, time 1418.87 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.8933, fde1 4.2142, ade 0.9241, fde 1.5895
+
+Model is loaded from:  D:\research\HMC_prediction/LaneGCN/results/lanegcn-CPC_backbone-without_pretraining/files\lanegcn.py
+The best epoch is : 38.000.ckpt
+The loaded weight is : 40.000.ckpt
+validation result for total validation set
+************************* Validation, time 1398.51 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.6465, fde1 3.5388, ade 0.8015, fde 1.2284
+
+validation result for left turn validation set
+************************* Validation, time 1398.51 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.8788, fde1 4.2081, ade 0.9857, fde 1.7461
+
+validation result for Go straight validation set
+************************* Validation, time 1398.51 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.5132, fde1 3.1724, ade 0.7153, fde 1.0016
+
+validation result for Right turn validation set
+************************* Validation, time 1398.51 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.8937, fde1 4.2148, ade 0.9241, fde 1.5895
+
+Model is loaded from:  D:\research\HMC_prediction/LaneGCN/results/lanegcn-CPC_backbone-without_pretraining/files\lanegcn.py
+The best epoch is : 38.000.ckpt
+The loaded weight is : 40.000.ckpt
+validation result for total validation set
+************************* Validation, time 1399.18 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.6463, fde1 3.5385, ade 0.8014, fde 1.2284
+
+validation result for left turn validation set
+************************* Validation, time 1399.18 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.8788, fde1 4.2077, ade 0.9854, fde 1.7461
+
+validation result for Go straight validation set
+************************* Validation, time 1399.18 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.5130, fde1 3.1718, ade 0.7153, fde 1.0016
+
+validation result for Right turn validation set
+************************* Validation, time 1399.18 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.8936, fde1 4.2153, ade 0.9241, fde 1.5895
+
+Model is loaded from:  D:\research\HMC_prediction/LaneGCN/results/lanegcn-CPC_backbone-without_pretraining/files\lanegcn.py
+The best epoch is : 38.000.ckpt
+The loaded weight is : 40.000.ckpt
+validation result for total validation set
+************************* Validation, time 1398.01 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.6462, fde1 3.5382, ade 0.8014, fde 1.2284
+
+validation result for left turn validation set
+************************* Validation, time 1398.01 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.8791, fde1 4.2083, ade 0.9857, fde 1.7461
+
+validation result for Go straight validation set
+************************* Validation, time 1398.01 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.5130, fde1 3.1717, ade 0.7153, fde 1.0016
+
+validation result for Right turn validation set
+************************* Validation, time 1398.01 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.8935, fde1 4.2148, ade 0.9241, fde 1.5895
+
+Model is loaded from:  D:\research\HMC_prediction/LaneGCN/results/lanegcn-CPC_backbone-without_pretraining/files\lanegcn.py
+The best epoch is : 38.000.ckpt
+The loaded weight is : 40.000.ckpt
+validation result for total validation set
+************************* Validation, time 1397.95 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.6463, fde1 3.5384, ade 0.8014, fde 1.2284
+
+validation result for left turn validation set
+************************* Validation, time 1397.95 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.8791, fde1 4.2087, ade 0.9857, fde 1.7461
+
+validation result for Go straight validation set
+************************* Validation, time 1397.95 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.5129, fde1 3.1718, ade 0.7153, fde 1.0016
+
+validation result for Right turn validation set
+************************* Validation, time 1397.95 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.8934, fde1 4.2145, ade 0.9241, fde 1.5895
+
+Model is loaded from:  D:\research\HMC_prediction/LaneGCN/results/lanegcn-CPC_backbone-without_pretraining/files\lanegcn.py
+The best epoch is : 38.000.ckpt
+The loaded weight is : 40.000.ckpt
+validation result for total validation set
+************************* Validation, time 1411.59 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.6463, fde1 3.5383, ade 0.8014, fde 1.2284
+
+validation result for left turn validation set
+************************* Validation, time 1411.59 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.8792, fde1 4.2090, ade 0.9857, fde 1.7461
+
+validation result for Go straight validation set
+************************* Validation, time 1411.59 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.5130, fde1 3.1718, ade 0.7153, fde 1.0016
+
+validation result for Right turn validation set
+************************* Validation, time 1411.59 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.8937, fde1 4.2153, ade 0.9241, fde 1.5895
+
+Model is loaded from:  D:\research\HMC_prediction/LaneGCN/results/lanegcn-CPC_backbone-without_pretraining/files\lanegcn.py
+The best epoch is : 38.000.ckpt
+The loaded weight is : 40.000.ckpt
+validation result for total validation set
+************************* Validation, time 1404.23 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.6461, fde1 3.5382, ade 0.8014, fde 1.2284
+
+validation result for left turn validation set
+************************* Validation, time 1404.23 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.8787, fde1 4.2079, ade 0.9856, fde 1.7461
+
+validation result for Go straight validation set
+************************* Validation, time 1404.23 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.5129, fde1 3.1717, ade 0.7153, fde 1.0016
+
+validation result for Right turn validation set
+************************* Validation, time 1404.23 *************************
+loss 0.5485 0.2043 0.3442, ade1 1.8935, fde1 4.2147, ade 0.9241, fde 1.5895
+
+Out[9]: 'D:\\research\\HMC_prediction/LaneGCN/results/lanegcn_multihead_scoring-ActorNet/files/'
