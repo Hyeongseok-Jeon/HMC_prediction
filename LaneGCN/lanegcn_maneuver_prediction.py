@@ -80,6 +80,8 @@ config["preprocess_val"] = os.path.join(
 )
 config['preprocess_test'] = os.path.join(root_path, "dataset", 'preprocess', 'test_test.p')
 config['sampling_aug'] = 'undersample'
+# config['sampling_aug'] = 'oversample'
+
 """Model"""
 config["n_hidden_after_deconv"] = 256
 config["max_pred_time"] = 5
