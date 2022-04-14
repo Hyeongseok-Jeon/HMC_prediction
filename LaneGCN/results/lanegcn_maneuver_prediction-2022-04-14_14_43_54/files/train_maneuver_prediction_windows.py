@@ -55,6 +55,9 @@ parser.add_argument(
 parser.add_argument(
     "--weight", default="", type=str, metavar="WEIGHT", help="checkpoint path"
 )
+parser.add_argument(
+    "--data_aug", default="under", type=str, metavar="WEIGHT", help="checkpoint path"
+)
 
 parser.add_argument("--port")
 
@@ -124,6 +127,7 @@ def main():
 
     # Data loader for training
     dataset = Dataset(config["train_split"], config, train=True)
+    config = dataset.config
     train_loader = DataLoader(
         dataset,
         batch_size=config["batch_size"],
@@ -152,7 +156,7 @@ def main():
 def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=None):
     net.train()
 
-    num_batches = len(val_loader)
+    num_batches = len(train_loader)
     epoch_per_batch = 1.0 / num_batches
     save_iters = int(np.ceil(config["save_freq"] * num_batches))
     display_iters = int(
@@ -162,7 +166,7 @@ def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=
 
     start_time = time.time()
     metrics = dict()
-    for i, data in tqdm(enumerate(val_loader)):
+    for i, data in tqdm(enumerate(train_loader)):
         epoch += epoch_per_batch
         data = dict(data)
 

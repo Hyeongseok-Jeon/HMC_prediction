@@ -79,6 +79,8 @@ config["preprocess_val"] = os.path.join(
     root_path, "dataset", "preprocess", "val_crs_dist6_angle90.p"
 )
 config['preprocess_test'] = os.path.join(root_path, "dataset", 'preprocess', 'test_test.p')
+config['sampling_aug'] = 'undersample'
+# config['sampling_aug'] = 'oversample'
 
 """Model"""
 config["n_hidden_after_deconv"] = 256
@@ -948,32 +950,9 @@ class PostProcess(nn.Module):
         self.val_maneuver = pd.read_csv(os.path.dirname(config['preprocess_train']) + '/val_data.csv')
 
     def forward(self, out, data, phase='train'):
-        maneuver_list = []
-        for i in range(len(data['file_name'])):
-            file_name = str(data['file_name'][i]) + '.csv'
-            if phase == 'train':
-                data_frame = self.train_maneuver[self.train_maneuver['file name'] == file_name]['target maneuver']
-            elif phase == 'val':
-                data_frame = self.val_maneuver[self.val_maneuver['file name'] == file_name]['target maneuver']
-            if len(data_frame) == 0:
-                maneuver_list.append('None')
-            else:
-                man = data_frame.reset_index()['target maneuver'][0]
-                if man == 'LEFT':
-                    maneuver_list.append('LEFT')
-                elif man == 'RIGHT':
-                    maneuver_list.append('RIGHT')
-                elif man == 'go_straight' or man == 'left_lane_change' or man == 'right_lane_change':
-                    maneuver_list.append('STRAIGHT')
-                else:
-                    maneuver_list.append('None')
-
         post_out = dict()
-        post_out["preds"] = [x[0:1].detach().cpu().numpy() for x in out["reg"]]
-        post_out["gt_preds"] = [data["gt_preds"][i][0:1].numpy() for i in range(len(data["gt_preds"])) if maneuver_list[i] != 'None']
         post_out["pred_maneuver"] = [np.argmax(out['score'][i].detach().cpu().numpy()) for i in range(out['score'].shape[0])]
         post_out["gt_maneuver"] = [out['score_GT'][i].cpu().numpy() for i in range(out['score_GT'].shape[0])]
-        post_out["has_preds"] = [data["has_preds"][i][0:1].numpy() for i in range(len(data["has_preds"])) if maneuver_list[i] != 'None']
         return post_out
 
     def append(self, metrics: Dict, loss_out: Dict, post_out: Optional[Dict[str, List[ndarray]]] = None) -> Dict:
