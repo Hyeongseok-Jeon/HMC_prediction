@@ -21,106 +21,16 @@ sys.path.append(root)
 from argoverse_api.argoverse.data_loading.argoverse_forecasting_loader import ArgoverseForecastingLoader
 from argoverse_api.argoverse.map_representation.map_api import ArgoverseMap
 from skimage.transform import rotate
-import random
+
 
 class ArgoDataset(Dataset):
     def __init__(self, split, config, train=True):
         self.config = config
         self.train = train
-        self.train_maneuver = pd.read_csv(os.path.dirname(config['preprocess_train']) + '/train_data.csv')
-        ST_LK_train = sum(self.train_maneuver['target maneuver'] == 'go_straight')
-        ST_LCL_train = sum(self.train_maneuver['target maneuver'] == 'left_lane_change')
-        ST_LCR_train = sum(self.train_maneuver['target maneuver'] == 'right_lane_change')
-        ST_train = ST_LK_train + ST_LCL_train + ST_LCR_train
-        LT_train = sum(self.train_maneuver['target maneuver'] == 'LEFT')
-        RT_train = sum(self.train_maneuver['target maneuver'] == 'RIGHT')
-        self.val_maneuver = pd.read_csv(os.path.dirname(config['preprocess_train']) + '/val_data.csv')
-        ST_LK_val = sum(self.val_maneuver['target maneuver'] == 'go_straight')
-        ST_LCL_val = sum(self.val_maneuver['target maneuver'] == 'left_lane_change')
-        ST_LCR_val = sum(self.val_maneuver['target maneuver'] == 'right_lane_change')
-        ST_val = ST_LK_val + ST_LCL_val + ST_LCR_val
-        LT_val = sum(self.val_maneuver['target maneuver'] == 'LEFT')
-        RT_val = sum(self.val_maneuver['target maneuver'] == 'RIGHT')
 
         if 'preprocess' in config and config['preprocess']:
             if train:
-                split = np.load(self.config['preprocess_train'], allow_pickle=True)
-                if config['sampling_aug'] == None:
-                    self.split = split
-                else:
-                    self.split = []
-                    if config['sampling_aug'] == 'oversample':
-                        for i in range(len(split)):
-                            file_name = str(split[i]['file_name']) + '.csv'
-                            data_frame = self.train_maneuver[self.train_maneuver['file name'] == file_name]['target maneuver']
-                            if len(data_frame) > 0:
-                                man = data_frame.reset_index()['target maneuver'][0]
-                                if man == 'LEFT':
-                                    aug = ST_train/LT_train
-                                    for j in range(int(aug)):
-                                        data = split[i]
-                                        data['idx'] = len(self.split)
-                                        self.split.append(data)
-                                    if random.random() < aug - int(aug):
-                                        data = split[i]
-                                        data['idx'] = len(self.split)
-                                        self.split.append(data)
-                                elif man == 'RIGHT':
-                                    aug = ST_train / RT_train
-                                    for j in range(int(aug)):
-                                        data = split[i]
-                                        data['idx'] = len(self.split)
-                                        self.split.append(data)
-                                    if random.random() < aug - int(aug):
-                                        data = split[i]
-                                        data['idx'] = len(self.split)
-                                        self.split.append(data)
-                                elif man == 'go_straight' or man == 'left_lane_change' or man == 'right_lane_change':
-                                    data = split[i]
-                                    data['idx'] = len(self.split)
-                                    self.split.append(data)
-                        self.config['display_iters'] = len(self.split)
-                        self.config['val_iters'] = 2*len(self.split)
-
-                    elif config['sampling_aug'] == 'undersample':
-                        for i in range(len(split)):
-                            file_name = str(split[i]['file_name']) + '.csv'
-                            data_frame = self.train_maneuver[self.train_maneuver['file name'] == file_name]['target maneuver']
-                            if len(data_frame) > 0:
-                                man = data_frame.reset_index()['target maneuver'][0]
-                                if man == 'LEFT':
-                                    aug = min(LT_train, ST_train, RT_train)/LT_train
-                                    for j in range(int(aug)):
-                                        data = split[i]
-                                        data['idx'] = len(self.split)
-                                        self.split.append(data)
-                                    if random.random() < aug - int(aug):
-                                        data = split[i]
-                                        data['idx'] = len(self.split)
-                                        self.split.append(data)
-                                elif man == 'RIGHT':
-                                    aug = min(LT_train, ST_train, RT_train)/RT_train
-                                    for j in range(int(aug)):
-                                        data = split[i]
-                                        data['idx'] = len(self.split)
-                                        self.split.append(data)
-                                    if random.random() < aug - int(aug):
-                                        data = split[i]
-                                        data['idx'] = len(self.split)
-                                        self.split.append(data)
-                                elif man == 'go_straight' or man == 'left_lane_change' or man == 'right_lane_change':
-                                    aug = min(LT_train, ST_train, RT_train) / ST_train
-                                    for j in range(int(aug)):
-                                        data = split[i]
-                                        data['idx'] = len(self.split)
-                                        self.split.append(data)
-                                    if random.random() < aug - int(aug):
-                                        data = split[i]
-                                        data['idx'] = len(self.split)
-                                        self.split.append(data)
-                        self.config['display_iters'] = len(self.split)
-                        self.config['val_iters'] = 2*len(self.split)
-
+                self.split = np.load(self.config['preprocess_train'], allow_pickle=True)
             else:
                 self.split = np.load(self.config['preprocess_val'], allow_pickle=True)
         else:
