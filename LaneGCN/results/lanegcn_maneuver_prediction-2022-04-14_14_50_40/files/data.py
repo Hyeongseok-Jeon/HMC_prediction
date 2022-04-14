@@ -51,6 +51,7 @@ class ArgoDataset(Dataset):
                     self.split = []
                     if config['sampling_aug'] == 'oversample':
                         for i in range(len(split)):
+                            print(i/len(split))
                             file_name = str(split[i]['file_name']) + '.csv'
                             data_frame = self.train_maneuver[self.train_maneuver['file name'] == file_name]['target maneuver']
                             if len(data_frame) > 0:
@@ -84,6 +85,7 @@ class ArgoDataset(Dataset):
 
                     elif config['sampling_aug'] == 'undersample':
                         for i in range(len(split)):
+                            print(i/len(split))
                             file_name = str(split[i]['file_name']) + '.csv'
                             data_frame = self.train_maneuver[self.train_maneuver['file name'] == file_name]['target maneuver']
                             if len(data_frame) > 0:

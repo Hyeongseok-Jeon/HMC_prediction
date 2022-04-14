@@ -16,12 +16,12 @@ import pandas as pd
 try:
     from data import ArgoDataset, collate_fn
     from utils import gpu, to_long, Optimizer, StepLR
-    from layers import Conv1d, Res1d, Linear, LinearRes, Null, Man_scorer
+    from layers import Conv1d, Res1d, Linear, LinearRes, Null
 
 except:
     from LaneGCN.data import ArgoDataset, collate_fn
     from LaneGCN.utils import gpu, to_long, Optimizer, StepLR
-    from LaneGCN.layers import Conv1d, Res1d, Linear, LinearRes, Null, Man_scorer
+    from LaneGCN.layers import Conv1d, Res1d, Linear, LinearRes, Null
 
 from numpy import float64, ndarray
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
@@ -79,9 +79,6 @@ config["preprocess_val"] = os.path.join(
     root_path, "dataset", "preprocess", "val_crs_dist6_angle90.p"
 )
 config['preprocess_test'] = os.path.join(root_path, "dataset", 'preprocess', 'test_test.p')
-config['sampling_aug'] = None
-# config['sampling_aug'] = 'undersample'
-# config['sampling_aug'] = 'oversample'
 
 """Model"""
 config["n_hidden_after_deconv"] = 256
@@ -106,8 +103,6 @@ config["mgn"] = 0.2
 config["cls_th"] = 2.0
 config["cls_ignore"] = 0.2
 
-config["n_linear_layer"] = 4
-config["n_hidden_after_deconv"] = 128
 
 ### end of config ###
 
@@ -115,19 +110,19 @@ class Net(nn.Module):
     """
     Lane Graph Network contains following components:
         1. ActorNet: a 1D CNN to process the trajectory input
-        2. MapNet: LaneGraphCNN to learn structured map representations
+        2. MapNet: LaneGraphCNN to learn structured map representations 
            from vectorized map data
-        3. Actor-Map Fusion Cycle: fuse the information between actor nodes
+        3. Actor-Map Fusion Cycle: fuse the information between actor nodes 
            and lane nodes:
-            a. A2M: introduces real-time traffic information to
+            a. A2M: introduces real-time traffic information to 
                 lane nodes, such as blockage or usage of the lanes
-            b. M2M:  updates lane node features by propagating the
+            b. M2M:  updates lane node features by propagating the 
                 traffic information over lane graphs
-            c. M2A: fuses updated map features with real-time traffic
+            c. M2A: fuses updated map features with real-time traffic 
                 information back to actors
             d. A2A: handles the interaction between actors and produces
                 the output actor features
-        4. PredNet: prediction header for motion forecasting using
+        4. PredNet: prediction header for motion forecasting using 
            feature from A2A
     """
 
@@ -139,7 +134,6 @@ class Net(nn.Module):
         self.mapping = nn.Linear(config["n_hidden_after_deconv"], config["n_actor"])
         self.actor_net = ActorNet(config)
         self.map_net = MapNet(config)
-        self.score = Man_scorer(config)
 
         self.a2m = A2M(config)
         self.m2m = M2M(config)
@@ -176,21 +170,7 @@ class Net(nn.Module):
         maneuver_list_copy = [x for x in maneuver_list_copy if x != 'None']
         # construct actor feature
         actors, actor_idcs = actor_gather(gpu([data["feats"][i] for i in range(len(maneuver_list)) if maneuver_list[i] != 'None']))
-        target_index = [x[0:1] for x in actor_idcs]
         actor_ctrs = gpu([data["ctrs"][i] for i in range(len(maneuver_list)) if maneuver_list[i] != 'None'])
-        for i in range(len(maneuver_list_copy)):
-            if maneuver_list_copy[i] == 'LEFT':
-                maneuver_array = torch.tensor([[1, 0, 0]], device=actor_idcs[0].device)
-            elif maneuver_list_copy[i] == 'STRAIGHT':
-                maneuver_array = torch.tensor([[0, 1, 0]], device=actor_idcs[0].device)
-            elif maneuver_list_copy[i] == 'RIGHT':
-                maneuver_array = torch.tensor([[0, 0, 1]], device=actor_idcs[0].device)
-
-            if i == 0:
-                maneuver_list_tensor =maneuver_array
-            else:
-                maneuver_list_tensor = torch.cat((maneuver_list_tensor, maneuver_array), dim=0)
-
         if mode == 'official':
             actors = self.actor_net(actors)
         elif mode == 'custom':
@@ -245,18 +225,76 @@ class Net(nn.Module):
         graph = graph_gather(to_long(gpu([data["graph"][i] for i in range(len(maneuver_list)) if maneuver_list[i] != 'None'])))
         nodes, node_idcs, node_ctrs = self.map_net(graph)
 
-        # actor-map fusion cycle
+        # actor-map fusion cycle 
         nodes = self.a2m(nodes, graph, actors, actor_idcs, actor_ctrs)
         nodes = self.m2m(nodes, graph)
         actors = self.m2a(actors, actor_idcs, actor_ctrs, nodes, node_idcs, node_ctrs)
-        hidden_for_score = actors.clone()
-        maneuver_score = self.score(hidden_for_score[torch.cat(target_index)])
+        actors = self.a2a(actors, actor_idcs, actor_ctrs)
+
+        left_actors = [actors[actor_idcs[i][0]:actor_idcs[i][-1] + 1] for i in range(len(actor_idcs)) if maneuver_list_copy[i] == 'LEFT']
+        left_idx = [i for i in range(len(actor_idcs)) if maneuver_list_copy[i] == 'LEFT']
+        right_actors = [actors[actor_idcs[i][0]:actor_idcs[i][-1] + 1] for i in range(len(actor_idcs)) if maneuver_list_copy[i] == 'RIGHT']
+        right_idx = [i for i in range(len(actor_idcs)) if maneuver_list_copy[i] == 'RIGHT']
+        straight_actors = [actors[actor_idcs[i][0]:actor_idcs[i][-1] + 1] for i in range(len(actor_idcs)) if maneuver_list_copy[i] == 'STRAIGHT']
+        straight_idx = [i for i in range(len(actor_idcs)) if maneuver_list_copy[i] == 'STRAIGHT']
+
+        if len(left_idx) > 0:
+            left_actors_cat = torch.cat(left_actors)
+            left_actor_idcs_cat = []
+            for i in left_idx:
+                if i == left_idx[0]:
+                    idcs_local = torch.arange(len(actor_idcs[i]), dtype=torch.int64, device=actor_idcs[0].device)
+                else:
+                    idcs_local = torch.arange(left_actor_idcs_cat[-1][-1]+1, len(actor_idcs[i])+left_actor_idcs_cat[-1][-1]+1, dtype=torch.int64, device=actor_idcs[0].device)
+                left_actor_idcs_cat.append(idcs_local)
+            left_actor_ctrs_cat = [actor_ctrs[i] for i in left_idx]
+            out_left = self.pred_net_LT(left_actors_cat, left_actor_idcs_cat, left_actor_ctrs_cat)
+
+        if len(right_idx) > 0:
+            right_actors_cat = torch.cat(right_actors)
+            right_actor_idcs_cat = []
+            for i in right_idx:
+                if i == right_idx[0]:
+                    idcs_local = torch.arange(len(actor_idcs[i]), dtype=torch.int64, device=actor_idcs[0].device)
+                else:
+                    idcs_local = torch.arange(right_actor_idcs_cat[-1][-1] + 1, len(actor_idcs[i]) + right_actor_idcs_cat[-1][-1] + 1, dtype=torch.int64, device=actor_idcs[0].device)
+                right_actor_idcs_cat.append(idcs_local)
+            right_actor_ctrs_cat = [actor_ctrs[i] for i in right_idx]
+            out_right = self.pred_net_RT(right_actors_cat, right_actor_idcs_cat, right_actor_ctrs_cat)
+        if len(straight_idx) > 0:
+            straight_actors_cat = torch.cat(straight_actors)
+            straight_actor_idcs_cat = []
+            for i in straight_idx:
+                if i == straight_idx[0]:
+                    idcs_local = torch.arange(len(actor_idcs[i]), dtype=torch.int64, device=actor_idcs[0].device)
+                else:
+                    idcs_local = torch.arange(straight_actor_idcs_cat[-1][-1] + 1, len(actor_idcs[i]) + straight_actor_idcs_cat[-1][-1] + 1, dtype=torch.int64, device=actor_idcs[0].device)
+                straight_actor_idcs_cat.append(idcs_local)
+            straight_actor_ctrs_cat = [actor_ctrs[i] for i in straight_idx]
+            out_straight = self.pred_net_LK(straight_actors_cat, straight_actor_idcs_cat, straight_actor_ctrs_cat)
 
         # prediction
         out = dict()
-        out['score'] = maneuver_score
-        out['score_GT'] = maneuver_list_tensor
+        out['cls'] = [None for _ in range(len(maneuver_list_copy))]
+        out['reg'] = [None for _ in range(len(maneuver_list_copy))]
 
+        for i in range(len(left_idx)):
+            out['cls'][left_idx[i]] = out_left['cls'][i]
+            out['reg'][left_idx[i]] = out_left['reg'][i]
+        for i in range(len(right_idx)):
+            out['cls'][right_idx[i]] = out_right['cls'][i]
+            out['reg'][right_idx[i]] = out_right['reg'][i]
+        for i in range(len(straight_idx)):
+            out['cls'][straight_idx[i]] = out_straight['cls'][i]
+            out['reg'][straight_idx[i]] = out_straight['reg'][i]
+
+        rot, orig = gpu([data["rot"][i] for i in range(len(maneuver_list)) if maneuver_list[i] != 'None']), gpu([data["orig"][i] for i in range(len(maneuver_list)) if maneuver_list[i] != 'None'])
+
+        # transform prediction to world coordinates
+        for i in range(len(out["reg"])):
+            out["reg"][i] = torch.matmul(out["reg"][i], rot[i]) + orig[i].view(
+                1, 1, 1, -1
+            )
         return out
 
 
@@ -932,14 +970,32 @@ class Loss(nn.Module):
         self.pred_loss = PredLoss(config)
         self.train_maneuver = pd.read_csv(os.path.dirname(config['preprocess_train']) + '/train_data.csv')
         self.val_maneuver = pd.read_csv(os.path.dirname(config['preprocess_train']) + '/val_data.csv')
-        self.loss_mean = nn.CrossEntropyLoss(reduction='sum')
 
     def forward(self, out: Dict, data: Dict, phase='train') -> Dict:
-        class_loss = self.loss_mean(out['score'], torch.argmax(out['score_GT'], dim=1))
-        loss_out = dict()
-        loss_out['loss_maneuver'] = class_loss
-        loss_out['num_maneuver'] = out['score'].shape[0]
-        loss_out["loss"] = loss_out["loss_maneuver"] / (loss_out["num_maneuver"] + 1e-10)
+        maneuver_list = []
+        for i in range(len(data['file_name'])):
+            file_name = str(data['file_name'][i]) + '.csv'
+            if phase == 'train':
+                data_frame = self.train_maneuver[self.train_maneuver['file name'] == file_name]['target maneuver']
+            elif phase == 'val':
+                data_frame = self.val_maneuver[self.val_maneuver['file name'] == file_name]['target maneuver']
+            if len(data_frame) == 0:
+                maneuver_list.append('None')
+            else:
+                man = data_frame.reset_index()['target maneuver'][0]
+                if man == 'LEFT':
+                    maneuver_list.append('LEFT')
+                elif man == 'RIGHT':
+                    maneuver_list.append('RIGHT')
+                elif man == 'go_straight' or man == 'left_lane_change' or man == 'right_lane_change':
+                    maneuver_list.append('STRAIGHT')
+                else:
+                    maneuver_list.append('None')
+
+        loss_out = self.pred_loss(out, gpu([data["gt_preds"][i] for i in range(len(maneuver_list)) if maneuver_list[i] != 'None']), gpu([data["has_preds"][i] for i in range(len(maneuver_list)) if maneuver_list[i] != 'None']))
+        loss_out["loss"] = loss_out["cls_loss"] / (
+                loss_out["num_cls"] + 1e-10
+        ) + loss_out["reg_loss"] / (loss_out["num_reg"] + 1e-10)
         return loss_out
 
 
@@ -951,9 +1007,30 @@ class PostProcess(nn.Module):
         self.val_maneuver = pd.read_csv(os.path.dirname(config['preprocess_train']) + '/val_data.csv')
 
     def forward(self, out, data, phase='train'):
+        maneuver_list = []
+        for i in range(len(data['file_name'])):
+            file_name = str(data['file_name'][i]) + '.csv'
+            if phase == 'train':
+                data_frame = self.train_maneuver[self.train_maneuver['file name'] == file_name]['target maneuver']
+            elif phase == 'val':
+                data_frame = self.val_maneuver[self.val_maneuver['file name'] == file_name]['target maneuver']
+            if len(data_frame) == 0:
+                maneuver_list.append('None')
+            else:
+                man = data_frame.reset_index()['target maneuver'][0]
+                if man == 'LEFT':
+                    maneuver_list.append('LEFT')
+                elif man == 'RIGHT':
+                    maneuver_list.append('RIGHT')
+                elif man == 'go_straight' or man == 'left_lane_change' or man == 'right_lane_change':
+                    maneuver_list.append('STRAIGHT')
+                else:
+                    maneuver_list.append('None')
+
         post_out = dict()
-        post_out["pred_maneuver"] = [np.argmax(out['score'][i].detach().cpu().numpy()) for i in range(out['score'].shape[0])]
-        post_out["gt_maneuver"] = [out['score_GT'][i].cpu().numpy() for i in range(out['score_GT'].shape[0])]
+        post_out["preds"] = [x[0:1].detach().cpu().numpy() for x in out["reg"]]
+        post_out["gt_preds"] = [data["gt_preds"][i][0:1].numpy() for i in range(len(data["gt_preds"])) if maneuver_list[i] != 'None']
+        post_out["has_preds"] = [data["has_preds"][i][0:1].numpy() for i in range(len(data["has_preds"])) if maneuver_list[i] != 'None']
         return post_out
 
     def append(self, metrics: Dict, loss_out: Dict, post_out: Optional[Dict[str, List[ndarray]]] = None) -> Dict:
@@ -987,47 +1064,18 @@ class PostProcess(nn.Module):
                 % dt
             )
 
-        maneuver_loss = metrics["loss_maneuver"] / (metrics["num_maneuver"] + 1e-10)
-        loss = maneuver_loss
-        gt = np.asarray(metrics['gt_maneuver'])
-        pred = np.asarray(metrics['pred_maneuver'])
-        ST_gt = gt[:,1] == 1
-        LT_gt = gt[:,0] == 1
-        RT_gt = gt[:,2] == 1
-        ST_pred = pred == 1
-        LT_pred = pred == 0
-        RT_pred = pred == 2
+        cls = metrics["cls_loss"] / (metrics["num_cls"] + 1e-10)
+        reg = metrics["reg_loss"] / (metrics["num_reg"] + 1e-10)
+        loss = cls + reg
 
-        ST_TP = sum(ST_gt & ST_pred)+1e-10
-        ST_TN = sum((gt[:,1] != 1) & ~ST_pred)+1e-10
-        ST_FP = sum(ST_gt & ~ST_pred)+1e-10
-        ST_FN = sum((gt[:,1] != 1) & ST_pred)+1e-10
-        ST_ACC = (ST_TP+ST_TN)/(ST_TP+ST_TN+ST_FP+ST_FN)
-        ST_Precision = ST_TP/(ST_TP+ST_FP)
-        ST_Recall = ST_TP/(ST_TP+ST_FN)
-        ST_F1 = 2/((1/ST_Recall)+(1/ST_Precision))
-
-        LT_TP = sum(LT_gt & LT_pred)+1e-10
-        LT_TN = sum((gt[:, 0] != 1) & ~LT_pred)+1e-10
-        LT_FP = sum(LT_gt & ~LT_pred)+1e-10
-        LT_FN = sum((gt[:, 0] != 1) & LT_pred)+1e-10
-        LT_ACC = (LT_TP+LT_TN)/(LT_FN+LT_FP+LT_TP+LT_TN)
-        LT_Precision = LT_TP / (LT_TP + LT_FP)
-        LT_Recall = LT_TP / (LT_TP + LT_FN)
-        LT_F1 = 2 / ((1 / LT_Recall) + (1 / LT_Precision))
-
-        RT_TP = sum(RT_gt & RT_pred)+1e-10
-        RT_TN = sum((gt[:, 2] != 1) & ~RT_pred)+1e-10
-        RT_FP = sum(RT_gt & ~RT_pred)+1e-10
-        RT_FN = sum((gt[:, 2] != 1) & RT_pred)+1e-10
-        RT_ACC = (RT_TP+RT_TN)/(RT_FN+RT_FP+RT_TP+RT_TN)
-        RT_Precision = RT_TP / (RT_TP + RT_FP)
-        RT_Recall = RT_TP / (RT_TP + RT_FN)
-        RT_F1 = 2 / ((1 / RT_Recall) + (1 / RT_Precision))
+        preds = np.concatenate(metrics["preds"], 0)
+        gt_preds = np.concatenate(metrics["gt_preds"], 0)
+        has_preds = np.concatenate(metrics["has_preds"], 0)
+        ade1, fde1, ade, fde, min_idcs = pred_metrics(preds, gt_preds, has_preds)
 
         print(
-            "loss %2.4f & ST_ACC, ST_Prec, ST_Recall, ST_F1 = %2.4f, %2.4f,%2.4f,%2.4f & LT_ACC, LT_Prec, LT_Recall, LT_F1 = %2.4f, %2.4f,%2.4f,%2.4f & RT_ACC, RT_Prec, RT_Recall, RT_F1 = %2.4f, %2.4f,%2.4f,%2.4f"
-            % (loss, ST_ACC, ST_Precision, ST_Recall, ST_F1, LT_ACC, LT_Precision, LT_Recall, LT_F1, RT_ACC, RT_Precision, RT_Recall, RT_F1)
+            "loss %2.4f %2.4f %2.4f, ade1 %2.4f, fde1 %2.4f, ade %2.4f, fde %2.4f"
+            % (loss, cls, reg, ade1, fde1, ade, fde)
         )
         print()
 

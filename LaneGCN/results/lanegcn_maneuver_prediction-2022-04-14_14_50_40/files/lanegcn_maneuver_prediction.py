@@ -79,8 +79,7 @@ config["preprocess_val"] = os.path.join(
     root_path, "dataset", "preprocess", "val_crs_dist6_angle90.p"
 )
 config['preprocess_test'] = os.path.join(root_path, "dataset", 'preprocess', 'test_test.p')
-config['sampling_aug'] = None
-# config['sampling_aug'] = 'undersample'
+config['sampling_aug'] = 'undersample'
 # config['sampling_aug'] = 'oversample'
 
 """Model"""
@@ -987,47 +986,24 @@ class PostProcess(nn.Module):
                 % dt
             )
 
-        maneuver_loss = metrics["loss_maneuver"] / (metrics["num_maneuver"] + 1e-10)
-        loss = maneuver_loss
-        gt = np.asarray(metrics['gt_maneuver'])
-        pred = np.asarray(metrics['pred_maneuver'])
-        ST_gt = gt[:,1] == 1
-        LT_gt = gt[:,0] == 1
-        RT_gt = gt[:,2] == 1
-        ST_pred = pred == 1
-        LT_pred = pred == 0
-        RT_pred = pred == 2
+        cls = metrics["cls_loss"] / (metrics["num_cls"] + 1e-10)
+        reg = metrics["reg_loss"] / (metrics["num_reg"] + 1e-10)
+        maneuver_loss = 2 * metrics["loss_maneuver"] / (metrics["num_maneuver"] + 1e-10)
+        loss = cls + reg + maneuver_loss
 
-        ST_TP = sum(ST_gt & ST_pred)+1e-10
-        ST_TN = sum((gt[:,1] != 1) & ~ST_pred)+1e-10
-        ST_FP = sum(ST_gt & ~ST_pred)+1e-10
-        ST_FN = sum((gt[:,1] != 1) & ST_pred)+1e-10
-        ST_ACC = (ST_TP+ST_TN)/(ST_TP+ST_TN+ST_FP+ST_FN)
-        ST_Precision = ST_TP/(ST_TP+ST_FP)
-        ST_Recall = ST_TP/(ST_TP+ST_FN)
-        ST_F1 = 2/((1/ST_Recall)+(1/ST_Precision))
+        preds = np.concatenate(metrics["preds"], 0)
+        gt_preds = np.concatenate(metrics["gt_preds"], 0)
+        has_preds = np.concatenate(metrics["has_preds"], 0)
+        ade1, fde1, ade, fde, min_idcs = pred_metrics(preds, gt_preds, has_preds)
 
-        LT_TP = sum(LT_gt & LT_pred)+1e-10
-        LT_TN = sum((gt[:, 0] != 1) & ~LT_pred)+1e-10
-        LT_FP = sum(LT_gt & ~LT_pred)+1e-10
-        LT_FN = sum((gt[:, 0] != 1) & LT_pred)+1e-10
-        LT_ACC = (LT_TP+LT_TN)/(LT_FN+LT_FP+LT_TP+LT_TN)
-        LT_Precision = LT_TP / (LT_TP + LT_FP)
-        LT_Recall = LT_TP / (LT_TP + LT_FN)
-        LT_F1 = 2 / ((1 / LT_Recall) + (1 / LT_Precision))
-
-        RT_TP = sum(RT_gt & RT_pred)+1e-10
-        RT_TN = sum((gt[:, 2] != 1) & ~RT_pred)+1e-10
-        RT_FP = sum(RT_gt & ~RT_pred)+1e-10
-        RT_FN = sum((gt[:, 2] != 1) & RT_pred)+1e-10
-        RT_ACC = (RT_TP+RT_TN)/(RT_FN+RT_FP+RT_TP+RT_TN)
-        RT_Precision = RT_TP / (RT_TP + RT_FP)
-        RT_Recall = RT_TP / (RT_TP + RT_FN)
-        RT_F1 = 2 / ((1 / RT_Recall) + (1 / RT_Precision))
-
+        positive_num = 0
+        for i in range(len(metrics['pred_maneuver'])):
+            if np.argmax(metrics['gt_maneuver'][i]) == metrics['pred_maneuver'][i]:
+                positive_num = positive_num + 1
+        acc = positive_num/len(metrics['gt_preds'])
         print(
-            "loss %2.4f & ST_ACC, ST_Prec, ST_Recall, ST_F1 = %2.4f, %2.4f,%2.4f,%2.4f & LT_ACC, LT_Prec, LT_Recall, LT_F1 = %2.4f, %2.4f,%2.4f,%2.4f & RT_ACC, RT_Prec, RT_Recall, RT_F1 = %2.4f, %2.4f,%2.4f,%2.4f"
-            % (loss, ST_ACC, ST_Precision, ST_Recall, ST_F1, LT_ACC, LT_Precision, LT_Recall, LT_F1, RT_ACC, RT_Precision, RT_Recall, RT_F1)
+            "loss %2.4f %2.4f %2.4f %2.4f, ade1 %2.4f, fde1 %2.4f, ade %2.4f, fde %2.4f, acc %2.2f%%"
+            % (loss, cls, reg, maneuver_loss, ade1, fde1, ade, fde, 100*acc)
         )
         print()
 
