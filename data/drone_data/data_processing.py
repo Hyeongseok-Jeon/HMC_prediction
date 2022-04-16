@@ -6,9 +6,9 @@ import sys
 import time
 import json
 import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
-# matplotlib.use('TkAgg')
 
 # cur_path = os.path.dirname(os.path.abspath(__file__))+'/'
 cur_path = os.getcwd() + '/data/drone_data/'
@@ -33,19 +33,6 @@ print('\n')
 # plt.figure()
 
 for file_name_index in range(len(file_list_int)):
-    # if file_list_int[file_name_index] == 1003:
-    #     print(file_name_index)
-    # selected_file_index = input('Select data file index from above :')
-    # selected_file_index = input('Proceed?: ')
-
-# 1011_0027
-# 1016_0001
-# 1016_0002
-# 1014_0006
-# 1014_0049
-# 1014_0013
-# 1010_0017
-
 
     selected_scenario_id = file_list_int[file_name_index]
 
@@ -62,7 +49,7 @@ for file_name_index in range(len(file_list_int)):
             representative_id = '1001'
 
         origin_GT = []
-        with open(cur_path + 'map/' + representative_id + '/csv/LandMark.csv', newline='') as csvfile:
+        with open(cur_path + 'MORAI_map/' + representative_id + '/csv/LandMark.csv', newline='') as csvfile:
             spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
             for row in spamreader:
                 row_mod = row[0].split(',')
@@ -78,16 +65,16 @@ for file_name_index in range(len(file_list_int)):
 
         print('Data Converting ....')
 
-        new_tracks = coordinate_conversion(scale, tracks, landmark, recordingMeta, origin_GT)
+        new_tracks, res_x = coordinate_conversion(scale, tracks, landmark, recordingMeta, origin_GT)
         new_tracks_tmp = new_tracks.copy()
         if selected_scenario_id == 1003:
             new_tracks[:, 5] = new_tracks[:, 5] - 13
-        with open(cur_path + 'map/' + representative_id + '/link_set.json') as json_file:
+        with open(cur_path + 'MORAI_map/' + representative_id + '/link_set_mod.json') as json_file:
             links = json.load(json_file)
-        with open(cur_path + 'map/' + representative_id + '/node_set.json') as json_file:
+        with open(cur_path + 'MORAI_map/' + representative_id + '/node_set_mod.json') as json_file:
             nodes = json.load(json_file)
-        maneuver_table = np.load(cur_path + 'map/' + representative_id + '/maneuver_table.npy')
-
+        maneuver_table = np.load(cur_path + 'MORAI_map/' + representative_id + '/maneuver_table.npy')
+        #
         # for i in range(len(links)):
         #     points_np = np.array(links[i]['points'])[:, :2]
         #     plt.plot(np.array(points_np)[:, 1], -np.array(points_np)[:, 0], c='k', zorder=100, linewidth=3)
@@ -247,17 +234,17 @@ for file_name_index in range(len(file_list_int)):
                     cat = 'val'
                 else:
                     cat = 'train'
-                with open(cur_path + 'processed/' + cat + '/maneuver_index/' + file_name + '.npy', "wb") as f:
+                with open(cur_path + 'processed_morai/' + cat + '/maneuver_index/' + file_name + '.npy', "wb") as f:
                     np.save(f, maneuver_index)
-                with open(cur_path + 'processed/' + cat + '/nearest_outlet_state/' + file_name + '.npy', "wb") as f:
+                with open(cur_path + 'processed_morai/' + cat + '/nearest_outlet_state/' + file_name + '.npy', "wb") as f:
                     np.save(f, nearest_outlet_state)
-                with open(cur_path + 'processed/' + cat + '/outlet_node_state/' + file_name + '.npy', "wb") as f:
+                with open(cur_path + 'processed_morai/' + cat + '/outlet_node_state/' + file_name + '.npy', "wb") as f:
                     np.save(f, outlet_node_state)
-                with open(cur_path + 'processed/' + cat + '/total_traj/' + file_name + '.npy', "wb") as f:
+                with open(cur_path + 'processed_morai/' + cat + '/total_traj/' + file_name + '.npy', "wb") as f:
                     np.save(f, total_traj)
-                with open(cur_path + 'processed/' + cat + '/link_idx/' + file_name + '.npy', "wb") as f:
+                with open(cur_path + 'processed_morai/' + cat + '/link_idx/' + file_name + '.npy', "wb") as f:
                     np.save(f, seg_list)
-                with open(cur_path + 'processed/' + cat + '/conversion/' + file_name + '.npy', "wb") as f:
+                with open(cur_path + 'processed_morai/' + cat + '/conversion/' + file_name + '.npy', "wb") as f:
                     np.save(f, np.asarray([origin_point] + rot.tolist()))
                 # plt.scatter(traj_conv[:, 0], traj_conv[:, 1])
                 # plt.text(traj_conv[-1, 0], traj_conv[-1, 1], veh_id_sort)

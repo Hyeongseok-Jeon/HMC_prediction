@@ -136,7 +136,7 @@ def coordinate_conversion(scale, tracks, landmark, recordingMeta, origin_GT):
             new_tracks[veh_list[j], 4:6] = np.asarray([x_1, y_1])
             new_tracks[veh_list[j], 6] = new_tracks[veh_list[j], 6] + rot - 90
 
-    return new_tracks
+    return new_tracks, res.x
 
 
 def get_nearest_link(links, pos):

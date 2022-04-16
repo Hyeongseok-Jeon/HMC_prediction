@@ -1,0 +1,2 @@
+recordingId,locationId,frameRate,referenceFrame,weekday,startTime,duration,numTracks,numVehicles,numVRUs,latLocation,lonLocation,xUtmOrigin,yUtmOrigin,orthoPxToMeter,px2meter,p1x,p1y,p2x,p2y,p3x,p3y,p4x,p4y
+500,0,30,5001_1831,0,0,0,0,0,0,0,0,0,0,0,0.031407433,1802,818,2174,1214,1788,1644,1436,1203

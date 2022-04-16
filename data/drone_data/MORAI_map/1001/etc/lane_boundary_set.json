@@ -1,0 +1,868 @@
+[
+  {
+    "idx": "LM000003",
+    "from_node_idx": "95S",
+    "to_node_idx": "92S",
+    "points": [
+      [
+        -0.5376,
+        -57.056,
+        -1.2748
+      ],
+      [
+        -0.5376,
+        -0.1033,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000004",
+    "from_node_idx": "ND000002",
+    "to_node_idx": "102S",
+    "points": [
+      [
+        -0.543,
+        36.20425,
+        -1.2748
+      ],
+      [
+        -0.543,
+        36.508075000000005,
+        -1.2748
+      ],
+      [
+        -0.543,
+        36.8119,
+        -1.2748
+      ],
+      [
+        -0.543,
+        41.6731,
+        -1.2748
+      ],
+      [
+        -0.543,
+        51.3955,
+        -1.2748
+      ],
+      [
+        -0.543,
+        70.8403,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000005",
+    "from_node_idx": "206S",
+    "to_node_idx": "185S",
+    "points": [
+      [
+        2.8086,
+        31.8838,
+        -1.2748
+      ],
+      [
+        2.7927,
+        66.3252,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000006",
+    "from_node_idx": "207S",
+    "to_node_idx": "184S",
+    "points": [
+      [
+        2.9585,
+        31.8838,
+        -1.2748
+      ],
+      [
+        2.9427,
+        66.3252,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000007",
+    "from_node_idx": "80S",
+    "to_node_idx": "83S",
+    "points": [
+      [
+        6.429,
+        33.1981,
+        -1.2748
+      ],
+      [
+        6.429,
+        70.2977,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000008",
+    "from_node_idx": "101S",
+    "to_node_idx": "ND000002",
+    "points": [
+      [
+        -0.543,
+        31.9507,
+        -1.2748
+      ],
+      [
+        -0.543,
+        34.3813,
+        -1.2748
+      ],
+      [
+        -0.543,
+        35.5966,
+        -1.2748
+      ],
+      [
+        -0.543,
+        36.20425,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000015",
+    "from_node_idx": "15S",
+    "to_node_idx": "26S",
+    "points": [
+      [
+        -9.1198,
+        36.6231,
+        -1.2748
+      ],
+      [
+        -9.0356,
+        69.9441,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000016",
+    "from_node_idx": "259S",
+    "to_node_idx": "214S",
+    "points": [
+      [
+        -6.2549,
+        36.7915,
+        -1.2748
+      ],
+      [
+        -6.2549,
+        70.0071,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000017",
+    "from_node_idx": "258S",
+    "to_node_idx": "215S",
+    "points": [
+      [
+        -6.4049,
+        36.7915,
+        -1.2748
+      ],
+      [
+        -6.4049,
+        70.0071,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000018",
+    "from_node_idx": "210S",
+    "to_node_idx": "237S",
+    "points": [
+      [
+        -3.6242,
+        36.84,
+        -1.2748
+      ],
+      [
+        -3.6242,
+        67.3009,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000019",
+    "from_node_idx": "211S",
+    "to_node_idx": "236S",
+    "points": [
+      [
+        -3.4742,
+        36.84,
+        -1.2748
+      ],
+      [
+        -3.4742,
+        67.3009,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000020",
+    "from_node_idx": "104S",
+    "to_node_idx": "107S",
+    "points": [
+      [
+        -1.0003,
+        31.9507,
+        -1.2748
+      ],
+      [
+        -1.0003,
+        70.8403,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000021",
+    "from_node_idx": "108S",
+    "to_node_idx": "149S",
+    "points": [
+      [
+        2.1342,
+        -2.1209,
+        -1.2748
+      ],
+      [
+        2.137,
+        -55.5476,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000022",
+    "from_node_idx": "109S",
+    "to_node_idx": "148S",
+    "points": [
+      [
+        1.9842,
+        -2.1221,
+        -1.2748
+      ],
+      [
+        1.987,
+        -55.5476,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000023",
+    "from_node_idx": "45S",
+    "to_node_idx": "42S",
+    "points": [
+      [
+        7.648,
+        -2.312,
+        -1.2748
+      ],
+      [
+        7.648,
+        -55.5476,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000024",
+    "from_node_idx": "156S",
+    "to_node_idx": "119S",
+    "points": [
+      [
+        4.9569,
+        -1.9246,
+        -1.2748
+      ],
+      [
+        4.9675,
+        -52.5686,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000025",
+    "from_node_idx": "118S",
+    "to_node_idx": "157S",
+    "points": [
+      [
+        4.8175,
+        -52.5686,
+        -1.2748
+      ],
+      [
+        4.8069,
+        -1.9269,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000026",
+    "from_node_idx": "77S",
+    "to_node_idx": "74S",
+    "points": [
+      [
+        15.3646,
+        15.7403,
+        -1.2748
+      ],
+      [
+        45.7324,
+        15.7403,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000027",
+    "from_node_idx": "53S",
+    "to_node_idx": "55S",
+    "points": [
+      [
+        15.4883,
+        8.7733,
+        -1.2748
+      ],
+      [
+        45.7324,
+        8.7733,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000028",
+    "from_node_idx": "19S",
+    "to_node_idx": "86S",
+    "points": [
+      [
+        15.236,
+        12.2792,
+        -1.2748
+      ],
+      [
+        47.2382,
+        12.078,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000029",
+    "from_node_idx": "38S",
+    "to_node_idx": "40S",
+    "points": [
+      [
+        -16.3687,
+        14.2945,
+        -1.2748
+      ],
+      [
+        -40.1913,
+        14.2945,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  },
+  {
+    "idx": "LM000030",
+    "from_node_idx": "58S",
+    "to_node_idx": "57S",
+    "points": [
+      [
+        -16.7009,
+        7.2145,
+        -1.2748
+      ],
+      [
+        -40.1913,
+        7.2145,
+        -1.2748
+      ]
+    ],
+    "lane_type_def": "",
+    "lane_type": 0,
+    "lane_sub_type": 0,
+    "lane_color": "",
+    "lane_shape": [],
+    "lane_width": 0.15,
+    "dash_interval_L1": 30,
+    "dash_interval_L2": 50,
+    "double_line_interval": 0.1,
+    "geometry": [
+      {
+        "id": 0,
+        "method": "poly3"
+      }
+    ],
+    "passRestr": "",
+    "lane_type_list": [],
+    "lane_shape_list": [],
+    "lane_color_list": [],
+    "lane_type_start": [],
+    "lane_type_end": []
+  }
+]

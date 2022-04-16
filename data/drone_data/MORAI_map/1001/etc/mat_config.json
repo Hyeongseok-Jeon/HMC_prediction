@@ -1,0 +1,11 @@
+{
+  "Lane_White": [
+    "lm_white.obj"
+  ],
+  "Lane_Yellow": [
+    "lm_yellow.obj"
+  ],
+  "Asphalt": [
+    "road.obj"
+  ]
+}

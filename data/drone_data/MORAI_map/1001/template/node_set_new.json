@@ -1,0 +1,332 @@
+[
+  {
+    "idx": "00001103S",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      6.4778,
+      -40.306295223068446,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001103E",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      6.4778,
+      0.1367999198846519,
+      0.0
+    ],
+    "on_stop_line": true
+  },
+  {
+    "idx": "00001102S",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      3.5462,
+      -40.37712603248656,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001102E",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      3.5462,
+      0.06570066744461656,
+      0.0
+    ],
+    "on_stop_line": true
+  },
+  {
+    "idx": "00001101S",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      1.1032000000000002,
+      -40.448315190151334,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001101E",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      1.1032000000000002,
+      0.0,
+      0.0
+    ],
+    "on_stop_line": true
+  },
+  {
+    "idx": "00001104S",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      15.413474598026369,
+      10.219708772841841,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001104E",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      28.97108592535369,
+      10.545180589426309,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001105S",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      28.823590870189946,
+      14.049459120258689,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001105E",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      15.236,
+      14.0133,
+      0.0
+    ],
+    "on_stop_line": true
+  },
+  {
+    "idx": "00001106S",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      4.3649683249532245,
+      36.27702308399603,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001106E",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      4.3649683249532245,
+      59.14256452117115,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001107S",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      1.12485,
+      36.297025000000005,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001107E",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      1.12485,
+      59.091769736260176,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001108S",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      -2.0183875,
+      59.22646108455956,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001108E",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      -2.0183875,
+      36.6231,
+      0.0
+    ],
+    "on_stop_line": true
+  },
+  {
+    "idx": "00001109S",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      -5.015577594342176,
+      59.282626694999635,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001109E",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      -5.06185,
+      36.6231,
+      0.0
+    ],
+    "on_stop_line": true
+  },
+  {
+    "idx": "00001110S",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      -7.800552015425637,
+      59.244254601188004,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001110E",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      -7.700552015425637,
+      36.6231,
+      0.0
+    ],
+    "on_stop_line": true
+  },
+  {
+    "idx": "00001111S",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      -16.03330578940222,
+      12.841610450297594,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001111E",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      -34.91769597091479,
+      12.841610450297594,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001112S",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      -34.7994665983133,
+      8.736674536950886,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001112E",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      -16.7127,
+      8.8794,
+      0.0
+    ],
+    "on_stop_line": true
+  },
+  {
+    "idx": "00001113S",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      -5.963227025873493,
+      -0.18561456352472305,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001113E",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      -5.963227025873493,
+      -40.64309971919283,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001114S",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      -3.120969713141676,
+      -0.08542309515178204,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001114E",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      -3.120969713141676,
+      -40.53219335153699,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001115S",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      3.5462,
+      -53.97905999887735,
+      0.0
+    ],
+    "on_stop_line": false
+  },
+  {
+    "idx": "00001117S",
+    "node_type": null,
+    "junction": [],
+    "point": [
+      6.4778,
+      -53.87684187665582,
+      0.0
+    ],
+    "on_stop_line": false
+  }
+]
