@@ -122,7 +122,7 @@ def main():
         for f in files:
             shutil.copy(os.path.join(src_dir, f), os.path.join(dst_dir, f))
 
-    config['preprocess_train'] = os.path.split(config['preprocess_train'])[0]+'\\train_crs_dist6_angle90_over.p'
+    config['preprocess_train'] = os.path.split(config['preprocess_train'])[0]+'\\train_crs_dist6_angle90_under.p'
     # Data loader for training
     dataset = Dataset(config["train_split"], config, train=True)
     train_loader = DataLoader(

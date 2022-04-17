@@ -153,43 +153,10 @@ class Net(nn.Module):
         self.pred_net_RT = PredNet(config)
 
     def forward(self, data: Dict, mode='official', transfer=False, phase='train') -> Dict[str, List[Tensor]]:
-        maneuver_list = []
-        for i in range(len(data['file_name'])):
-            file_name = str(data['file_name'][i]) + '.csv'
-            if phase == 'train':
-                data_frame = self.train_maneuver[self.train_maneuver['file name'] == file_name]['target maneuver']
-            elif phase == 'val':
-                data_frame = self.val_maneuver[self.val_maneuver['file name'] == file_name]['target maneuver']
-            if len(data_frame) == 0:
-                maneuver_list.append('None')
-            else:
-                man = data_frame.reset_index()['target maneuver'][0]
-                if man == 'LEFT':
-                    maneuver_list.append('LEFT')
-                elif man == 'RIGHT':
-                    maneuver_list.append('RIGHT')
-                elif man == 'go_straight' or man == 'left_lane_change' or man == 'right_lane_change':
-                    maneuver_list.append('STRAIGHT')
-                else:
-                    maneuver_list.append('None')
-        maneuver_list_copy = maneuver_list.copy()
-        maneuver_list_copy = [x for x in maneuver_list_copy if x != 'None']
-        # construct actor feature
-        actors, actor_idcs = actor_gather(gpu([data["feats"][i] for i in range(len(maneuver_list)) if maneuver_list[i] != 'None']))
+        actors, actor_idcs = actor_gather(gpu(data["feats"]))
         target_index = [x[0:1] for x in actor_idcs]
-        actor_ctrs = gpu([data["ctrs"][i] for i in range(len(maneuver_list)) if maneuver_list[i] != 'None'])
-        for i in range(len(maneuver_list_copy)):
-            if maneuver_list_copy[i] == 'LEFT':
-                maneuver_array = torch.tensor([[1, 0, 0]], device=actor_idcs[0].device)
-            elif maneuver_list_copy[i] == 'STRAIGHT':
-                maneuver_array = torch.tensor([[0, 1, 0]], device=actor_idcs[0].device)
-            elif maneuver_list_copy[i] == 'RIGHT':
-                maneuver_array = torch.tensor([[0, 0, 1]], device=actor_idcs[0].device)
+        actor_ctrs = gpu(data["ctrs"])
 
-            if i == 0:
-                maneuver_list_tensor =maneuver_array
-            else:
-                maneuver_list_tensor = torch.cat((maneuver_list_tensor, maneuver_array), dim=0)
 
         if mode == 'official':
             actors = self.actor_net(actors)
@@ -242,20 +209,20 @@ class Net(nn.Module):
                 actors = self.mapping(actors)
 
             # construct map features
-        graph = graph_gather(to_long(gpu([data["graph"][i] for i in range(len(maneuver_list)) if maneuver_list[i] != 'None'])))
+        graph = graph_gather(to_long(gpu(data["graph"])))
         nodes, node_idcs, node_ctrs = self.map_net(graph)
 
         # actor-map fusion cycle
+        actors = self.a2a(actors, actor_idcs, actor_ctrs)
         nodes = self.a2m(nodes, graph, actors, actor_idcs, actor_ctrs)
         nodes = self.m2m(nodes, graph)
         actors = self.m2a(actors, actor_idcs, actor_ctrs, nodes, node_idcs, node_ctrs)
-        hidden_for_score = actors.clone()
-        maneuver_score = self.score(hidden_for_score[torch.cat(target_index)])
+        maneuver_score = self.score(actors[torch.cat(target_index)])
 
         # prediction
         out = dict()
         out['score'] = maneuver_score
-        out['score_GT'] = maneuver_list_tensor
+        out['score_GT'] = gpu(torch.tensor(data["maneuver_label"]))
 
         return out
 
