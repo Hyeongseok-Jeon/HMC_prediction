@@ -26,13 +26,13 @@ from torch.utils.data.distributed import DistributedSampler
 try:
     # import lanegcn as model
     # import lanegcn_multihead as model
-    import lanegcn_multihead_scoring as model
+    import lanegcn_maneuver_prediction as model
     from utils import Logger, load_pretrain
 
 except:
     # import LaneGCN.lanegcn as model
     # import LaneGCN.lanegcn_multihead as model
-    import LaneGCN.lanegcn_multihead_scoring as model
+    import LaneGCN.lanegcn_maneuver_prediction as model
     from LaneGCN.utils import Logger, load_pretrain
 
 # cur_path = os.path.abspath(__file__)
@@ -122,6 +122,7 @@ def main():
         for f in files:
             shutil.copy(os.path.join(src_dir, f), os.path.join(dst_dir, f))
 
+    config['preprocess_train'] = os.path.split(config['preprocess_train'])[0]+'\\train_crs_dist6_angle90_over.p'
     # Data loader for training
     dataset = Dataset(config["train_split"], config, train=True)
     train_loader = DataLoader(
