@@ -137,6 +137,7 @@ def main():
                 shutil.copy(os.path.join(src_dir, f), os.path.join(dst_dir, f))
 
     # Data loader for training
+    config['preprocess_train'] = os.path.split(config['preprocess_train'])[0]+'\\train_crs_dist6_angle90_under.p'
     dataset = Dataset(config["train_split"], config, train=True)
     config = dataset.config
     train_sampler = DistributedSampler(
