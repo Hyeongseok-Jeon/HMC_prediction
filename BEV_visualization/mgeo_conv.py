@@ -656,6 +656,8 @@ def get_local_path_before_inlet(cur_pos, links, vehs, jj):
             al = (len(RT_path_mod) - 2 - k) / (len(RT_path_mod) - 2)
             ax_main.plot(RT_final[k:k + 2, 0], RT_final[k:k + 2, 1], lw=10, color=(0, 0, 1, 0.3 * al ** 2), rasterized=True, zorder=0)
 
+    return [LT_exist, ST_exist, RT_exist]
+
 
 data_id = '1001'
 with open(cur_path + 'MORAI_map/' + data_id + '/link_set_mod.json') as json_file:
@@ -703,17 +705,17 @@ for i in range(len(scene_list)):
     ax_prob_4 = plt.subplot2grid((50, 70), (38, 54), colspan=16, rowspan=12)
     ax_prob_4.set_facecolor((0, 0.5, 0.5, 0.5))
     ax_probs = [ax_prob_1, ax_prob_2, ax_prob_3, ax_prob_4]
-    save_path = 'BEV_visualization\\tmp\\'
+    save_path = 'BEV_visualization\\tmp2\\'
     os.makedirs(save_path, exist_ok=True)
     prob_bag = [[], [], [], []]
     plot_idx = [None, None, None, None]
     for j in range(1, landmark.shape[0]):
-        print(j/landmark.shape[0])
+        print(j / landmark.shape[0])
         ax_main.axis('off')
 
         for axs in ax_probs:
             axs.set_ylim([0, 12 / 9])
-            axs.set_xlim([-10, 0.2])
+            axs.set_xlim([-5, 0.5])
             axs.plot(np.asarray([0, 0]), np.asarray([0, 1]), c=(0.5, 0.5, 0.5, 0.5), ls='--')
 
         frame = int(frame_list[j]) - 1
@@ -847,62 +849,6 @@ for i in range(len(scene_list)):
                     prob_bag[plot_pos] = []
 
             elif cur_link[0]['idx_int'] > 0 & next_link[0]['idx_int'] == 0:
-                LT_prob = np.random.rand()
-                ST_prob = np.random.rand()
-                RT_prob = np.random.rand()
-                LT_prob_norm = LT_prob / (LT_prob + ST_prob + RT_prob)
-                ST_prob_norm = ST_prob / (LT_prob + ST_prob + RT_prob)
-                RT_prob_norm = RT_prob / (LT_prob + ST_prob + RT_prob)
-                probs = [LT_prob_norm, ST_prob_norm, RT_prob_norm]
-                veh_idx = str(int(vehs['id'][jj]))
-                x_cen = vehs['x'][jj]
-                y_cen = vehs['y'][jj]
-                ax_main.text(x_cen, y_cen, str(int(vehs['id'][jj])), ha='center', va='center', size='x-large', zorder = 50000)
-
-                if veh_idx in plot_idx:
-                    plot_pos = plot_idx.index(veh_idx)
-                    plot_idx_frame[plot_pos] = jj
-                    prob_bag[plot_pos].append(probs)
-                else:
-                    if None in plot_idx:
-                        plot_pos = plot_idx.index(None)
-                        plot_idx[plot_pos] = veh_idx
-                        plot_idx_frame[plot_pos] = jj
-                        prob_bag[plot_pos].append(probs)
-                    else:
-                        pass
-
-                if plot_pos == 0:
-                    ax_main.plot(veh_x[jj], veh_y[jj], 'g', alpha=0.5, zorder=10000)
-                    ax_main.fill(veh_x[jj], veh_y[jj], 'g', alpha=0.5, zorder=10000)
-                elif plot_pos == 1:
-                    ax_main.plot(veh_x[jj], veh_y[jj], 'y', alpha=0.5, zorder=10000)
-                    ax_main.fill(veh_x[jj], veh_y[jj], 'y', alpha=0.5, zorder=10000)
-                elif plot_pos == 2:
-                    ax_main.plot(veh_x[jj], veh_y[jj], 'm', alpha=0.5, zorder=10000)
-                    ax_main.fill(veh_x[jj], veh_y[jj], 'm', alpha=0.5, zorder=10000)
-                elif plot_pos == 3:
-                    ax_main.plot(veh_x[jj], veh_y[jj], 'c', alpha=0.5, zorder=10000)
-                    ax_main.fill(veh_x[jj], veh_y[jj], 'c', alpha=0.5, zorder=10000)
-
-
-                LT_prob_seq = [prob[0] for prob in prob_bag[plot_pos]]
-                ST_prob_seq = [prob[1] for prob in prob_bag[plot_pos]]
-                RT_prob_seq = [prob[2] for prob in prob_bag[plot_pos]]
-                x = 0.1*np.asarray([-i for i in range(len(LT_prob_seq))])
-                x.sort()
-                ax_probs[plot_pos].plot(x, LT_prob_seq, 'o-', c='r', markersize=0, alpha=0.8, label='Left Turn Prob.')
-                LT_line[plot_pos] = ax_probs[plot_pos].scatter(x, LT_prob_seq, c='r', s=5)
-                ax_probs[plot_pos].plot(x, ST_prob_seq, 'o-', c='g', markersize=0, alpha=0.8, label='Go Straight Prob.')
-                ST_line[plot_pos] = ax_probs[plot_pos].scatter(x, ST_prob_seq, c='g', s=5)
-                ax_probs[plot_pos].plot(x, RT_prob_seq, 'o-', c='b', markersize=0, alpha=0.8, label='Right Turn Prob.')
-                RT_line[plot_pos] = ax_probs[plot_pos].scatter(x, RT_prob_seq, c='b', s=5)
-                title_font = {
-                    'fontsize': 10,
-                }
-                ax_probs[plot_pos].set_title('Maneuver probability of the vehicle '+ plot_idx[plot_pos], fontdict=title_font)
-
-                target_cand.append(jj)
                 if len(next_link) == 1:
                     if next_link[0]['dir'] == 'ST':
                         ST_links = [cur_link[0], next_link[0]]
@@ -953,17 +899,93 @@ for i in range(len(scene_list)):
                     LT_links.append([link for link in links_sim_coord if link['from_node_idx'] == LT_links[-1]['to_node_idx']][0])
                 cur_pos = [vehs['x'][jj], vehs['y'][jj]]
                 links = [LT_links, ST_links, RT_links]
-                get_local_path_before_inlet(cur_pos, links, vehs, jj)
+                feasible_maneuver = get_local_path_before_inlet(cur_pos, links, vehs, jj)
+
+                for link_num in range(3):
+                    if link_num == 0:
+                        LT_points = links[0][link_num]['points_BEV']
+                        ST_points = links[1][link_num]['points_BEV']
+                        RT_points = links[2][link_num]['points_BEV']
+                    else:
+                        LT_points = LT_points + links[0][link_num]['points_BEV'][1:]
+                        ST_points = ST_points + links[1][link_num]['points_BEV'][1:]
+                        RT_points = RT_points + links[2][link_num]['points_BEV'][1:]
+                dist_to_LT = np.min(np.linalg.norm(np.asarray(LT_points) - cur_pos, axis=1)) + 10 * np.random.normal()
+                dist_to_ST = np.min(np.linalg.norm(np.asarray(ST_points) - cur_pos, axis=1)) + 10 * np.random.normal()
+                dist_to_RT = np.min(np.linalg.norm(np.asarray(RT_points) - cur_pos, axis=1)) + 10 * np.random.normal()
+
+                LT_prob = np.exp(-0.01 * dist_to_LT)
+                ST_prob = np.exp(-0.01 * dist_to_ST)
+                RT_prob = np.exp(-0.01 * dist_to_RT)
+
+                mask_prob = np.asarray([LT_prob, ST_prob, RT_prob]) * feasible_maneuver
+                LT_prob_norm = mask_prob[0] / np.sum(mask_prob)
+                ST_prob_norm = mask_prob[1] / np.sum(mask_prob)
+                RT_prob_norm = mask_prob[2] / np.sum(mask_prob)
+
+                probs = [LT_prob_norm, ST_prob_norm, RT_prob_norm]
+                veh_idx = str(int(vehs['id'][jj]))
+                x_cen = vehs['x'][jj]
+                y_cen = vehs['y'][jj]
+                ax_main.text(x_cen, y_cen, str(int(vehs['id'][jj])), ha='center', va='center', size='x-large', zorder=50000)
+
+                if veh_idx in plot_idx:
+                    plot_pos = plot_idx.index(veh_idx)
+                    plot_idx_frame[plot_pos] = jj
+                    prob_bag[plot_pos].append(probs)
+                else:
+                    if None in plot_idx:
+                        plot_pos = plot_idx.index(None)
+                        plot_idx[plot_pos] = veh_idx
+                        plot_idx_frame[plot_pos] = jj
+                        prob_bag[plot_pos].append(probs)
+                    else:
+                        pass
+
+                if plot_pos == 0:
+                    ax_main.plot(veh_x[jj], veh_y[jj], 'g', alpha=0.5, zorder=10000)
+                    ax_main.fill(veh_x[jj], veh_y[jj], 'g', alpha=0.5, zorder=10000)
+                elif plot_pos == 1:
+                    ax_main.plot(veh_x[jj], veh_y[jj], 'y', alpha=0.5, zorder=10000)
+                    ax_main.fill(veh_x[jj], veh_y[jj], 'y', alpha=0.5, zorder=10000)
+                elif plot_pos == 2:
+                    ax_main.plot(veh_x[jj], veh_y[jj], 'm', alpha=0.5, zorder=10000)
+                    ax_main.fill(veh_x[jj], veh_y[jj], 'm', alpha=0.5, zorder=10000)
+                elif plot_pos == 3:
+                    ax_main.plot(veh_x[jj], veh_y[jj], 'c', alpha=0.5, zorder=10000)
+                    ax_main.fill(veh_x[jj], veh_y[jj], 'c', alpha=0.5, zorder=10000)
+
+                LT_prob_seq = [prob[0] for prob in prob_bag[plot_pos]]
+                ST_prob_seq = [prob[1] for prob in prob_bag[plot_pos]]
+                RT_prob_seq = [prob[2] for prob in prob_bag[plot_pos]]
+                x = 0.1 * np.asarray([-i for i in range(len(LT_prob_seq))])
+                x.sort()
+                ax_probs[plot_pos].plot(x, LT_prob_seq, 'o-', c='r', markersize=0, alpha=0.8, label='Left Turn Prob.')
+                LT_line[plot_pos] = ax_probs[plot_pos].scatter(x, LT_prob_seq, c='r', s=5)
+                ax_probs[plot_pos].plot(x, ST_prob_seq, 'o-', c='g', markersize=0, alpha=0.8, label='Go Straight Prob.')
+                ST_line[plot_pos] = ax_probs[plot_pos].scatter(x, ST_prob_seq, c='g', s=5)
+                ax_probs[plot_pos].plot(x, RT_prob_seq, 'o-', c='b', markersize=0, alpha=0.8, label='Right Turn Prob.')
+                RT_line[plot_pos] = ax_probs[plot_pos].scatter(x, RT_prob_seq, c='b', s=5)
+                title_font = {
+                    'fontsize': 10,
+                }
+                ax_probs[plot_pos].set_title('Maneuver probability of the vehicle ' + plot_idx[plot_pos], fontdict=title_font)
+
+                target_cand.append(jj)
 
             hist_traj_x = vehs['hist_x'][jj]
             hist_traj_y = vehs['hist_y'][jj]
             for k in range(len(hist_traj_x) - 1):
                 ax_main.plot(hist_traj_x[k:k + 2], hist_traj_y[k:k + 2], 'r', alpha=k / (len(hist_traj_x) - 1), lw=2.5)
         for zxcv in range(len(ax_probs)):
-            ax_probs[zxcv].set_xlim([-10, 0.2])
-            ax_probs[zxcv].set_ylim([0, 12/9])
+            ax_probs[zxcv].set_xlim([-5, 0.5])
+            ax_probs[zxcv].set_ylim([0, 12 / 9])
             ax_probs[zxcv].set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
-            ax_probs[zxcv].set_xticks([-10, -8, -6, -4, -2, 0])
+            ax_probs[zxcv].set_xticks([-5, -4, -3, -2, -1, 0])
+            ax_probs[zxcv].set_xlabel('time (sec)')
+            if zxcv == 0:
+                ax_probs[zxcv].set_ylabel('Maneuver Probability')
+
             if LT_line[zxcv] != None:
                 ax_probs[zxcv].legend((LT_line[zxcv], ST_line[zxcv], RT_line[zxcv]), ('Left Turn Prob.', 'Go Straight Prob.', 'Right Turn Prob.'), fontsize='x-small')
 
@@ -977,7 +999,7 @@ for i in range(len(scene_list)):
         ax_probs[2].clear()
         ax_probs[3].clear()
 
-    img_list = glob.glob('BEV_visualization\\tmp\\*_gauss.png')
+    img_list = glob.glob('BEV_visualization\\tmp2\\*_gauss.png')
 
     img_array = []
     for filename in img_list:
@@ -986,7 +1008,7 @@ for i in range(len(scene_list)):
         size = (width, height)
         img_array.append(img)
 
-    out = cv2.VideoWriter('BEV_visualization\\tmp\\gauss.mp4', cv2.VideoWriter_fourcc(*'FMP4'), 10, size)
+    out = cv2.VideoWriter('BEV_visualization\\tmp2\\gauss.mp4', cv2.VideoWriter_fourcc(*'FMP4'), 10, size)
 
     for i in range(len(img_array)):
         out.write(img_array[i])
