@@ -1,0 +1,6 @@
+Epoch 1.000, lr 0.00100, time 1610.46
+loss 0.9734 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.6879, 0.2886,0.5695,0.3831 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.7144, 0.7029,0.5541,0.6197 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.7227, 0.6990,0.5681,0.6268
+
+Epoch 2.000, lr 0.00100, time 1593.98
+loss 0.8863 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.7375, 0.4797,0.6472,0.5510 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.7820, 0.7615,0.6444,0.6981 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.7932, 0.7298,0.6755,0.7016
+
