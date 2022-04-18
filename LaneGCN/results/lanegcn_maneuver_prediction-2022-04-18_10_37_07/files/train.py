@@ -40,10 +40,10 @@ sys.path.insert(0, root_path)
 
 parser = argparse.ArgumentParser(description="Fuse Detection in Pytorch")
 parser.add_argument(
-    "-m", "--model", default="lanegcn_maneuver_prediction", type=str, metavar="MODEL", help="model name"
+    "-m", "--model", default="lanegcn", type=str, metavar="MODEL", help="model name"
 )
 parser.add_argument(
-    "-t", "--transfer", default='False', type=str, metavar="TRANSFER", help="transferring the pretrained encoder"
+    "-t", "--transfer", default='True', type=str, metavar="TRANSFER", help="transferring the pretrained encoder"
 )
 parser.add_argument("--eval", action="store_true")
 parser.add_argument(
@@ -137,9 +137,7 @@ def main():
                 shutil.copy(os.path.join(src_dir, f), os.path.join(dst_dir, f))
 
     # Data loader for training
-    config['preprocess_train'] = os.path.split(config['preprocess_train'])[0]+'\\train_crs_dist6_angle90_under.p'
     dataset = Dataset(config["train_split"], config, train=True)
-    config = dataset.config
     train_sampler = DistributedSampler(
         dataset, num_replicas=hvd.size(), rank=hvd.rank()
     )
@@ -153,8 +151,6 @@ def main():
         worker_init_fn=worker_init_fn,
         drop_last=True,
     )
-    config["display_iters"] = len(dataset)
-    config["val_iters"] = len(dataset) * 2
 
     # Data loader for evaluation
     dataset = Dataset(config["val_split"], config, train=False)
@@ -202,7 +198,7 @@ def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=
         epoch += epoch_per_batch
         data = dict(data)
 
-        output = net(data, mode='custom', transfer=True, phase='train')
+        output = net(data, mode='official', transfer=True, phase='train')
         loss_out = loss(output, data, phase='train')
         post_out = post_process(output, data, phase='train')
         post_process.append(metrics, loss_out, post_out)
@@ -240,7 +236,7 @@ def val(config, data_loader, net, loss, post_process, epoch):
     for i, data in enumerate(data_loader):
         data = dict(data)
         with torch.no_grad():
-            output = net(data, mode='custom', transfer=True, phase='val')
+            output = net(data, mode='official', transfer=True, phase='val')
             loss_out = loss(output, data, phase='val')
             post_out = post_process(output, data, phase='val')
             post_process.append(metrics, loss_out, post_out)

@@ -153,8 +153,6 @@ def main():
         worker_init_fn=worker_init_fn,
         drop_last=True,
     )
-    config["display_iters"] = len(dataset)
-    config["val_iters"] = len(dataset) * 2
 
     # Data loader for evaluation
     dataset = Dataset(config["val_split"], config, train=False)
