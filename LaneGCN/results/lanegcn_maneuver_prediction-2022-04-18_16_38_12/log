@@ -1,0 +1,24 @@
+Epoch 1.000, lr 0.00100, time 1645.78
+loss 0.9036 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.7583, 0.6541,0.6363,0.6451 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.7519, 0.6728,0.6144,0.6422 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.7622, 0.5819,0.6632,0.6199
+
+Epoch 2.000, lr 0.00100, time 1626.56
+loss 0.8391 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.7904, 0.7454,0.6685,0.7049 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8078, 0.6791,0.7234,0.7006 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8133, 0.6922,0.7326,0.7118
+
+************************* Validation, time 846.02 *************************
+loss 0.8098 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.7535, 0.7422,0.9474,0.8323 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8018, 0.7657,0.3123,0.4436 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9129, 0.5970,0.4276,0.4983
+
+Epoch 3.000, lr 0.00100, time 2465.60
+loss 0.8224 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.7970, 0.7594,0.6760,0.7153 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8197, 0.6937,0.7442,0.7181 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8270, 0.7119,0.7549,0.7328
+
+Epoch 4.000, lr 0.00100, time 1619.36
+loss 0.8058 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8044, 0.7614,0.6888,0.7233 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8309, 0.7253,0.7543,0.7395 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8386, 0.7238,0.7767,0.7493
+
+************************* Validation, time 843.26 *************************
+loss 0.7360 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8242, 0.8376,0.9428,0.8871 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8999, 0.6812,0.5115,0.5843 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9017, 0.7201,0.4007,0.5149
+
+Epoch 5.000, lr 0.00100, time 2463.34
+loss 0.7912 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8138, 0.7556,0.7091,0.7316 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8393, 0.7389,0.7670,0.7527 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8498, 0.7598,0.7830,0.7712
+
+Epoch 6.000, lr 0.00100, time 1616.86
+loss 0.7857 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8181, 0.7561,0.7175,0.7363 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8439, 0.7466,0.7739,0.7600 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8542, 0.7716,0.7867,0.7791
+
