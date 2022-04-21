@@ -5,6 +5,7 @@
 /LaneGCN/dataset/test_obs/*
 /LaneGCN/dataset/train/*
 /LaneGCN/dataset/val/*
+/LaneGCN/results/lanegcn_maneuver_prediction-2022-04-18_16_38_12/*0.ckpt
 /data/__pycache__/
 /logger/__pycache__/
 */__pycache__/*
