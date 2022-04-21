@@ -22,3 +22,429 @@ loss 0.7912 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8138, 0.7556,0.7091,0.7316 &
 Epoch 6.000, lr 0.00100, time 1616.86
 loss 0.7857 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8181, 0.7561,0.7175,0.7363 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8439, 0.7466,0.7739,0.7600 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8542, 0.7716,0.7867,0.7791
 
+************************* Validation, time 854.24 *************************
+loss 0.7488 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8018, 0.8018,0.9500,0.8696 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8671, 0.7638,0.4208,0.5426 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9115, 0.6958,0.4310,0.5323
+
+Epoch 7.000, lr 0.00100, time 2475.61
+loss 0.7780 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8238, 0.7598,0.7276,0.7434 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8489, 0.7548,0.7812,0.7678 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8597, 0.7839,0.7926,0.7882
+
+Epoch 8.000, lr 0.00100, time 1616.42
+loss 0.7707 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8305, 0.7700,0.7370,0.7531 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8525, 0.7567,0.7890,0.7725 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8640, 0.7937,0.7972,0.7954
+
+************************* Validation, time 843.34 *************************
+loss 0.7293 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8305, 0.8378,0.9507,0.8907 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8832, 0.7676,0.4605,0.5756 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9270, 0.6962,0.4969,0.5799
+
+Epoch 9.000, lr 0.00100, time 2461.43
+loss 0.7623 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8365, 0.7769,0.7466,0.7614 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8585, 0.7681,0.7971,0.7823 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8701, 0.8026,0.8065,0.8046
+
+Epoch 10.000, lr 0.00100, time 1618.26
+loss 0.7586 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8406, 0.7888,0.7495,0.7687 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8609, 0.7682,0.8031,0.7853 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8716, 0.8025,0.8102,0.8063
+
+************************* Validation, time 844.53 *************************
+loss 0.7355 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8139, 0.8144,0.9531,0.8783 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9102, 0.7236,0.5492,0.6244 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8860, 0.8146,0.3696,0.5085
+
+Epoch 11.000, lr 0.00100, time 2463.70
+loss 0.7526 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8450, 0.7722,0.7676,0.7699 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8657, 0.7848,0.8047,0.7946 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8746, 0.8210,0.8061,0.8135
+
+Epoch 12.000, lr 0.00100, time 1616.46
+loss 0.7482 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8489, 0.7942,0.7649,0.7793 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8695, 0.7819,0.8161,0.7986 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8788, 0.8196,0.8171,0.8184
+
+************************* Validation, time 842.06 *************************
+loss 0.7030 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8506, 0.8681,0.9462,0.9055 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9157, 0.7101,0.5742,0.6349 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9199, 0.7475,0.4668,0.5747
+
+Epoch 13.000, lr 0.00100, time 2461.76
+loss 0.7433 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8520, 0.7901,0.7740,0.7820 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8731, 0.7872,0.8220,0.8042 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8821, 0.8336,0.8165,0.8249
+
+Epoch 14.000, lr 0.00100, time 1621.86
+loss 0.7390 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8546, 0.7972,0.7760,0.7864 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8741, 0.7932,0.8206,0.8067 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8856, 0.8311,0.8265,0.8288
+
+************************* Validation, time 848.02 *************************
+loss 0.7141 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8390, 0.8484,0.9510,0.8968 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9140, 0.7156,0.5658,0.6319 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9080, 0.7903,0.4270,0.5545
+
+Epoch 15.000, lr 0.00100, time 2476.19
+loss 0.7336 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8593, 0.8033,0.7832,0.7931 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8795, 0.7986,0.8308,0.8144 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8879, 0.8381,0.8277,0.8329
+
+Epoch 16.000, lr 0.00100, time 1626.92
+loss 0.7352 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8578, 0.8085,0.7772,0.7925 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8789, 0.7966,0.8305,0.8132 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8863, 0.8295,0.8294,0.8295
+
+************************* Validation, time 849.87 *************************
+loss 0.7156 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8448, 0.8587,0.9481,0.9012 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9214, 0.6928,0.6039,0.6453 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9056, 0.7801,0.4186,0.5448
+
+Epoch 17.000, lr 0.00100, time 2478.10
+loss 0.7301 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8617, 0.8148,0.7824,0.7983 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8836, 0.7959,0.8436,0.8191 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8895, 0.8414,0.8293,0.8353
+
+Epoch 18.000, lr 0.00100, time 1623.64
+loss 0.7282 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8638, 0.8101,0.7896,0.7997 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8830, 0.8070,0.8342,0.8204 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8918, 0.8408,0.8355,0.8382
+
+************************* Validation, time 844.75 *************************
+loss 0.7239 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8284, 0.8305,0.9555,0.8886 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9031, 0.7833,0.5205,0.6254 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9116, 0.7750,0.4378,0.5595
+
+Epoch 19.000, lr 0.00100, time 2465.37
+loss 0.7275 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8626, 0.8132,0.7852,0.7989 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8847, 0.8049,0.8401,0.8222 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8913, 0.8397,0.8349,0.8373
+
+Epoch 20.000, lr 0.00100, time 1619.86
+loss 0.7233 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8671, 0.8200,0.7918,0.8056 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8862, 0.8041,0.8447,0.8239 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8946, 0.8477,0.8378,0.8427
+
+************************* Validation, time 844.73 *************************
+loss 0.7358 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8189, 0.8139,0.9604,0.8811 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9035, 0.7772,0.5220,0.6245 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9000, 0.8287,0.4065,0.5454
+
+Epoch 21.000, lr 0.00100, time 2465.58
+loss 0.7218 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8679, 0.8113,0.7985,0.8048 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8889, 0.8153,0.8438,0.8293 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8946, 0.8505,0.8359,0.8432
+
+Epoch 22.000, lr 0.00100, time 1620.53
+loss 0.7187 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8712, 0.8174,0.8026,0.8099 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8904, 0.8129,0.8494,0.8307 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8958, 0.8557,0.8356,0.8455
+
+************************* Validation, time 845.16 *************************
+loss 0.7299 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8268, 0.8258,0.9584,0.8871 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8893, 0.8215,0.4790,0.6051 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9216, 0.7366,0.4734,0.5764
+
+Epoch 23.000, lr 0.00100, time 2467.67
+loss 0.7170 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8721, 0.8143,0.8066,0.8104 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8924, 0.8210,0.8489,0.8347 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8982, 0.8587,0.8394,0.8490
+
+Epoch 24.000, lr 0.00100, time 1635.41
+loss 0.7173 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8723, 0.8127,0.8081,0.8104 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8910, 0.8188,0.8468,0.8326 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8966, 0.8583,0.8357,0.8468
+
+************************* Validation, time 853.15 *************************
+loss 0.7351 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8166, 0.8138,0.9572,0.8797 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8950, 0.7951,0.4946,0.6099 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9066, 0.7750,0.4214,0.5459
+
+Epoch 25.000, lr 0.00100, time 2498.25
+loss 0.7144 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8739, 0.8232,0.8056,0.8143 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8923, 0.8184,0.8506,0.8342 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9004, 0.8584,0.8452,0.8517
+
+Epoch 26.000, lr 0.00100, time 1644.69
+loss 0.7152 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8747, 0.8205,0.8090,0.8147 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8933, 0.8225,0.8503,0.8361 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8991, 0.8576,0.8424,0.8500
+
+************************* Validation, time 854.00 *************************
+loss 0.7460 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8093, 0.7989,0.9636,0.8735 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9002, 0.8144,0.5103,0.6274 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.8936, 0.8138,0.3881,0.5256
+
+Epoch 27.000, lr 0.00100, time 2499.46
+loss 0.7093 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8777, 0.8355,0.8071,0.8211 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8980, 0.8273,0.8593,0.8430 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9021, 0.8538,0.8526,0.8532
+
+Epoch 28.000, lr 0.00100, time 1629.22
+loss 0.7062 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8794, 0.8241,0.8180,0.8210 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8998, 0.8292,0.8627,0.8456 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9045, 0.8723,0.8460,0.8589
+
+************************* Validation, time 842.13 *************************
+loss 0.7043 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8448, 0.8532,0.9537,0.9006 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9201, 0.7602,0.5873,0.6627 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9119, 0.7817,0.4391,0.5623
+
+Epoch 29.000, lr 0.00100, time 2471.45
+loss 0.7069 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8807, 0.8284,0.8186,0.8235 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.8986, 0.8314,0.8579,0.8444 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9042, 0.8656,0.8498,0.8576
+
+Epoch 30.000, lr 0.00100, time 1647.76
+loss 0.7039 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8807, 0.8332,0.8156,0.8243 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9020, 0.8320,0.8665,0.8489 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9055, 0.8671,0.8519,0.8594
+
+************************* Validation, time 851.05 *************************
+loss 0.7049 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8528, 0.8710,0.9461,0.9070 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9115, 0.7734,0.5506,0.6433 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9304, 0.6825,0.5145,0.5867
+
+Epoch 31.000, lr 0.00100, time 2480.13
+loss 0.7007 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8833, 0.8451,0.8145,0.8295 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9035, 0.8334,0.8696,0.8511 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9080, 0.8638,0.8607,0.8623
+
+Epoch 32.000, lr 0.00010, time 1610.13
+loss 0.6981 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8867, 0.8390,0.8263,0.8326 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9050, 0.8385,0.8698,0.8539 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9097, 0.8746,0.8572,0.8658
+
+************************* Validation, time 846.19 *************************
+loss 0.7160 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8364, 0.8413,0.9549,0.8945 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9156, 0.7723,0.5669,0.6539 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9077, 0.7817,0.4252,0.5508
+
+Epoch 33.000, lr 0.00010, time 2464.65
+loss 0.6890 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8933, 0.8496,0.8355,0.8425 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9111, 0.8469,0.8801,0.8632 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9167, 0.8852,0.8674,0.8762
+
+Epoch 34.000, lr 0.00010, time 1630.07
+loss 0.6814 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8994, 0.8565,0.8459,0.8512 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9164, 0.8556,0.8877,0.8713 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9211, 0.8932,0.8730,0.8830
+
+************************* Validation, time 846.81 *************************
+loss 0.7216 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8291, 0.8260,0.9613,0.8885 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9151, 0.8014,0.5622,0.6608 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9017, 0.8193,0.4105,0.5470
+
+Epoch 35.000, lr 0.00010, time 2460.85
+loss 0.6775 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9024, 0.8585,0.8519,0.8552 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9188, 0.8605,0.8905,0.8753 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9230, 0.8973,0.8749,0.8860
+
+Epoch 36.000, lr 0.00010, time 1614.80
+loss 0.6744 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9052, 0.8642,0.8552,0.8596 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9215, 0.8630,0.8961,0.8793 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9256, 0.9014,0.8784,0.8898
+
+************************* Validation, time 848.13 *************************
+loss 0.7222 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8295, 0.8274,0.9603,0.8889 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9145, 0.7957,0.5603,0.6576 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9033, 0.8201,0.4150,0.5511
+
+Epoch 37.000, lr 0.00010, time 2461.12
+loss 0.6720 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9071, 0.8676,0.8574,0.8625 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9231, 0.8644,0.8992,0.8815 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9274, 0.9042,0.8809,0.8924
+
+Epoch 38.000, lr 0.00010, time 1631.83
+loss 0.6697 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9089, 0.8701,0.8602,0.8651 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9246, 0.8666,0.9018,0.8839 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9287, 0.9065,0.8825,0.8944
+
+************************* Validation, time 850.70 *************************
+loss 0.7196 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8336, 0.8336,0.9592,0.8920 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9187, 0.7858,0.5781,0.6661 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9029, 0.8189,0.4138,0.5498
+
+Epoch 39.000, lr 0.00010, time 2487.03
+loss 0.6675 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9107, 0.8730,0.8627,0.8678 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9259, 0.8689,0.9036,0.8860 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9303, 0.9085,0.8854,0.8968
+
+Epoch 40.000, lr 0.00010, time 1640.84
+loss 0.6657 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9123, 0.8752,0.8652,0.8702 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9271, 0.8708,0.9054,0.8877 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9323, 0.9116,0.8882,0.8997
+
+************************* Validation, time 857.13 *************************
+loss 0.7212 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8338, 0.8327,0.9604,0.8920 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9148, 0.8017,0.5610,0.6601 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9074, 0.8114,0.4268,0.5594
+
+Epoch 41.000, lr 0.00010, time 2497.76
+loss 0.6644 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9132, 0.8779,0.8654,0.8716 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9282, 0.8724,0.9070,0.8894 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9330, 0.9112,0.8904,0.9006
+
+Epoch 42.000, lr 0.00010, time 1640.33
+loss 0.6636 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9137, 0.8781,0.8667,0.8724 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9286, 0.8726,0.9082,0.8900 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9332, 0.9126,0.8897,0.9010
+
+************************* Validation, time 855.05 *************************
+loss 0.7225 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8331, 0.8320,0.9602,0.8915 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9146, 0.8009,0.5604,0.6594 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9070, 0.8122,0.4256,0.5586
+
+Epoch 43.000, lr 0.00010, time 2494.26
+loss 0.6628 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9143, 0.8803,0.8666,0.8734 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9290, 0.8735,0.9086,0.8907 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9338, 0.9119,0.8919,0.9018
+
+Epoch 44.000, lr 0.00010, time 1639.15
+loss 0.6628 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9141, 0.8792,0.8669,0.8730 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9289, 0.8742,0.9076,0.8906 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9342, 0.9123,0.8925,0.9023
+
+************************* Validation, time 863.13 *************************
+loss 0.7191 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8370, 0.8376,0.9595,0.8944 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9130, 0.8072,0.5539,0.6570 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9131, 0.7969,0.4442,0.5704
+
+Epoch 45.000, lr 0.00010, time 2497.52
+loss 0.6619 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9150, 0.8806,0.8682,0.8744 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9295, 0.8746,0.9090,0.8914 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9345, 0.9133,0.8925,0.9028
+
+Epoch 46.000, lr 0.00010, time 1629.65
+loss 0.6616 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9148, 0.8797,0.8683,0.8739 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9297, 0.8743,0.9099,0.8917 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9347, 0.9148,0.8919,0.9032
+
+************************* Validation, time 851.88 *************************
+loss 0.7163 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8396, 0.8421,0.9583,0.8964 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9167, 0.7948,0.5689,0.6631 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9123, 0.8013,0.4418,0.5695
+
+Epoch 47.000, lr 0.00010, time 2462.76
+loss 0.6607 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9157, 0.8819,0.8690,0.8754 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9303, 0.8752,0.9108,0.8926 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9352, 0.9147,0.8935,0.9040
+
+Epoch 48.000, lr 0.00010, time 1624.22
+loss 0.6605 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9163, 0.8818,0.8707,0.8762 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9304, 0.8755,0.9107,0.8928 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9352, 0.9155,0.8927,0.9039
+
+************************* Validation, time 842.41 *************************
+loss 0.7191 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8373, 0.8373,0.9602,0.8946 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9136, 0.8069,0.5563,0.6586 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9124, 0.8028,0.4423,0.5704
+
+Epoch 49.000, lr 0.00010, time 2474.16
+loss 0.6605 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9163, 0.8812,0.8710,0.8761 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9304, 0.8762,0.9102,0.8929 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9353, 0.9156,0.8930,0.9041
+
+Epoch 50.000, lr 0.00010, time 1632.57
+loss 0.6603 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9164, 0.8824,0.8705,0.8764 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9305, 0.8755,0.9111,0.8929 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9351, 0.9151,0.8928,0.9038
+
+************************* Validation, time 866.21 *************************
+loss 0.7257 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8309, 0.8281,0.9614,0.8898 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9104, 0.8138,0.5442,0.6523 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9093, 0.8099,0.4327,0.5640
+
+Epoch 51.000, lr 0.00010, time 2532.86
+loss 0.6601 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9163, 0.8816,0.8707,0.8761 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9307, 0.8767,0.9107,0.8934 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9357, 0.9157,0.8939,0.9046
+
+Epoch 52.000, lr 0.00010, time 1663.88
+loss 0.6599 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9167, 0.8836,0.8702,0.8769 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9306, 0.8753,0.9114,0.8930 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9357, 0.9155,0.8942,0.9047
+
+************************* Validation, time 865.14 *************************
+loss 0.7201 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8364, 0.8379,0.9584,0.8941 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9221, 0.7794,0.5935,0.6739 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9029, 0.8220,0.4143,0.5509
+
+Epoch 53.000, lr 0.00010, time 2552.33
+loss 0.6593 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9169, 0.8851,0.8697,0.8774 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9310, 0.8755,0.9124,0.8936 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9360, 0.9151,0.8951,0.9050
+
+Epoch 54.000, lr 0.00010, time 1668.04
+loss 0.6607 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9157, 0.8835,0.8677,0.8755 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9302, 0.8735,0.9119,0.8923 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9352, 0.9145,0.8935,0.9039
+
+************************* Validation, time 868.69 *************************
+loss 0.7151 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8415, 0.8427,0.9601,0.8976 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9163, 0.8069,0.5664,0.6656 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9142, 0.8009,0.4482,0.5748
+
+Epoch 55.000, lr 0.00010, time 2522.67
+loss 0.6610 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9156, 0.8816,0.8691,0.8753 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9304, 0.8756,0.9106,0.8928 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9348, 0.9140,0.8928,0.9033
+
+Epoch 56.000, lr 0.00010, time 1647.49
+loss 0.6597 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9169, 0.8813,0.8724,0.8768 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9307, 0.8777,0.9097,0.8934 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9356, 0.9157,0.8936,0.9045
+
+************************* Validation, time 857.85 *************************
+loss 0.7270 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8296, 0.8257,0.9622,0.8887 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9116, 0.8119,0.5486,0.6548 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9060, 0.8169,0.4229,0.5573
+
+Epoch 57.000, lr 0.00010, time 2510.60
+loss 0.6597 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9164, 0.8813,0.8712,0.8762 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9310, 0.8779,0.9103,0.8938 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9359, 0.9156,0.8944,0.9049
+
+Epoch 58.000, lr 0.00010, time 1653.79
+loss 0.6582 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9180, 0.8853,0.8724,0.8788 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9317, 0.8771,0.9130,0.8947 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9368, 0.9172,0.8956,0.9063
+
+************************* Validation, time 832.31 *************************
+loss 0.7252 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8314, 0.8289,0.9613,0.8902 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9115, 0.8119,0.5483,0.6545 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9088, 0.8118,0.4313,0.5633
+
+Epoch 59.000, lr 0.00010, time 2447.21
+loss 0.6582 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9179, 0.8845,0.8728,0.8786 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9316, 0.8777,0.9123,0.8947 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9368, 0.9173,0.8956,0.9063
+
+Epoch 60.000, lr 0.00010, time 1615.21
+loss 0.6577 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9181, 0.8850,0.8729,0.8789 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9321, 0.8787,0.9130,0.8955 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9372, 0.9175,0.8965,0.9069
+
+************************* Validation, time 836.99 *************************
+loss 0.7204 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8361, 0.8354,0.9608,0.8937 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9123, 0.8135,0.5509,0.6570 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9129, 0.8016,0.4438,0.5713
+
+Epoch 61.000, lr 0.00010, time 2451.40
+loss 0.6576 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9183, 0.8850,0.8734,0.8791 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9321, 0.8792,0.9125,0.8956 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9372, 0.9172,0.8967,0.9068
+
+Epoch 62.000, lr 0.00010, time 1613.63
+loss 0.6577 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9178, 0.8863,0.8712,0.8787 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9323, 0.8779,0.9140,0.8956 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9372, 0.9166,0.8971,0.9068
+
+************************* Validation, time 835.16 *************************
+loss 0.7259 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8306, 0.8279,0.9613,0.8896 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9125, 0.8100,0.5520,0.6566 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9067, 0.8126,0.4246,0.5578
+
+Epoch 63.000, lr 0.00010, time 2449.41
+loss 0.6577 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9180, 0.8846,0.8730,0.8788 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9320, 0.8788,0.9124,0.8953 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9370, 0.9171,0.8963,0.9066
+
+Epoch 64.000, lr 0.00010, time 1613.41
+loss 0.6571 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9185, 0.8850,0.8739,0.8794 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9323, 0.8798,0.9126,0.8959 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9374, 0.9174,0.8969,0.9071
+
+************************* Validation, time 833.19 *************************
+loss 0.7247 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8314, 0.8285,0.9617,0.8902 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9106, 0.8152,0.5446,0.6529 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9097, 0.8107,0.4339,0.5653
+
+Epoch 65.000, lr 0.00010, time 2446.43
+loss 0.6566 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9187, 0.8864,0.8735,0.8799 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9328, 0.8795,0.9141,0.8965 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9376, 0.9177,0.8973,0.9074
+
+Epoch 66.000, lr 0.00010, time 1611.95
+loss 0.6565 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9189, 0.8861,0.8742,0.8801 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9330, 0.8810,0.9135,0.8970 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9377, 0.9174,0.8980,0.9076
+
+************************* Validation, time 834.06 *************************
+loss 0.7219 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8342, 0.8325,0.9612,0.8923 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9129, 0.8144,0.5529,0.6587 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9101, 0.8044,0.4348,0.5645
+
+Epoch 67.000, lr 0.00010, time 2446.82
+loss 0.6560 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9192, 0.8872,0.8740,0.8806 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9335, 0.8810,0.9150,0.8977 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9380, 0.9178,0.8983,0.9080
+
+Epoch 68.000, lr 0.00010, time 1612.48
+loss 0.6557 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9194, 0.8868,0.8747,0.8807 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9337, 0.8817,0.9150,0.8981 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9381, 0.9182,0.8983,0.9082
+
+************************* Validation, time 835.96 *************************
+loss 0.7282 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8283, 0.8239,0.9625,0.8878 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9091, 0.8212,0.5393,0.6510 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9081, 0.8122,0.4289,0.5614
+
+Epoch 69.000, lr 0.00010, time 2437.62
+loss 0.6562 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9192, 0.8854,0.8753,0.8803 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9334, 0.8816,0.9143,0.8976 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9377, 0.9186,0.8971,0.9077
+
+Epoch 70.000, lr 0.00010, time 1594.55
+loss 0.6561 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9192, 0.8855,0.8753,0.8804 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9336, 0.8817,0.9146,0.8978 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9377, 0.9186,0.8970,0.9077
+
+************************* Validation, time 827.83 *************************
+loss 0.7202 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8361, 0.8363,0.9598,0.8938 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9172, 0.7937,0.5713,0.6644 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9079, 0.8193,0.4289,0.5630
+
+Epoch 71.000, lr 0.00010, time 2424.11
+loss 0.6559 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9195, 0.8868,0.8750,0.8809 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9336, 0.8811,0.9151,0.8978 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9378, 0.9183,0.8974,0.9077
+
+Epoch 72.000, lr 0.00010, time 1594.79
+loss 0.6558 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9195, 0.8875,0.8745,0.8810 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9336, 0.8812,0.9151,0.8979 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9379, 0.9177,0.8981,0.9078
+
+************************* Validation, time 828.26 *************************
+loss 0.7277 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8289, 0.8249,0.9621,0.8882 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9094, 0.8177,0.5405,0.6508 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9080, 0.8114,0.4286,0.5609
+
+Epoch 73.000, lr 0.00010, time 2424.07
+loss 0.6549 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9205, 0.8881,0.8767,0.8823 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9338, 0.8820,0.9151,0.8982 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9387, 0.9194,0.8989,0.9090
+
+Epoch 74.000, lr 0.00010, time 1594.59
+loss 0.6548 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9203, 0.8878,0.8765,0.8821 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9340, 0.8824,0.9153,0.8986 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9387, 0.9194,0.8988,0.9090
+
+************************* Validation, time 830.42 *************************
+loss 0.7267 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8297, 0.8261,0.9619,0.8889 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9117, 0.8122,0.5487,0.6549 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9069, 0.8189,0.4258,0.5603
+
+Epoch 75.000, lr 0.00010, time 2485.08
+loss 0.6554 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9199, 0.8871,0.8759,0.8814 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9340, 0.8818,0.9157,0.8984 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9379, 0.9187,0.8973,0.9079
+
+Epoch 76.000, lr 0.00010, time 1662.35
+loss 0.6543 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9207, 0.8883,0.8772,0.8827 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9346, 0.8832,0.9162,0.8994 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9390, 0.9199,0.8992,0.9095
+
+************************* Validation, time 867.98 *************************
+loss 0.7237 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8325, 0.8299,0.9618,0.8910 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9120, 0.8119,0.5500,0.6558 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9096, 0.8169,0.4339,0.5668
+
+Epoch 77.000, lr 0.00010, time 2528.55
+loss 0.6542 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9207, 0.8885,0.8770,0.8827 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9344, 0.8826,0.9161,0.8990 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9391, 0.9202,0.8994,0.9096
+
+Epoch 78.000, lr 0.00010, time 1662.53
+loss 0.6545 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9207, 0.8868,0.8782,0.8825 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9344, 0.8840,0.9148,0.8991 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9385, 0.9195,0.8983,0.9087
+
+************************* Validation, time 868.31 *************************
+loss 0.7219 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8340, 0.8327,0.9607,0.8921 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9131, 0.8086,0.5543,0.6577 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9100, 0.8095,0.4346,0.5656
+
+Epoch 79.000, lr 0.00010, time 2529.72
+loss 0.6538 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9215, 0.8891,0.8784,0.8838 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9346, 0.8837,0.9157,0.8994 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9390, 0.9197,0.8995,0.9095
+
+Epoch 80.000, lr 0.00010, time 1663.58
+loss 0.6544 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9208, 0.8874,0.8780,0.8826 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9345, 0.8836,0.9155,0.8993 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9385, 0.9195,0.8982,0.9087
+
+************************* Validation, time 864.45 *************************
+loss 0.7216 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8346, 0.8335,0.9606,0.8925 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9132, 0.8083,0.5547,0.6579 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9106, 0.8099,0.4367,0.5674
+
+Epoch 81.000, lr 0.00010, time 2527.43
+loss 0.6545 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9207, 0.8875,0.8777,0.8826 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9340, 0.8834,0.9144,0.8986 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9389, 0.9195,0.8995,0.9094
+
+Epoch 82.000, lr 0.00010, time 1664.89
+loss 0.6539 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9214, 0.8886,0.8787,0.8836 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9345, 0.8835,0.9158,0.8994 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9389, 0.9202,0.8989,0.9095
+
+************************* Validation, time 869.59 *************************
+loss 0.7204 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8361, 0.8361,0.9599,0.8937 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9134, 0.8045,0.5557,0.6573 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9114, 0.8040,0.4391,0.5680
+
+Epoch 83.000, lr 0.00010, time 2536.90
+loss 0.6537 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9213, 0.8888,0.8781,0.8835 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9349, 0.8839,0.9164,0.8999 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9392, 0.9202,0.8996,0.9098
+
+Epoch 84.000, lr 0.00010, time 1678.81
+loss 0.6530 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9218, 0.8901,0.8786,0.8843 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9355, 0.8846,0.9175,0.9007 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9397, 0.9208,0.9006,0.9106
+
+************************* Validation, time 876.58 *************************
+loss 0.7224 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8340, 0.8338,0.9595,0.8923 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9133, 0.8003,0.5556,0.6558 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9093, 0.8056,0.4324,0.5627
+
+Epoch 85.000, lr 0.00010, time 2553.08
+loss 0.6530 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9218, 0.8891,0.8792,0.8842 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9357, 0.8846,0.9181,0.9010 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9393, 0.9213,0.8989,0.9100
+
+Epoch 86.000, lr 0.00010, time 1678.63
+loss 0.6536 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9214, 0.8872,0.8798,0.8835 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9353, 0.8852,0.9164,0.9005 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9389, 0.9210,0.8983,0.9095
+
+************************* Validation, time 877.26 *************************
+loss 0.7206 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8359, 0.8361,0.9596,0.8936 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9130, 0.8047,0.5543,0.6564 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9119, 0.8028,0.4406,0.5690
+
+Epoch 87.000, lr 0.00010, time 2558.51
+loss 0.6538 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9214, 0.8891,0.8783,0.8837 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9348, 0.8837,0.9164,0.8998 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9390, 0.9199,0.8992,0.9095
+
+Epoch 88.000, lr 0.00010, time 1685.45
+loss 0.6529 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9221, 0.8887,0.8804,0.8846 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9353, 0.8858,0.9160,0.9006 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9397, 0.9211,0.9002,0.9105
+
+************************* Validation, time 859.23 *************************
+loss 0.7232 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8331, 0.8314,0.9609,0.8915 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9072, 0.8188,0.5327,0.6455 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9151, 0.7981,0.4511,0.5764
+
+Epoch 89.000, lr 0.00010, time 2499.94
+loss 0.6527 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9221, 0.8896,0.8798,0.8847 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9354, 0.8858,0.9164,0.9008 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9397, 0.9205,0.9007,0.9105
+
+Epoch 90.000, lr 0.00010, time 1631.25
+loss 0.6528 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9220, 0.8896,0.8794,0.8845 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9354, 0.8852,0.9166,0.9006 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9399, 0.9208,0.9008,0.9107
+
+************************* Validation, time 848.02 *************************
+loss 0.7262 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8303, 0.8272,0.9615,0.8893 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9109, 0.8138,0.5460,0.6536 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9082, 0.8118,0.4293,0.5616
+
+Epoch 91.000, lr 0.00010, time 2481.37
+loss 0.6529 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9217, 0.8911,0.8777,0.8843 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9353, 0.8832,0.9183,0.9004 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9398, 0.9210,0.9006,0.9107
+
+Epoch 92.000, lr 0.00010, time 1631.52
+loss 0.6522 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9226, 0.8903,0.8805,0.8854 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9357, 0.8856,0.9174,0.9012 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9401, 0.9217,0.9008,0.9111
+
+************************* Validation, time 846.48 *************************
+loss 0.7157 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8407, 0.8419,0.9599,0.8970 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9120, 0.8102,0.5500,0.6552 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9177, 0.7946,0.4604,0.5830
+
+Epoch 93.000, lr 0.00010, time 2479.94
+loss 0.6529 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9220, 0.8897,0.8793,0.8845 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9350, 0.8846,0.9161,0.9000 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9400, 0.9210,0.9010,0.9109
+
+Epoch 94.000, lr 0.00010, time 1648.23
+loss 0.6524 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9224, 0.8904,0.8799,0.8851 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9358, 0.8860,0.9172,0.9013 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9399, 0.9208,0.9011,0.9108
+
+************************* Validation, time 861.51 *************************
+loss 0.7236 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8330, 0.8306,0.9616,0.8913 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9077, 0.8262,0.5340,0.6487 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9145, 0.7946,0.4488,0.5737
+
+Epoch 95.000, lr 0.00010, time 2531.82
+loss 0.6523 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9225, 0.8906,0.8799,0.8852 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9358, 0.8854,0.9177,0.9012 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9400, 0.9213,0.9008,0.9109
+
+Epoch 96.000, lr 0.00010, time 1687.27
+loss 0.6523 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9224, 0.8910,0.8795,0.8852 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9359, 0.8859,0.9177,0.9015 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9401, 0.9207,0.9016,0.9111
+
+************************* Validation, time 893.24 *************************
+loss 0.7216 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8354, 0.8342,0.9610,0.8931 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9110, 0.8111,0.5464,0.6529 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9127, 0.8032,0.4434,0.5714
+
+Epoch 97.000, lr 0.00010, time 2741.23
+loss 0.6525 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9223, 0.8915,0.8788,0.8851 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9355, 0.8847,0.9176,0.9008 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9400, 0.9205,0.9015,0.9109
+
+Epoch 98.000, lr 0.00010, time 1989.84
+loss 0.6524 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9219, 0.8889,0.8799,0.8844 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9358, 0.8866,0.9168,0.9014 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9400, 0.9211,0.9010,0.9109
+
+************************* Validation, time 1087.20 *************************
+loss 0.7194 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8373, 0.8371,0.9604,0.8945 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9141, 0.8045,0.5582,0.6591 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9120, 0.8091,0.4412,0.5710
+
+Epoch 99.000, lr 0.00010, time 3177.09
+loss 0.6518 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9231, 0.8913,0.8812,0.8862 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9358, 0.8859,0.9173,0.9013 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9404, 0.9218,0.9016,0.9116
+
+Epoch 100.000, lr 0.00010, time 2136.47
+loss 0.6515 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.9231, 0.8912,0.8813,0.8862 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9362, 0.8867,0.9177,0.9019 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9405, 0.9217,0.9017,0.9116
+
+************************* Validation, time 1162.88 *************************
+loss 0.7268 & ST_ACC, ST_Prec, ST_Recall, ST_F1 = 0.8300, 0.8260,0.9625,0.8890 & LT_ACC, LT_Prec, LT_Recall, LT_F1 = 0.9095, 0.8141,0.5409,0.6500 & RT_ACC, RT_Prec, RT_Recall, RT_F1 = 0.9088, 0.8177,0.4316,0.5650
+
